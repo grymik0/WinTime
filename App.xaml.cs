@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Threading;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using WinTime.Core;
@@ -9,17 +10,19 @@ namespace WinTime;
 
 /// <summary>
 /// Точка входа приложения.
-/// 1. Загружаем настройки
-/// 2. Первый запуск → диалог выбора пути к БД
-/// 3. Инициализируем AppServices (DB, трекер, ViewModel'ы)
-/// 4. Запускаем ActivityTracker
-/// 5. Создаём иконку в системном трее
+/// 1. Проверяем единственный экземпляр (Mutex)
+/// 2. Загружаем настройки
+/// 3. Первый запуск → диалог выбора пути к БД
+/// 4. Инициализируем AppServices (DB, трекер, ViewModel'ы)
+/// 5. Запускаем ActivityTracker
+/// 6. Создаём иконку в системном трее
 /// </summary>
 public partial class App : Application
 {
     private TaskbarIcon?  _trayIcon;
     private MainWindow?   _mainWindow;
     private bool          _isExiting;
+    private Mutex?        _singleInstanceMutex;
 
     /// <summary>Читается в MainWindow.Window_Closing для различия Hide vs реального выхода.</summary>
     public bool IsExiting => _isExiting;
@@ -30,15 +33,24 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        // Тёмная тема задана напрямую через цвета в XAML (Background="#16161E" и т.д.)
-        // WPF.UI 3.1.0 в режиме совместимости с .NET Framework не поддерживает
-        // программное применение темы в net10.0-windows — стили заданы явно.
+        // Одновременно может работать только один экземпляр приложения
+        _singleInstanceMutex = new Mutex(true, "WinTime_SingleInstance", out bool createdNew);
+        if (!createdNew)
+        {
+            MessageBox.Show(
+                "WinTime уже запущен.\nНайдите иконку в системном трее (правый нижний угол экрана).",
+                "WinTime", MessageBoxButton.OK, MessageBoxImage.Information);
+            Shutdown();
+            return;
+        }
 
-        // Перехватываем необработанные исключения — не роняем процесс
+        // Перехватываем необработанные исключения — показываем ошибку, не роняем процесс
         DispatcherUnhandledException += (_, ex) =>
         {
             ex.Handled = true;
-            // В production можно логировать в файл
+            MessageBox.Show(
+                $"Произошла непредвиденная ошибка:\n\n{ex.Exception.Message}",
+                "WinTime — Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         };
 
         // 1. Настройки
@@ -77,8 +89,9 @@ public partial class App : Application
         // 5. Иконка в трее (без файла иконки — генерируем программно)
         SetupTrayIcon();
 
-        // 6. Главное окно создаём, но НЕ показываем (ShowInTaskbar=False)
+        // 6. Создаём и показываем главное окно
         _mainWindow = new MainWindow();
+        _mainWindow.Show();
     }
 
     // ── Exit ──────────────────────────────────────────────────────────────────
@@ -90,6 +103,9 @@ public partial class App : Application
 
         // Финальный сброс буфера и закрытие БД
         await AppServices.ShutdownAsync();
+
+        _singleInstanceMutex?.ReleaseMutex();
+        _singleInstanceMutex?.Dispose();
 
         base.OnExit(e);
     }

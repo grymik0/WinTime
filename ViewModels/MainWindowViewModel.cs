@@ -77,3 +77,4 @@ public sealed class MainWindowViewModel : BaseViewModel
         _ = _dashboard.LoadDataAsync();
     }
 }
+

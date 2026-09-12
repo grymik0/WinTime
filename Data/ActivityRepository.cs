@@ -175,3 +175,4 @@ public sealed class ActivityRepository
 
     private static string Fmt(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss");
 }
+

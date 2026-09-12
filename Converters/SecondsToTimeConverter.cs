@@ -32,3 +32,4 @@ public sealed class SecondsToTimeConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotSupportedException();
 }
+

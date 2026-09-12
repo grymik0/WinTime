@@ -37,6 +37,13 @@ public sealed class DashboardViewModel : BaseViewModel
     private Axis[]     _xAxes    = [new Axis { Labels = [] }];
     private Axis[]     _yAxes    = [new Axis { MinLimit = 0 }];
 
+    // Белый текст для легенды и осей на тёмном фоне
+    public SolidColorPaint LegendTextPaint { get; } =
+        new(new SKColor(229, 231, 235)); // #E5E7EB
+
+    private static readonly SolidColorPaint AxisLabelPaint =
+        new(new SKColor(156, 163, 175)); // #9CA3AF
+
     private ObservableCollection<AppStatItem> _topApps = [];
 
     public TimePeriod SelectedPeriod
@@ -206,6 +213,7 @@ public sealed class DashboardViewModel : BaseViewModel
                 Labels          = labels,
                 LabelsRotation  = _selectedPeriod == TimePeriod.Month ? -60 : 0,
                 TextSize        = 11,
+                LabelsPaint     = AxisLabelPaint,
                 Padding         = new LiveChartsCore.Drawing.Padding(0),
             }
         ];
@@ -214,9 +222,10 @@ public sealed class DashboardViewModel : BaseViewModel
         [
             new Axis
             {
-                MinLimit = 0,
-                TextSize = 11,
-                Labeler  = v => $"{v:F1}ч",
+                MinLimit    = 0,
+                TextSize    = 11,
+                LabelsPaint = AxisLabelPaint,
+                Labeler     = v => $"{v:F1}ч",
             }
         ];
     }
@@ -256,3 +265,4 @@ public sealed class DashboardViewModel : BaseViewModel
         return $"{ts.Seconds}с";
     }
 }
+

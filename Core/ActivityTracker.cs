@@ -231,3 +231,4 @@ public sealed class TrackerStateEventArgs(string appName, string windowTitle, bo
     public string WindowTitle { get; } = windowTitle;
     public bool   IsIdle      { get; } = isIdle;
 }
+

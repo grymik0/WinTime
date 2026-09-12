@@ -32,3 +32,4 @@ public sealed class AppStatItem
         return $"{ts.Seconds}с";
     }
 }
+

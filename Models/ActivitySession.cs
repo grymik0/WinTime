@@ -20,3 +20,4 @@ public sealed class ActivitySession
     /// <summary>true — сессия засчитана в AFK / бездействие.</summary>
     public bool IsIdle { get; set; }
 }
+

@@ -108,7 +108,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox Grid.Column="0"
-                         Text="{Binding DatabasePath}"
+                         Text="{Binding DatabasePath, Mode=OneWay}"
                          IsReadOnly="True"
                          Padding="10 7"
                          FontSize="13" FontFamily="Consolas"

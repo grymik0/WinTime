@@ -29,3 +29,4 @@ public sealed class AppModel
             ? DisplayName
             : Path.GetFileNameWithoutExtension(ProcessName);
 }
+

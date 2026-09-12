@@ -83,3 +83,4 @@ public sealed class SettingsService
         public bool LaunchOnStartup { get; set; }
     }
 }
+

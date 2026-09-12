@@ -152,6 +152,7 @@
                                   InitialRotation="-90"
                                   IsClockwise="True"
                                   LegendPosition="Bottom"
+                                  LegendTextPaint="{Binding LegendTextPaint}"
                                   Background="Transparent" />
                 </Border>
 
@@ -233,3 +234,4 @@
         </StackPanel>
     </ScrollViewer>
 </UserControl>
+

@@ -44,3 +44,4 @@ public partial class FirstRunDialog : Window
         DialogResult   = true;
     }
 }
+

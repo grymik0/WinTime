@@ -25,3 +25,4 @@ public abstract class BaseViewModel : INotifyPropertyChanged
         return true;
     }
 }
+

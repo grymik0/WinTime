@@ -102,3 +102,4 @@ public sealed class ApplicationsViewModel : BaseViewModel
         Apps = new ObservableCollection<AppModel>(filtered);
     }
 }
+

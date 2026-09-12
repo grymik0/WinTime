@@ -55,3 +55,4 @@ public sealed class RelayCommand<T> : ICommand
     public void Execute(object? parameter)
         => _execute((T)parameter!);
 }
+
