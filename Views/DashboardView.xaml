@@ -1,0 +1,237 @@
+<UserControl x:Class="WinTime.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:vm="clr-namespace:WinTime.ViewModels"
+             Background="#16161E">
+
+    <UserControl.Resources>
+        <!-- Базовый стиль кнопки периода -->
+        <Style x:Key="PeriodBtn" TargetType="Button">
+            <Setter Property="Background"         Value="#252535" />
+            <Setter Property="Foreground"         Value="#9CA3AF" />
+            <Setter Property="BorderThickness"    Value="0" />
+            <Setter Property="Padding"            Value="18 7" />
+            <Setter Property="FontSize"           Value="13" />
+            <Setter Property="Cursor"             Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Карточка статистики -->
+        <Style x:Key="StatCard" TargetType="Border">
+            <Setter Property="Background"   Value="#1E1E2E" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding"      Value="20 16" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24 20 24 24">
+        <StackPanel>
+
+            <!-- ── Заголовок ─────────────────────────────────────────── -->
+            <Grid Margin="0 0 0 20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Дашборд" FontSize="22" FontWeight="Bold"
+                           Foreground="White" VerticalAlignment="Center" />
+
+                <!-- IsLoading индикатор -->
+                <TextBlock Grid.Column="1" Text="Загрузка…"
+                           Foreground="#6B7280" FontSize="13"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}" />
+            </Grid>
+
+            <!-- ── Период-селектор ────────────────────────────────────── -->
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
+
+                <Button Content="Сегодня" Margin="0 0 8 0"
+                        Command="{Binding SetPeriodCommand}"
+                        CommandParameter="{x:Static vm:TimePeriod.Today}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPeriodToday}" Value="True">
+                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Неделя" Margin="0 0 8 0"
+                        Command="{Binding SetPeriodCommand}"
+                        CommandParameter="{x:Static vm:TimePeriod.Week}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPeriodWeek}" Value="True">
+                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Месяц"
+                        Command="{Binding SetPeriodCommand}"
+                        CommandParameter="{x:Static vm:TimePeriod.Month}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPeriodMonth}" Value="True">
+                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </StackPanel>
+
+            <!-- ── Сводные карточки ───────────────────────────────────── -->
+            <UniformGrid Columns="3" Margin="0 0 0 20">
+
+                <Border Style="{StaticResource StatCard}" Margin="0 0 10 0">
+                    <StackPanel>
+                        <TextBlock Text="⏱  Экранное время"
+                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 8" />
+                        <TextBlock Text="{Binding TotalTime}"
+                                   FontSize="30" FontWeight="Bold" Foreground="White" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCard}" Margin="5 0 5 0">
+                    <StackPanel>
+                        <TextBlock Text="💤  Время AFK"
+                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 8" />
+                        <TextBlock Text="{Binding IdleTime}"
+                                   FontSize="30" FontWeight="Bold" Foreground="#F59E0B" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCard}" Margin="10 0 0 0">
+                    <StackPanel>
+                        <TextBlock Text="🏆  Топ приложение"
+                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 8" />
+                        <TextBlock Text="{Binding TopApp}"
+                                   FontSize="18" FontWeight="SemiBold" Foreground="#6366F1"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Border>
+
+            </UniformGrid>
+
+            <!-- ── Графики ───────────────────────────────────────────── -->
+            <Grid Height="300" Margin="0 0 0 20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="320" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Donut Chart -->
+                <Border Grid.Column="0" Background="#1E1E2E" CornerRadius="10" Padding="8">
+                    <lvc:PieChart Series="{Binding PieSeries}"
+                                  InitialRotation="-90"
+                                  IsClockwise="True"
+                                  LegendPosition="Bottom"
+                                  LegendTextPaint="{Binding LegendTextPaint}"
+                                  Background="Transparent" />
+                </Border>
+
+                <!-- Bar Chart -->
+                <Border Grid.Column="1" Background="#1E1E2E" CornerRadius="10"
+                        Padding="12 8" Margin="12 0 0 0">
+                    <lvc:CartesianChart Series="{Binding BarSeries}"
+                                        XAxes="{Binding XAxes}"
+                                        YAxes="{Binding YAxes}"
+                                        Background="Transparent"
+                                        ZoomMode="None" />
+                </Border>
+            </Grid>
+
+            <!-- ── Топ приложений ─────────────────────────────────────── -->
+            <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16">
+                <StackPanel>
+                    <TextBlock Text="Приложения" FontSize="15" FontWeight="SemiBold"
+                               Foreground="White" Margin="0 0 0 14" />
+
+                    <ItemsControl ItemsSource="{Binding TopApps}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0 5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="28" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="90" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image Source="{Binding Icon}" Width="20" Height="20"
+                                           VerticalAlignment="Center"
+                                           RenderOptions.BitmapScalingMode="HighQuality" />
+
+                                    <TextBlock Grid.Column="1" Text="{Binding DisplayName}"
+                                               Foreground="#E5E7EB" FontSize="13"
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="4 0" />
+
+                                    <TextBlock Grid.Column="2" Text="{Binding FormattedTime}"
+                                               Foreground="#9CA3AF" FontSize="12"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                               Margin="4 0" />
+
+                                    <ProgressBar Grid.Column="3"
+                                                 Value="{Binding Percentage}"
+                                                 Maximum="100"
+                                                 Height="6"
+                                                 Foreground="#6366F1"
+                                                 Background="#374151"
+                                                 Margin="10 0 0 0"
+                                                 VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Пусто -->
+                    <TextBlock Text="Данных пока нет. Начните работу — статистика появится здесь."
+                               Foreground="#6B7280" FontSize="13" TextWrapping="Wrap"
+                               Margin="0 8 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TopApps.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
+
