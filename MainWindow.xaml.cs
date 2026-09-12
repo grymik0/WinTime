@@ -1,24 +1,27 @@
-﻿using System.Text;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace WinTime
+namespace WinTime;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+        DataContext = AppServices.MainWindowVm;
+    }
+
+    /// <summary>
+    /// Закрытие окна прячет его в трей вместо завершения приложения.
+    /// Для реального выхода — пункт «Выход» в контекстном меню трея.
+    /// </summary>
+    private void Window_Closing(object sender, CancelEventArgs e)
+    {
+        // Если это не намеренный выход через трей — просто скрываем
+        if (Application.Current is App { IsExiting: false })
         {
-            InitializeComponent();
+            e.Cancel = true;
+            Hide();
         }
     }
 }

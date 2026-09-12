@@ -1,0 +1,175 @@
+<UserControl x:Class="WinTime.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#16161E">
+
+    <UserControl.Resources>
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontSize"     Value="11" />
+            <Setter Property="FontWeight"   Value="SemiBold" />
+            <Setter Property="Foreground"   Value="#6B7280" />
+            <Setter Property="Margin"       Value="0 24 0 10" />
+        </Style>
+
+        <Style x:Key="SettingLabel" TargetType="TextBlock">
+            <Setter Property="FontSize"   Value="14" />
+            <Setter Property="Foreground" Value="#E5E7EB" />
+            <Setter Property="Margin"     Value="0 0 0 4" />
+        </Style>
+
+        <Style x:Key="SettingHint" TargetType="TextBlock">
+            <Setter Property="FontSize"   Value="12" />
+            <Setter Property="Foreground" Value="#6B7280" />
+            <Setter Property="Margin"     Value="0 0 0 16" />
+        </Style>
+
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Background"      Value="#252535" />
+            <Setter Property="Foreground"      Value="#E5E7EB" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding"         Value="18 10" />
+            <Setter Property="FontSize"        Value="13" />
+            <Setter Property="Cursor"          Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Margin"          Value="0 0 0 8" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#313147" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36 24" MaxWidth="640">
+
+            <!-- Заголовок -->
+            <TextBlock Text="Настройки" FontSize="22" FontWeight="Bold"
+                       Foreground="White" Margin="0 0 0 4" />
+            <TextBlock Text="Конфигурация WinTime"
+                       FontSize="13" Foreground="#6B7280" />
+
+            <!-- ── РАЗДЕЛ: ОТСЛЕЖИВАНИЕ ─────────────────────────────── -->
+            <TextBlock Text="ОТСЛЕЖИВАНИЕ" Style="{StaticResource SectionHeader}" />
+
+            <!-- AFK Slider -->
+            <TextBlock Text="Порог бездействия (AFK)" Style="{StaticResource SettingLabel}" />
+            <Grid Margin="0 0 0 4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Slider Grid.Column="0"
+                        Minimum="1" Maximum="10"
+                        Value="{Binding AfkThresholdMinutes}"
+                        TickFrequency="1" IsSnapToTickEnabled="True"
+                        Foreground="#6366F1"
+                        VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1"
+                           Margin="12 0 0 0"
+                           FontSize="15" FontWeight="SemiBold"
+                           Foreground="#6366F1" VerticalAlignment="Center">
+                    <Run Text="{Binding AfkThresholdMinutes}" /><Run Text=" мин" />
+                </TextBlock>
+            </Grid>
+            <TextBlock Style="{StaticResource SettingHint}"
+                       Text="Если в течение этого времени нет ввода с мыши/клавиатуры — время считается AFK." />
+
+            <!-- ── РАЗДЕЛ: СИСТЕМА ──────────────────────────────────── -->
+            <TextBlock Text="СИСТЕМА" Style="{StaticResource SectionHeader}" />
+
+            <!-- Автозапуск -->
+            <CheckBox IsChecked="{Binding LaunchOnStartup}"
+                      Foreground="#E5E7EB" FontSize="14"
+                      Content="Запускать WinTime при старте Windows"
+                      Margin="0 0 0 20"
+                      Cursor="Hand" />
+
+            <!-- ── РАЗДЕЛ: БАЗА ДАННЫХ ──────────────────────────────── -->
+            <TextBlock Text="БАЗА ДАННЫХ" Style="{StaticResource SectionHeader}" />
+
+            <TextBlock Text="Путь к файлу базы данных" Style="{StaticResource SettingLabel}" />
+            <Grid Margin="0 0 0 6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0"
+                         Text="{Binding DatabasePath}"
+                         IsReadOnly="True"
+                         Padding="10 7"
+                         FontSize="13" FontFamily="Consolas"
+                         Background="#1E1E2E"
+                         Foreground="#9CA3AF"
+                         BorderBrush="#374151"
+                         BorderThickness="1"
+                         VerticalContentAlignment="Center" />
+
+                <Button Grid.Column="2"
+                        Content="Обзор…"
+                        Command="{Binding ChooseDbPathCommand}"
+                        Style="{StaticResource ActionButton}"
+                        Margin="0" />
+            </Grid>
+
+            <TextBlock Text="{Binding DbChangeNote}"
+                       FontSize="12" Foreground="#F59E0B"
+                       Margin="0 0 0 20"
+                       TextWrapping="Wrap" />
+
+            <!-- ── РАЗДЕЛ: ЭКСПОРТ ──────────────────────────────────── -->
+            <TextBlock Text="ЭКСПОРТ ДАННЫХ" Style="{StaticResource SectionHeader}" />
+
+            <WrapPanel Margin="0 0 0 8">
+                <Button Content="📥  Экспорт в CSV"
+                        Command="{Binding ExportCsvCommand}"
+                        Style="{StaticResource ActionButton}"
+                        Margin="0 0 8 8" />
+                <Button Content="📥  Экспорт в JSON"
+                        Command="{Binding ExportJsonCommand}"
+                        Style="{StaticResource ActionButton}"
+                        Margin="0 0 0 8" />
+            </WrapPanel>
+
+            <!-- ── РАЗДЕЛ: ОПАСНАЯ ЗОНА ─────────────────────────────── -->
+            <TextBlock Text="ОПАСНАЯ ЗОНА" Style="{StaticResource SectionHeader}" />
+
+            <Button Content="🗑  Очистить историю активности"
+                    Command="{Binding ClearHistoryCommand}"
+                    Background="#3B1B1B"
+                    Foreground="#F87171"
+                    BorderThickness="0"
+                    Padding="18 10"
+                    FontSize="13"
+                    Cursor="Hand"
+                    HorizontalAlignment="Left">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <TextBlock Style="{StaticResource SettingHint}"
+                       Margin="0 6 0 0"
+                       Text="Удаляет все записи об активности. Список приложений остаётся." />
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
