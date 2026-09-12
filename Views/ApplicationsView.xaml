@@ -4,6 +4,62 @@
              xmlns:vm="clr-namespace:WinTime.ViewModels"
              Background="#16161E">
 
+    <UserControl.Resources>
+
+        <!-- Стиль заголовков столбцов -->
+        <Style x:Key="ColHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="Background"        Value="#252535" />
+            <Setter Property="Foreground"        Value="#9CA3AF" />
+            <Setter Property="FontSize"          Value="12" />
+            <Setter Property="Padding"           Value="12 0" />
+            <Setter Property="Height"            Value="36" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderThickness"   Value="0 0 0 1" />
+            <Setter Property="BorderBrush"       Value="#374151" />
+        </Style>
+
+        <!-- Стиль ячеек -->
+        <Style x:Key="CellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderThickness"   Value="0" />
+            <Setter Property="FocusVisualStyle"  Value="{x:Null}" />
+            <Setter Property="Background"        Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="12 0">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#2D2D44" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль строк -->
+        <Style x:Key="RowStyle" TargetType="DataGridRow">
+            <Setter Property="Background"     Value="#1E1E2E" />
+            <Setter Property="Height"         Value="42" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#212133" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#2D2D44" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#252540" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
     <Grid Margin="24 20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -17,7 +73,7 @@
         <TextBlock Grid.Row="0" Text="Приложения"
                    FontSize="22" FontWeight="Bold" Foreground="White" />
 
-        <!-- Поиск -->
+        <!-- Поиск + Обновить -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="320" />
@@ -55,88 +111,73 @@
                   CanUserAddRows="False"
                   CanUserReorderColumns="False"
                   SelectionMode="Single"
+                  AlternationCount="2"
                   GridLinesVisibility="Horizontal"
                   HorizontalGridLinesBrush="#252535"
                   Background="#1E1E2E"
-                  RowBackground="#1E1E2E"
-                  AlternatingRowBackground="#212133"
                   Foreground="White"
                   BorderBrush="#374151"
                   BorderThickness="1"
-                  ColumnHeaderHeight="36"
-                  RowHeight="38"
                   RowHeaderWidth="0"
+                  ColumnHeaderStyle="{StaticResource ColHeader}"
+                  CellStyle="{StaticResource CellStyle}"
+                  RowStyle="{StaticResource RowStyle}"
                   RowEditEnding="AppsGrid_RowEditEnding">
-
-            <DataGrid.ColumnHeaderStyle>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background"   Value="#252535" />
-                    <Setter Property="Foreground"   Value="#9CA3AF" />
-                    <Setter Property="FontSize"     Value="12" />
-                    <Setter Property="Padding"      Value="12 0" />
-                    <Setter Property="BorderThickness" Value="0 0 0 1" />
-                    <Setter Property="BorderBrush"  Value="#374151" />
-                </Style>
-            </DataGrid.ColumnHeaderStyle>
-
-            <DataGrid.CellStyle>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="Padding"      Value="10 0" />
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#2D2D44" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.CellStyle>
 
             <DataGrid.Columns>
 
-                <!-- Отображаемое имя (редактируемое) -->
-                <DataGridTextColumn Header="Приложение"
-                                    Binding="{Binding DisplayName, UpdateSourceTrigger=LostFocus}"
-                                    Width="200"
-                                    ElementStyle="{StaticResource {x:Type TextBlock}}" />
+                <!-- Приложение (редактируемое) -->
+                <DataGridTemplateColumn Header="Приложение" Width="200" SortMemberPath="FriendlyName">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FriendlyName}"
+                                       Foreground="#E5E7EB" FontSize="13"
+                                       VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=LostFocus}"
+                                     Background="#252535" Foreground="White"
+                                     BorderThickness="0" FontSize="13"
+                                     VerticalContentAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
 
-                <!-- Имя процесса (только чтение) -->
-                <DataGridTextColumn Header="Процесс"
-                                    Binding="{Binding ProcessName}"
-                                    IsReadOnly="True"
-                                    Width="160">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="#6B7280" />
-                            <Setter Property="FontFamily" Value="Consolas" />
-                            <Setter Property="FontSize"   Value="12" />
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
+                <!-- Процесс (только чтение) -->
+                <DataGridTemplateColumn Header="Процесс" Width="180" IsReadOnly="True" SortMemberPath="ProcessName">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ProcessName}"
+                                       Foreground="#6B7280" FontFamily="Consolas"
+                                       FontSize="12" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
                 <!-- Категория -->
-                <DataGridTemplateColumn Header="Категория" Width="160">
+                <DataGridTemplateColumn Header="Категория" Width="160" SortMemberPath="Category">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Category}"
                                        Foreground="#9CA3AF" FontSize="13"
-                                       VerticalAlignment="Center" Padding="10 0" />
+                                       VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <ComboBox ItemsSource="{x:Static vm:ApplicationsViewModel.Categories}"
                                       SelectedItem="{Binding Category, UpdateSourceTrigger=PropertyChanged}"
-                                      Background="#252535"
-                                      Foreground="White"
-                                      BorderThickness="0"
-                                      FontSize="13" />
+                                      Background="#252535" Foreground="White"
+                                      BorderThickness="0" FontSize="13"
+                                      VerticalContentAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- Не отслеживать (blacklist) -->
-                <DataGridTemplateColumn Header="Не отслеживать" Width="130">
+                <!-- Не отслеживать -->
+                <DataGridTemplateColumn Header="Не отслеживать" Width="130" IsReadOnly="True" SortMemberPath="IsBlacklisted">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsBlacklisted, UpdateSourceTrigger=PropertyChanged}"
@@ -151,3 +192,4 @@
 
     </Grid>
 </UserControl>
+

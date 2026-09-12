@@ -12,11 +12,10 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = AppServices.MainWindowVm;
 
-        // Подписываемся на смену вкладки для анимации
         AppServices.MainWindowVm.PropertyChanged += OnVmPropertyChanged;
     }
 
-    // ── Navigation animation ──────────────────────────────────────────────────
+    // ── Navigation animation
 
     private void OnVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -31,25 +30,22 @@ public partial class MainWindow : Window
     {
         var transform = (TranslateTransform)ContentArea.RenderTransform;
 
-        // Начальные значения
         ContentArea.Opacity = 0;
         transform.Y = 12;
 
         var ease     = new CubicEase { EasingMode = EasingMode.EaseOut };
         var duration = new Duration(TimeSpan.FromMilliseconds(200));
 
-        // Fade in: 0 → 1
         ContentArea.BeginAnimation(
             OpacityProperty,
             new DoubleAnimation(0, 1, duration) { EasingFunction = ease });
 
-        // Slide up: 12 → 0
         transform.BeginAnimation(
             TranslateTransform.YProperty,
             new DoubleAnimation(12, 0, duration) { EasingFunction = ease });
     }
 
-    // ── Window closing ────────────────────────────────────────────────────────
+    // ── Window closing
 
     /// <summary>
     /// Закрытие окна прячет его в трей вместо завершения приложения.
@@ -57,12 +53,10 @@ public partial class MainWindow : Window
     /// </summary>
     private void Window_Closing(object sender, CancelEventArgs e)
     {
-        // Если это не намеренный выход через трей — просто скрываем
         if (Application.Current is App { IsExiting: false })
         {
             e.Cancel = true;
             Hide();
         }
     }
-}
 }
