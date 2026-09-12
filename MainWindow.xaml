@@ -111,8 +111,13 @@
 
         <!-- ══════════════════ КОНТЕНТ ══════════════════ -->
         <ContentControl Grid.Column="1"
+                        x:Name="ContentArea"
                         Content="{Binding CurrentView}"
-                        Focusable="False" />
+                        Focusable="False">
+            <ContentControl.RenderTransform>
+                <TranslateTransform />
+            </ContentControl.RenderTransform>
+        </ContentControl>
 
     </Grid>
 </Window>

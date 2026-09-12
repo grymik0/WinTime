@@ -65,6 +65,7 @@
                   BorderThickness="1"
                   ColumnHeaderHeight="36"
                   RowHeight="38"
+                  RowHeaderWidth="0"
                   RowEditEnding="AppsGrid_RowEditEnding">
 
             <DataGrid.ColumnHeaderStyle>
