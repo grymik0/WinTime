@@ -22,6 +22,34 @@ internal static class NativeMethods
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     internal static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
+    // ── Window enumeration ──────────────────────────────────────────────────
+
+    internal delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool IsWindowVisible(IntPtr hWnd);
+
+    internal const int GWL_EXSTYLE = -20;
+    internal const long WS_EX_TOOLWINDOW = 0x00000080L;
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
+    internal static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+    internal static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
+
+    internal static long GetWindowLongPtr(IntPtr hWnd, int nIndex)
+    {
+        if (IntPtr.Size == 8)
+            return (long)GetWindowLongPtr64(hWnd, nIndex);
+        return GetWindowLong32(hWnd, nIndex);
+    }
+
     // ── Process info ────────────────────────────────────────────────────────
 
     internal const uint PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;

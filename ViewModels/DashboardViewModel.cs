@@ -4,6 +4,7 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
+using WinTime.Core;
 using WinTime.Data;
 using WinTime.Models;
 using WinTime.Services;
@@ -84,12 +85,21 @@ public sealed class DashboardViewModel : BaseViewModel
         SKColor.Parse("#6B7280"),
     ];
 
+    private readonly ActivityTracker    _tracker;
+
+    private long _rawActiveSeconds;
+    private long _rawIdleSeconds;
+    private int  _chartRefreshCounter;
+
     // ── Constructor
 
-    public DashboardViewModel(ActivityRepository activityRepo, IconService iconService)
+    public DashboardViewModel(ActivityRepository activityRepo, IconService iconService, ActivityTracker tracker)
     {
         _activityRepo = activityRepo;
         _iconService  = iconService;
+        _tracker      = tracker;
+
+        _tracker.StateChanged += OnTrackerStateChanged;
 
         SetPeriodCommand = new RelayCommand<TimePeriod>(p =>
         {
@@ -101,6 +111,62 @@ public sealed class DashboardViewModel : BaseViewModel
         });
     }
 
+    private void OnTrackerStateChanged(object? sender, TrackerStateEventArgs e)
+    {
+        System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
+        {
+            if (!e.IsIdle)
+            {
+                _rawActiveSeconds++;
+                TotalTime = Fmt(_rawActiveSeconds);
+
+                var app = TopApps.FirstOrDefault(a => a.AppId == e.AppId);
+                if (app is not null)
+                {
+                    app.AddSecond(_rawActiveSeconds);
+                }
+                else if (!string.IsNullOrEmpty(e.AppName))
+                {
+                    var newItem = new AppStatItem
+                    {
+                        AppId = e.AppId,
+                        DisplayName = e.AppName,
+                        ProcessName = e.AppName,
+                        TotalSeconds = 1,
+                        Percentage = _rawActiveSeconds > 0 ? 100.0 / _rawActiveSeconds : 0
+                    };
+                    TopApps.Add(newItem);
+                }
+
+                TopApp = TopApps.OrderByDescending(a => a.TotalSeconds).FirstOrDefault()?.DisplayName ?? "—";
+            }
+            else
+            {
+                _rawIdleSeconds++;
+                IdleTime = Fmt(_rawIdleSeconds);
+            }
+
+            if (++_chartRefreshCounter >= 30)
+            {
+                _chartRefreshCounter = 0;
+                _ = RefreshChartsQuietlyAsync();
+            }
+        });
+    }
+
+    private async Task RefreshChartsQuietlyAsync()
+    {
+        try
+        {
+            var (from, _, barLabels) = GetPeriodRange();
+            var apps = TopApps.ToList();
+            long total = apps.Sum(a => a.TotalSeconds);
+            BuildPieChart(apps, total);
+            await BuildBarChartAsync(from, barLabels);
+        }
+        catch { }
+    }
+
     // ── Data loading
 
     public async Task LoadDataAsync()
@@ -108,9 +174,13 @@ public sealed class DashboardViewModel : BaseViewModel
         IsLoading = true;
         try
         {
+            await _tracker.FlushToDbAsync();
+
             var (from, to, barLabels) = GetPeriodRange();
 
             var (active, idle) = await _activityRepo.GetTotalsAsync(from, to);
+            _rawActiveSeconds = active;
+            _rawIdleSeconds   = idle;
             TotalTime = Fmt(active);
             IdleTime  = Fmt(idle);
 

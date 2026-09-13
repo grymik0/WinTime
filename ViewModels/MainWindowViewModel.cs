@@ -10,6 +10,7 @@ namespace WinTime.ViewModels;
 public sealed class MainWindowViewModel : BaseViewModel
 {
     private readonly DashboardViewModel    _dashboard;
+    private readonly ProcessesViewModel    _processes;
     private readonly ApplicationsViewModel _applications;
     private readonly SettingsViewModel     _settings;
 
@@ -34,6 +35,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     // ── Commands ──────────────────────────────────────────────────────────────
 
     public ICommand NavigateDashboardCommand    { get; }
+    public ICommand NavigateProcessesCommand    { get; }
     public ICommand NavigateApplicationsCommand { get; }
     public ICommand NavigateSettingsCommand     { get; }
     public ICommand ToggleTrackingCommand       { get; }
@@ -42,10 +44,12 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public MainWindowViewModel(
         DashboardViewModel    dashboard,
+        ProcessesViewModel    processes,
         ApplicationsViewModel applications,
         SettingsViewModel     settings)
     {
         _dashboard    = dashboard;
+        _processes    = processes;
         _applications = applications;
         _settings     = settings;
 
@@ -53,6 +57,12 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             CurrentView = _dashboard;
             _ = _dashboard.LoadDataAsync();
+        });
+
+        NavigateProcessesCommand = new RelayCommand(() =>
+        {
+            CurrentView = _processes;
+            _ = _processes.LoadAsync();
         });
 
         NavigateApplicationsCommand = new RelayCommand(() =>

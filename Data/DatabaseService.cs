@@ -73,6 +73,16 @@ public sealed class DatabaseService : IDisposable
 
             CREATE INDEX IF NOT EXISTS idx_sessions_start ON ActivitySessions(StartTime);
             CREATE INDEX IF NOT EXISTS idx_sessions_appid ON ActivitySessions(AppId);
+
+            CREATE TABLE IF NOT EXISTS AppUptime (
+                Id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                AppId         INTEGER NOT NULL REFERENCES Applications(Id),
+                Date          TEXT    NOT NULL,
+                UptimeSeconds INTEGER NOT NULL DEFAULT 0,
+                UNIQUE(AppId, Date)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_app_uptime_date ON AppUptime(Date);
         ";
         cmd.ExecuteNonQuery();
     }

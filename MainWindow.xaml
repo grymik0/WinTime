@@ -17,6 +17,9 @@
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProcessesViewModel}">
+            <views:ProcessesView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:ApplicationsViewModel}">
             <views:ApplicationsView />
         </DataTemplate>
@@ -90,6 +93,10 @@
                     <Button Content="📊   Дашборд"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateDashboardCommand}"
+                            Margin="0 2" />
+                    <Button Content="💻   Процессы"
+                            Style="{StaticResource NavBtn}"
+                            Command="{Binding NavigateProcessesCommand}"
                             Margin="0 2" />
                     <Button Content="🗂   Приложения"
                             Style="{StaticResource NavBtn}"
