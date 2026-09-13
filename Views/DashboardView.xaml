@@ -6,7 +6,6 @@
              Background="#16161E">
 
     <UserControl.Resources>
-        <!-- Базовый стиль кнопки периода -->
         <Style x:Key="PeriodBtn" TargetType="Button">
             <Setter Property="Background"         Value="#252535" />
             <Setter Property="Foreground"         Value="#9CA3AF" />
@@ -28,7 +27,6 @@
             </Setter>
         </Style>
 
-        <!-- Карточка статистики -->
         <Style x:Key="StatCard" TargetType="Border">
             <Setter Property="Background"   Value="#1E1E2E" />
             <Setter Property="CornerRadius" Value="10" />
@@ -39,7 +37,6 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24 20 24 24">
         <StackPanel>
 
-            <!-- ── Заголовок ─────────────────────────────────────────── -->
             <Grid Margin="0 0 0 20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -49,14 +46,12 @@
                 <TextBlock Text="Дашборд" FontSize="22" FontWeight="Bold"
                            Foreground="White" VerticalAlignment="Center" />
 
-                <!-- IsLoading индикатор -->
                 <TextBlock Grid.Column="1" Text="Загрузка…"
                            Foreground="#6B7280" FontSize="13"
                            VerticalAlignment="Center"
                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}" />
             </Grid>
 
-            <!-- ── Период-селектор ────────────────────────────────────── -->
             <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
 
                 <Button Content="Сегодня" Margin="0 0 8 0"
@@ -106,7 +101,6 @@
 
             </StackPanel>
 
-            <!-- ── Сводные карточки ───────────────────────────────────── -->
             <UniformGrid Columns="3" Margin="0 0 0 20">
 
                 <Border Style="{StaticResource StatCard}" Margin="0 0 10 0">
@@ -139,14 +133,12 @@
 
             </UniformGrid>
 
-            <!-- ── Графики ───────────────────────────────────────────── -->
             <Grid Height="300" Margin="0 0 0 20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="320" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Donut Chart -->
                 <Border Grid.Column="0" Background="#1E1E2E" CornerRadius="10" Padding="8">
                     <lvc:PieChart Series="{Binding PieSeries}"
                                   InitialRotation="-90"
@@ -156,7 +148,6 @@
                                   Background="Transparent" />
                 </Border>
 
-                <!-- Bar Chart -->
                 <Border Grid.Column="1" Background="#1E1E2E" CornerRadius="10"
                         Padding="12 8" Margin="12 0 0 0">
                     <lvc:CartesianChart Series="{Binding BarSeries}"
@@ -167,7 +158,6 @@
                 </Border>
             </Grid>
 
-            <!-- ── Топ приложений ─────────────────────────────────────── -->
             <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16">
                 <StackPanel>
                     <TextBlock Text="Приложения" FontSize="15" FontWeight="SemiBold"
@@ -213,7 +203,6 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <!-- Пусто -->
                     <TextBlock Text="Данных пока нет. Начните работу — статистика появится здесь."
                                Foreground="#6B7280" FontSize="13" TextWrapping="Wrap"
                                Margin="0 8 0 0">

@@ -24,7 +24,7 @@ public sealed class DashboardViewModel : BaseViewModel
     private readonly ActivityRepository _activityRepo;
     private readonly IconService        _iconService;
 
-    // ── Bindable Properties ──────────────────────────────────────────────────
+    // ── Bindable Properties
 
     private TimePeriod _selectedPeriod = TimePeriod.Today;
     private string _totalTime  = "—";
@@ -37,12 +37,8 @@ public sealed class DashboardViewModel : BaseViewModel
     private Axis[]     _xAxes    = [new Axis { Labels = [] }];
     private Axis[]     _yAxes    = [new Axis { MinLimit = 0 }];
 
-    // Белый текст для легенды и осей на тёмном фоне
     public SolidColorPaint LegendTextPaint { get; } =
-        new(new SKColor(229, 231, 235)); // #E5E7EB
-
-    private static readonly SolidColorPaint AxisLabelPaint =
-        new(new SKColor(156, 163, 175)); // #9CA3AF
+        new(new SKColor(229, 231, 235));
 
     private ObservableCollection<AppStatItem> _topApps = [];
 
@@ -68,28 +64,27 @@ public sealed class DashboardViewModel : BaseViewModel
         private set => SetProperty(ref _topApps, value);
     }
 
-    // Удобные флаги для подсветки кнопок периода
     public bool IsPeriodToday { get => _selectedPeriod == TimePeriod.Today;  }
     public bool IsPeriodWeek  { get => _selectedPeriod == TimePeriod.Week;   }
     public bool IsPeriodMonth { get => _selectedPeriod == TimePeriod.Month;  }
 
-    // ── Commands ──────────────────────────────────────────────────────────────
+    // ── Commands
 
     public ICommand SetPeriodCommand { get; }
 
-    // ── Colour palette ────────────────────────────────────────────────────────
+    // ── Colour palette
 
     private static readonly SKColor[] Palette =
     [
-        SKColor.Parse("#6366F1"), // indigo
-        SKColor.Parse("#8B5CF6"), // violet
-        SKColor.Parse("#EC4899"), // pink
-        SKColor.Parse("#F59E0B"), // amber
-        SKColor.Parse("#10B981"), // emerald
-        SKColor.Parse("#6B7280"), // gray — «Остальные»
+        SKColor.Parse("#6366F1"),
+        SKColor.Parse("#8B5CF6"),
+        SKColor.Parse("#EC4899"),
+        SKColor.Parse("#F59E0B"),
+        SKColor.Parse("#10B981"),
+        SKColor.Parse("#6B7280"),
     ];
 
-    // ── Constructor ───────────────────────────────────────────────────────────
+    // ── Constructor
 
     public DashboardViewModel(ActivityRepository activityRepo, IconService iconService)
     {
@@ -106,7 +101,7 @@ public sealed class DashboardViewModel : BaseViewModel
         });
     }
 
-    // ── Data loading ──────────────────────────────────────────────────────────
+    // ── Data loading
 
     public async Task LoadDataAsync()
     {
@@ -115,12 +110,10 @@ public sealed class DashboardViewModel : BaseViewModel
         {
             var (from, to, barLabels) = GetPeriodRange();
 
-            // Сводные цифры
             var (active, idle) = await _activityRepo.GetTotalsAsync(from, to);
             TotalTime = Fmt(active);
             IdleTime  = Fmt(idle);
 
-            // Список приложений
             var apps = await _activityRepo.GetTopAppsAsync(from, to);
             TopApp = apps.FirstOrDefault()?.DisplayName ?? "—";
 
@@ -128,23 +121,22 @@ public sealed class DashboardViewModel : BaseViewModel
             foreach (var a in apps)
                 a.Percentage = totalForPct > 0 ? a.TotalSeconds * 100.0 / totalForPct : 0;
 
-            // Иконки (лениво, не блокируем UI)
             foreach (var a in apps.Take(10))
-                a.Icon = null; // иконки будут добавлены позже через IconService + путь к EXE
+                a.Icon = null;
 
             TopApps = new ObservableCollection<AppStatItem>(apps.Take(10));
 
             BuildPieChart(apps, totalForPct);
             await BuildBarChartAsync(from, barLabels);
         }
-        catch { /* защита от любых ошибок БД */ }
+        catch {  }
         finally
         {
             IsLoading = false;
         }
     }
 
-    // ── Chart builders ────────────────────────────────────────────────────────
+    // ── Chart builders
 
     private void BuildPieChart(List<AppStatItem> apps, long total)
     {
@@ -210,11 +202,18 @@ public sealed class DashboardViewModel : BaseViewModel
         [
             new Axis
             {
-                Labels          = labels,
-                LabelsRotation  = _selectedPeriod == TimePeriod.Month ? -60 : 0,
-                TextSize        = 11,
-                LabelsPaint     = AxisLabelPaint,
-                Padding         = new LiveChartsCore.Drawing.Padding(0),
+                Labels         = _selectedPeriod == TimePeriod.Week ? labels : null,
+                Labeler        = _selectedPeriod switch
+                {
+                    TimePeriod.Today  => v => $"{(int)v:D2}:00",
+                    TimePeriod.Month  => v => $"{(int)v + 1} чис.",
+                    _                 => v => v.ToString(),
+                },
+                LabelsRotation = _selectedPeriod == TimePeriod.Today  ? -60 :
+                                 _selectedPeriod == TimePeriod.Month  ? -60 : 0,
+                TextSize       = 11,
+                LabelsPaint    = new SolidColorPaint(new SKColor(156, 163, 175)),
+                Padding        = new LiveChartsCore.Drawing.Padding(0),
             }
         ];
 
@@ -224,13 +223,15 @@ public sealed class DashboardViewModel : BaseViewModel
             {
                 MinLimit    = 0,
                 TextSize    = 11,
-                LabelsPaint = AxisLabelPaint,
-                Labeler     = v => $"{v:F1}ч",
+                LabelsPaint = new SolidColorPaint(new SKColor(156, 163, 175)),
+                Labeler     = v => v < 1
+                    ? $"{(int)Math.Round(v * 60)}м"
+                    : $"{v:F1}ч",
             }
         ];
     }
 
-    // ── Period range ──────────────────────────────────────────────────────────
+    // ── Period range
 
     private (DateTime from, DateTime to, string[] labels) GetPeriodRange()
     {

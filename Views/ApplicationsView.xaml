@@ -182,7 +182,8 @@
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsBlacklisted, UpdateSourceTrigger=PropertyChanged}"
                                       HorizontalAlignment="Center"
-                                      VerticalAlignment="Center" />
+                                      VerticalAlignment="Center"
+                                      Click="BlacklistCheckBox_Click" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

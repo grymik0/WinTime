@@ -117,3 +117,4 @@ WinTime is **100% local**. No data ever leaves your machine. No analytics, no cr
 ## License
 
 MIT © 2026 [grymik0](https://github.com/grymik0)
+
