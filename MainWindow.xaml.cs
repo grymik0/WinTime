@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace WinTime;
 
@@ -11,8 +12,17 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = AppServices.MainWindowVm;
-
         AppServices.MainWindowVm.PropertyChanged += OnVmPropertyChanged;
+
+        try
+        {
+            var sri = Application.GetResourceStream(
+                new Uri("pack://application:,,,/Assets/icon.ico"));
+            if (sri?.Stream is not null)
+                Icon = BitmapFrame.Create(sri.Stream,
+                    BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+        }
+        catch { }
     }
 
     // ── Navigation animation

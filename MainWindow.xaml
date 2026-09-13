@@ -12,7 +12,7 @@
         Foreground="White"
         Closing="Window_Closing">
 
-    <!-- DataTemplate: ViewModel → View (ContentControl навигация) -->
+    <!-- DataTemplate: ViewModel → View -->
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView />
@@ -24,7 +24,6 @@
             <views:SettingsView />
         </DataTemplate>
 
-        <!-- Стиль навигационных кнопок сайдбара -->
         <Style x:Key="NavBtn" TargetType="Button">
             <Setter Property="Background"             Value="Transparent" />
             <Setter Property="Foreground"             Value="#9CA3AF" />
@@ -61,11 +60,9 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- ══════════════════ САЙДБАР ══════════════════ -->
         <Border Grid.Column="0" Background="#1C1C28">
             <DockPanel>
 
-                <!-- Логотип -->
                 <Border DockPanel.Dock="Top" Padding="20 24 20 20">
                     <StackPanel>
                         <TextBlock Text="⏱  WinTime"
@@ -87,10 +84,8 @@
                             HorizontalAlignment="Stretch" />
                 </Border>
 
-                <!-- Разделитель низа -->
                 <Border DockPanel.Dock="Bottom" Height="1" Background="#252535" Margin="16 0" />
 
-                <!-- Навигационные кнопки -->
                 <StackPanel DockPanel.Dock="Top" Margin="10 16">
                     <Button Content="📊   Дашборд"
                             Style="{StaticResource NavBtn}"
@@ -109,7 +104,6 @@
             </DockPanel>
         </Border>
 
-        <!-- ══════════════════ КОНТЕНТ ══════════════════ -->
         <ContentControl Grid.Column="1"
                         x:Name="ContentArea"
                         Content="{Binding CurrentView}"
