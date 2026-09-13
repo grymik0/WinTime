@@ -15,6 +15,7 @@ public sealed class ActivityTracker : IAsyncDisposable
 {
     private readonly ApplicationRepository _appRepo;
     private readonly ActivityRepository    _activityRepo;
+    private readonly UptimeRepository      _uptimeRepo;
     private readonly InMemoryBuffer        _buffer;
     private readonly SettingsService       _settings;
 
@@ -22,21 +23,25 @@ public sealed class ActivityTracker : IAsyncDisposable
     private Task? _workerTask;
     private Task? _flushTask;
 
-    // ── Filtry ───────────────────────────────────────────────────────────────
+    private readonly object _uptimeLock = new();
+    private readonly Dictionary<int, int> _uptimeBuffer = [];
+    private volatile HashSet<int> _runningAppIds = [];
+
+    // ── Filtry
 
     private static readonly HashSet<string> IgnoredClasses = new(StringComparer.OrdinalIgnoreCase)
     {
         "Shell_TrayWnd", "Progman", "WorkerW",
-        "Shell_SecondaryTrayWnd", "DV2ControlHost"
+        "Shell_SecondaryTrayWnd", "DV2ControlHost", "Windows.UI.Core.CoreWindow"
     };
 
     private static readonly HashSet<string> IgnoredProcesses = new(StringComparer.OrdinalIgnoreCase)
     {
         "LockApp", "LogonUI", "ShellExperienceHost",
-        "SearchHost", "StartMenuExperienceHost"
+        "SearchHost", "StartMenuExperienceHost", "TextInputHost", "ApplicationFrameHost", "SystemSettings"
     };
 
-    // ── State ─────────────────────────────────────────────────────────────────
+    // ── State
 
     private volatile bool _isPaused;
 
@@ -46,24 +51,29 @@ public sealed class ActivityTracker : IAsyncDisposable
         set => _isPaused = value;
     }
 
+    /// <summary>Возвращает набор ID приложений, чьи окна открыты прямо сейчас.</summary>
+    public HashSet<int> GetRunningAppIds() => _runningAppIds;
+
     /// <summary>Вызывается при каждом обновлении (раз в секунду) из UI-потока или фонового.</summary>
     public event EventHandler<TrackerStateEventArgs>? StateChanged;
 
-    // ── Constructor ───────────────────────────────────────────────────────────
+    // ── Constructor
 
     public ActivityTracker(
         ApplicationRepository appRepo,
         ActivityRepository    activityRepo,
+        UptimeRepository      uptimeRepo,
         InMemoryBuffer        buffer,
         SettingsService       settings)
     {
         _appRepo      = appRepo;
         _activityRepo = activityRepo;
+        _uptimeRepo   = uptimeRepo;
         _buffer       = buffer;
         _settings     = settings;
     }
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
+    // ── Lifecycle
 
     public void Start()
     {
@@ -82,7 +92,6 @@ public sealed class ActivityTracker : IAsyncDisposable
         }
         catch (OperationCanceledException) { }
 
-        // Финальный принудительный сброс
         await FlushToDbAsync();
     }
 
@@ -92,7 +101,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         _cts.Dispose();
     }
 
-    // ── Worker loops ─────────────────────────────────────────────────────────
+    // ── Worker loops
 
     private async Task TrackLoopAsync(CancellationToken ct)
     {
@@ -103,7 +112,7 @@ public sealed class ActivityTracker : IAsyncDisposable
             {
                 if (_isPaused) continue;
                 try { await ProcessTickAsync(); }
-                catch { /* тихо — не роняем приложение из-за одного тика */ }
+                catch { }
             }
         }
         catch (OperationCanceledException) { }
@@ -122,41 +131,36 @@ public sealed class ActivityTracker : IAsyncDisposable
         catch (OperationCanceledException) { }
     }
 
-    // ── Tick processing ───────────────────────────────────────────────────────
+    // ── Tick processing
 
     private async Task ProcessTickAsync()
     {
         var hwnd = NativeMethods.GetForegroundWindow();
         if (hwnd == IntPtr.Zero) return;
 
-        // Фильтр по классу окна
         var cls = new StringBuilder(256);
         NativeMethods.GetClassName(hwnd, cls, 256);
         if (IgnoredClasses.Contains(cls.ToString())) return;
 
-        // PID
         NativeMethods.GetWindowThreadProcessId(hwnd, out uint pid);
         if (pid == 0) return;
 
-        // Имя процесса и путь к EXE
         string processName, processPath;
         try
         {
             (processName, processPath) = GetProcessInfo(pid);
         }
-        catch { return; } // Access Denied (UAC / System)
+        catch { return; }
 
         if (string.IsNullOrEmpty(processName)) return;
 
         var baseName = Path.GetFileNameWithoutExtension(processName);
         if (IgnoredProcesses.Contains(baseName)) return;
 
-        // Заголовок окна
         var titleBuf = new StringBuilder(512);
         NativeMethods.GetWindowText(hwnd, titleBuf, 512);
         var windowTitle = titleBuf.ToString();
 
-        // AFK-детекция
         var lii = new NativeMethods.LASTINPUTINFO
         {
             cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.LASTINPUTINFO>()
@@ -165,28 +169,102 @@ public sealed class ActivityTracker : IAsyncDisposable
         uint idleMs = (uint)Environment.TickCount - lii.dwTime;
         bool isIdle = idleMs > _settings.AfkThresholdSeconds * 1000u;
 
-        // Запись в БД (GetOrCreate из кэша — очень быстро)
         var app = await _appRepo.GetOrCreateAsync(processName, processPath);
-        if (app.IsBlacklisted) return;
+        if (!app.IsBlacklisted)
+        {
+            _buffer.Update(app.Id, windowTitle, isIdle, DateTime.Now);
 
-        _buffer.Update(app.Id, windowTitle, isIdle, DateTime.Now);
+            StateChanged?.Invoke(this, new TrackerStateEventArgs(
+                app.Id, app.FriendlyName, windowTitle, isIdle));
+        }
 
-        StateChanged?.Invoke(this, new TrackerStateEventArgs(
-            app.FriendlyName, windowTitle, isIdle));
+        await ScanRunningWindowsAsync();
     }
 
-    private async Task FlushToDbAsync()
+    private async Task ScanRunningWindowsAsync()
+    {
+        var runningPids = new HashSet<uint>();
+
+        NativeMethods.EnumWindows((hWnd, _) =>
+        {
+            if (!NativeMethods.IsWindowVisible(hWnd)) return true;
+
+            long exStyle = NativeMethods.GetWindowLongPtr(hWnd, NativeMethods.GWL_EXSTYLE);
+            if ((exStyle & NativeMethods.WS_EX_TOOLWINDOW) != 0) return true;
+
+            var cls = new StringBuilder(256);
+            NativeMethods.GetClassName(hWnd, cls, 256);
+            if (IgnoredClasses.Contains(cls.ToString())) return true;
+
+            var title = new StringBuilder(256);
+            NativeMethods.GetWindowText(hWnd, title, 256);
+            if (title.Length == 0) return true;
+
+            NativeMethods.GetWindowThreadProcessId(hWnd, out uint pid);
+            if (pid != 0)
+                runningPids.Add(pid);
+
+            return true;
+        }, IntPtr.Zero);
+
+        var currentAppIds = new HashSet<int>();
+        var currentPid = (uint)Environment.ProcessId;
+
+        foreach (var pid in runningPids)
+        {
+            if (pid == currentPid) continue;
+
+            string procName, procPath;
+            try { (procName, procPath) = GetProcessInfo(pid); }
+            catch { continue; }
+
+            if (string.IsNullOrEmpty(procName)) continue;
+            var baseName = Path.GetFileNameWithoutExtension(procName);
+            if (IgnoredProcesses.Contains(baseName)) continue;
+
+            try
+            {
+                var app = await _appRepo.GetOrCreateAsync(procName, procPath);
+                if (app.IsBlacklisted) continue;
+
+                currentAppIds.Add(app.Id);
+
+                lock (_uptimeLock)
+                {
+                    _uptimeBuffer[app.Id] = _uptimeBuffer.GetValueOrDefault(app.Id, 0) + 1;
+                }
+            }
+            catch { }
+        }
+
+        _runningAppIds = currentAppIds;
+    }
+
+    public async Task FlushToDbAsync()
     {
         try
         {
             var sessions = _buffer.Flush();
             if (sessions.Count > 0)
                 await _activityRepo.InsertBatchAsync(sessions);
+
+            List<(int AppId, int Seconds)> uptimeList;
+            lock (_uptimeLock)
+            {
+                uptimeList = _uptimeBuffer.Select(kv => (kv.Key, kv.Value)).ToList();
+                _uptimeBuffer.Clear();
+            }
+
+            if (uptimeList.Count > 0)
+            {
+                var today = DateTime.Now.ToString("yyyy-MM-dd");
+                await _uptimeRepo.AddUptimeBatchAsync(today, uptimeList);
+            }
         }
         catch { }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // ── Helpers
 
     private static (string name, string path) GetProcessInfo(uint pid)
     {
@@ -211,7 +289,6 @@ public sealed class ActivityTracker : IAsyncDisposable
             }
         }
 
-        // Fallback: System.Diagnostics.Process (менее надёжно, но работает)
         try
         {
             using var p = Process.GetProcessById((int)pid);
@@ -225,8 +302,9 @@ public sealed class ActivityTracker : IAsyncDisposable
 }
 
 /// <summary>Аргументы события TrackerStateChanged.</summary>
-public sealed class TrackerStateEventArgs(string appName, string windowTitle, bool isIdle) : EventArgs
+public sealed class TrackerStateEventArgs(int appId, string appName, string windowTitle, bool isIdle) : EventArgs
 {
+    public int    AppId       { get; } = appId;
     public string AppName     { get; } = appName;
     public string WindowTitle { get; } = windowTitle;
     public bool   IsIdle      { get; } = isIdle;

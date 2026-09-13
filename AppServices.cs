@@ -15,18 +15,20 @@ internal static class AppServices
     public static DatabaseService         Database      { get; private set; } = null!;
     public static ApplicationRepository   AppRepo       { get; private set; } = null!;
     public static ActivityRepository      ActivityRepo  { get; private set; } = null!;
+    public static UptimeRepository        UptimeRepo    { get; private set; } = null!;
     public static IconService             IconService   { get; private set; } = null!;
     public static ExportService           ExportService { get; private set; } = null!;
     public static InMemoryBuffer          Buffer        { get; private set; } = null!;
     public static ActivityTracker         Tracker       { get; private set; } = null!;
 
-    // ViewModels живут всё время работы приложения
+    // ViewModels 
     public static DashboardViewModel      DashboardVm     { get; private set; } = null!;
+    public static ProcessesViewModel      ProcessesVm     { get; private set; } = null!;
     public static ApplicationsViewModel   ApplicationsVm  { get; private set; } = null!;
     public static SettingsViewModel       SettingsVm      { get; private set; } = null!;
     public static MainWindowViewModel     MainWindowVm    { get; private set; } = null!;
 
-    // ── Initialization ───────────────────────────────────────────────────────
+    // ── Initialization
 
     public static void Initialize(SettingsService settings)
     {
@@ -36,17 +38,19 @@ internal static class AppServices
 
         AppRepo      = new ApplicationRepository(Database);
         ActivityRepo = new ActivityRepository(Database);
+        UptimeRepo   = new UptimeRepository(Database);
         IconService  = new IconService();
         ExportService = new ExportService(ActivityRepo, AppRepo);
 
         Buffer  = new InMemoryBuffer();
-        Tracker = new ActivityTracker(AppRepo, ActivityRepo, Buffer, Settings);
+        Tracker = new ActivityTracker(AppRepo, ActivityRepo, UptimeRepo, Buffer, Settings);
 
         // ViewModels
-        DashboardVm    = new DashboardViewModel(ActivityRepo, IconService);
+        DashboardVm    = new DashboardViewModel(ActivityRepo, IconService, Tracker);
+        ProcessesVm    = new ProcessesViewModel(UptimeRepo, Tracker);
         ApplicationsVm = new ApplicationsViewModel(AppRepo, ActivityRepo);
         SettingsVm     = new SettingsViewModel(Settings, ActivityRepo, ExportService);
-        MainWindowVm   = new MainWindowViewModel(DashboardVm, ApplicationsVm, SettingsVm);
+        MainWindowVm   = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, SettingsVm);
     }
 
     public static async Task ShutdownAsync()
