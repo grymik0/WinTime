@@ -72,7 +72,7 @@ WinTime runs silently in your system tray and tracks which applications you use 
 ### Run from source
 
 ```bash
-git clone https://github.com/grymik0/WinTime.git
+git clone
 cd WinTime
 dotnet run -p:Platform=x64
 ```
@@ -113,8 +113,3 @@ WinTime/
 WinTime is **100% local**. No data ever leaves your machine. No analytics, no crash reporting, no network requests.
 
 ---
-
-## License
-
-MIT © 2026 [grymik0](https://github.com/grymik0)
-
