@@ -54,13 +54,11 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36 24" MaxWidth="640">
 
-            <!-- Заголовок -->
             <TextBlock Text="Настройки" FontSize="22" FontWeight="Bold"
                        Foreground="White" Margin="0 0 0 4" />
             <TextBlock Text="Конфигурация WinTime"
                        FontSize="13" Foreground="#6B7280" />
 
-            <!-- ── РАЗДЕЛ: ОТСЛЕЖИВАНИЕ ─────────────────────────────── -->
             <TextBlock Text="ОТСЛЕЖИВАНИЕ" Style="{StaticResource SectionHeader}" />
 
             <!-- AFK Slider -->
@@ -86,17 +84,14 @@
             <TextBlock Style="{StaticResource SettingHint}"
                        Text="Если в течение этого времени нет ввода с мыши/клавиатуры — время считается AFK." />
 
-            <!-- ── РАЗДЕЛ: СИСТЕМА ──────────────────────────────────── -->
             <TextBlock Text="СИСТЕМА" Style="{StaticResource SectionHeader}" />
 
-            <!-- Автозапуск -->
             <CheckBox IsChecked="{Binding LaunchOnStartup}"
                       Foreground="#E5E7EB" FontSize="14"
                       Content="Запускать WinTime при старте Windows"
                       Margin="0 0 0 20"
                       Cursor="Hand" />
 
-            <!-- ── РАЗДЕЛ: БАЗА ДАННЫХ ──────────────────────────────── -->
             <TextBlock Text="БАЗА ДАННЫХ" Style="{StaticResource SectionHeader}" />
 
             <TextBlock Text="Путь к файлу базы данных" Style="{StaticResource SettingLabel}" />
@@ -130,7 +125,6 @@
                        Margin="0 0 0 20"
                        TextWrapping="Wrap" />
 
-            <!-- ── РАЗДЕЛ: ЭКСПОРТ ──────────────────────────────────── -->
             <TextBlock Text="ЭКСПОРТ ДАННЫХ" Style="{StaticResource SectionHeader}" />
 
             <WrapPanel Margin="0 0 0 8">
@@ -144,7 +138,6 @@
                         Margin="0 0 0 8" />
             </WrapPanel>
 
-            <!-- ── РАЗДЕЛ: ОПАСНАЯ ЗОНА ─────────────────────────────── -->
             <TextBlock Text="ОПАСНАЯ ЗОНА" Style="{StaticResource SectionHeader}" />
 
             <Button Content="🗑  Очистить историю активности"

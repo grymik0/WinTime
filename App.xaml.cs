@@ -24,16 +24,14 @@ public partial class App : Application
     private bool          _isExiting;
     private Mutex?        _singleInstanceMutex;
 
-    /// <summary>Читается в MainWindow.Window_Closing для различия Hide vs реального выхода.</summary>
     public bool IsExiting => _isExiting;
 
-    // ── Startup ───────────────────────────────────────────────────────────────
+    // ── Startup
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
-        // Одновременно может работать только один экземпляр приложения
         _singleInstanceMutex = new Mutex(true, "WinTime_SingleInstance", out bool createdNew);
         if (!createdNew)
         {
@@ -44,7 +42,6 @@ public partial class App : Application
             return;
         }
 
-        // Перехватываем необработанные исключения — показываем ошибку, не роняем процесс
         DispatcherUnhandledException += (_, ex) =>
         {
             ex.Handled = true;
@@ -53,11 +50,9 @@ public partial class App : Application
                 "WinTime — Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         };
 
-        // 1. Настройки
         var settings = new SettingsService();
         settings.Load();
 
-        // 2. Первый запуск
         if (!settings.IsDatabaseConfigured)
         {
             var dlg = new FirstRunDialog();
@@ -69,7 +64,6 @@ public partial class App : Application
             settings.DatabasePath = dlg.SelectedDbPath;
         }
 
-        // 3. Инициализируем все сервисы и ViewModel'ы
         try
         {
             AppServices.Initialize(settings);
@@ -83,25 +77,21 @@ public partial class App : Application
             return;
         }
 
-        // 4. Запуск трекера
         AppServices.Tracker.Start();
 
-        // 5. Иконка в трее (без файла иконки — генерируем программно)
         SetupTrayIcon();
 
-        // 6. Создаём и показываем главное окно
         _mainWindow = new MainWindow();
         _mainWindow.Show();
     }
 
-    // ── Exit ──────────────────────────────────────────────────────────────────
+    // ── Exit
 
     protected override async void OnExit(ExitEventArgs e)
     {
         _isExiting = true;
         _trayIcon?.Dispose();
 
-        // Финальный сброс буфера и закрытие БД
         await AppServices.ShutdownAsync();
 
         _singleInstanceMutex?.ReleaseMutex();
@@ -110,7 +100,7 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    // ── Tray ──────────────────────────────────────────────────────────────────
+    // ── Tray
 
     private void SetupTrayIcon()
     {
@@ -120,10 +110,8 @@ public partial class App : Application
             Icon        = CreateTrayIcon()
         };
 
-        // Двойной клик — открываем дашборд
         _trayIcon.TrayMouseDoubleClick += (_, _) => ShowMainWindow();
 
-        // Контекстное меню
         var menu = new System.Windows.Controls.ContextMenu();
 
         var itemOpen = new System.Windows.Controls.MenuItem { Header = "📊  Открыть статистику" };
@@ -176,33 +164,41 @@ public partial class App : Application
         Shutdown();
     }
 
-    // ── Icon generation ───────────────────────────────────────────────────────
+    // ── Icon generation
 
     /// <summary>
-    /// Программная генерация иконки 16×16 в виде синего круга.
-    /// Заменить на реальный .ico файл — добавить в csproj:
-    /// &lt;ApplicationIcon&gt;Assets\icon.ico&lt;/ApplicationIcon&gt;
+    /// Загружает иконку трея из встроенного ресурса Assets/icon.ico.
+    /// Если файл не найден — рисует запасной синий кружок.
     /// </summary>
     private static Icon CreateTrayIcon()
     {
-        using var bmp = new System.Drawing.Bitmap(32, 32);
-        using var g   = System.Drawing.Graphics.FromImage(bmp);
+        try
+        {
+            var stream = GetResourceStream(
+                new Uri("pack://application:,,,/Assets/icon.ico"))?.Stream;
+            if (stream is not null)
+            {
+                using var bmp   = new System.Drawing.Bitmap(stream);
+                var hIcon       = bmp.GetHicon();
+                var icon        = (Icon)Icon.FromHandle(hIcon).Clone();
+                NativeMethods.DestroyIcon(hIcon);
+                return icon;
+            }
+        }
+        catch {  }
+
+        using var fb  = new System.Drawing.Bitmap(32, 32);
+        using var g   = System.Drawing.Graphics.FromImage(fb);
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         g.Clear(System.Drawing.Color.Transparent);
-
-        // Фон — тёмно-синий круг
         using var bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(99, 102, 241));
         g.FillEllipse(bgBrush, 1, 1, 30, 30);
-
-        // Символ ⏱ заменяем на простую белую точку/линию
         using var pen = new System.Drawing.Pen(System.Drawing.Color.White, 2.5f);
         g.DrawLine(pen, 16, 8, 16, 16);
         g.DrawLine(pen, 16, 16, 22, 20);
-
-        var hIcon = bmp.GetHicon();
-        // FromHandle копирует хэндл — исходный нужно освобождать
-        var icon = (Icon)Icon.FromHandle(hIcon).Clone();
-        NativeMethods.DestroyIcon(hIcon);
-        return icon;
+        var fIcon = fb.GetHicon();
+        var fallback = (Icon)Icon.FromHandle(fIcon).Clone();
+        NativeMethods.DestroyIcon(fIcon);
+        return fallback;
     }
 }

@@ -1,3 +1,4 @@
+using System.Windows;
 using System.Windows.Controls;
 using WinTime.Models;
 using WinTime.ViewModels;
@@ -21,9 +22,21 @@ public partial class ApplicationsView : UserControl
         if (e.Row.DataContext is AppModel app &&
             DataContext is ApplicationsViewModel vm)
         {
-            // Выполняем после применения привязок WPF (через Dispatcher)
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
                 () => vm.SaveRowCommand.Execute(app));
+        }
+    }
+
+    /// <summary>
+    /// Чекбокс «Не отслеживать» — сохраняем сразу при клике,
+    /// не дожидаясь выхода строки из режима редактирования.
+    /// </summary>
+    private void BlacklistCheckBox_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is CheckBox { DataContext: AppModel app } &&
+            DataContext is ApplicationsViewModel vm)
+        {
+            vm.SaveRowCommand.Execute(app);
         }
     }
 }
