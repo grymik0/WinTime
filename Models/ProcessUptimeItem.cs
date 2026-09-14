@@ -20,6 +20,38 @@ public sealed class ProcessUptimeItem : BaseViewModel
     public string? IconBlob { get; set; }
     public bool IsBlacklisted { get; set; }
 
+    private bool _isExpanded;
+    private bool _isLoadingTitles;
+    private System.Collections.ObjectModel.ObservableCollection<WindowTitleStatItem> _windowTitles = [];
+
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set => SetProperty(ref _isExpanded, value);
+    }
+
+    public bool IsLoadingTitles
+    {
+        get => _isLoadingTitles;
+        set
+        {
+            if (SetProperty(ref _isLoadingTitles, value))
+                OnPropertyChanged(nameof(HasNoTitles));
+        }
+    }
+
+    public System.Collections.ObjectModel.ObservableCollection<WindowTitleStatItem> WindowTitles
+    {
+        get => _windowTitles;
+        set
+        {
+            if (SetProperty(ref _windowTitles, value))
+                OnPropertyChanged(nameof(HasNoTitles));
+        }
+    }
+
+    public bool HasNoTitles => !IsLoadingTitles && WindowTitles.Count == 0;
+
     public int UptimeSeconds
     {
         get => _uptimeSeconds;

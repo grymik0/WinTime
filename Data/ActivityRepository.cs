@@ -93,6 +93,26 @@ public sealed class ActivityRepository
         }).ToList();
     }
 
+    /// <summary>Топ заголовков окон/вкладок для конкретного приложения за период.</summary>
+    public async Task<List<(string Title, long Seconds)>> GetWindowTitlesForAppAsync(int appId, DateTime from, DateTime to, int limit = 50)
+    {
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT
+                s.WindowTitle,
+                SUM(s.DurationSeconds) AS TotalSeconds
+            FROM ActivitySessions s
+            WHERE s.AppId = @AppId
+              AND s.StartTime >= @From AND s.StartTime < @To
+              AND s.IsIdle = 0
+              AND TRIM(s.WindowTitle) != ''
+            GROUP BY s.WindowTitle
+            ORDER BY TotalSeconds DESC
+            LIMIT @Limit",
+            new { AppId = appId, From = Fmt(from), To = Fmt(to), Limit = limit });
+
+        return rows.Select(r => ((string)r.WindowTitle, (long)r.TotalSeconds)).ToList();
+    }
+
     /// <summary>Почасовая разбивка за день (массив 24 значений, секунды).</summary>
     public async Task<long[]> GetHourlyBreakdownAsync(DateTime date)
     {

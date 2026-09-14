@@ -47,7 +47,7 @@ internal static class AppServices
 
         // ViewModels
         DashboardVm    = new DashboardViewModel(ActivityRepo, IconService, Tracker);
-        ProcessesVm    = new ProcessesViewModel(UptimeRepo, Tracker);
+        ProcessesVm    = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker);
         ApplicationsVm = new ApplicationsViewModel(AppRepo, ActivityRepo);
         SettingsVm     = new SettingsViewModel(Settings, ActivityRepo, ExportService);
         MainWindowVm   = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, SettingsVm);

@@ -61,9 +61,13 @@
 
         <Style x:Key="RowStyle" TargetType="DataGridRow">
             <Setter Property="Background"     Value="#1E1E2E" />
-            <Setter Property="Height"         Value="44" />
+            <Setter Property="MinHeight"      Value="44" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="DetailsVisibility" Value="Collapsed" />
             <Style.Triggers>
+                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                    <Setter Property="DetailsVisibility" Value="Visible" />
+                </DataTrigger>
                 <Trigger Property="AlternationIndex" Value="1">
                     <Setter Property="Background" Value="#212133" />
                 </Trigger>
@@ -189,11 +193,61 @@
                   BorderBrush="#374151"
                   BorderThickness="1"
                   RowHeaderWidth="0"
+                  RowDetailsVisibilityMode="Collapsed"
                   ColumnHeaderStyle="{StaticResource ColHeader}"
                   CellStyle="{StaticResource CellStyle}"
                   RowStyle="{StaticResource RowStyle}">
 
             <DataGrid.Columns>
+
+                <!-- Раскрытие заголовков/вкладок -->
+                <DataGridTemplateColumn Width="42">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding DataContext.ToggleExpandCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Width="26" Height="26"
+                                    ToolTip="Показать вкладки и заголовки окон">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Foreground" Value="#6B7280" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="BtnBorder" Background="Transparent" CornerRadius="4">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="BtnBorder" Property="Background" Value="#2D2D44" />
+                                                            <Setter Property="Foreground" Value="#A5B4FC" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock FontSize="11" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="▶" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                                    <Setter Property="Text" Value="▼" />
+                                                    <Setter Property="Foreground" Value="#818CF8" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
                 <DataGridTemplateColumn Header="Статус" Width="110" SortMemberPath="IsCurrentlyRunning">
                     <DataGridTemplateColumn.CellTemplate>
@@ -307,6 +361,75 @@
                 </DataGridTemplateColumn>
 
             </DataGrid.Columns>
+
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Border Background="#14141E" BorderBrush="#2D2D44" BorderThickness="0 1 0 1" Padding="46 12 24 14">
+                        <StackPanel>
+                            <Grid Margin="0 0 0 8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="📄  Вкладки и окна" FontSize="12" FontWeight="SemiBold" Foreground="#818CF8" />
+                                    <TextBlock Text=" (детализация за выбранный период)" FontSize="11" Foreground="#6B7280" Margin="4 1 0 0" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="Загрузка заголовков…" FontSize="11" Foreground="#9CA3AF"
+                                           Visibility="{Binding IsLoadingTitles, Converter={StaticResource BoolToVisibility}}" />
+                            </Grid>
+
+                            <TextBlock Text="Нет отдельных заголовков окон за выбранный период"
+                                       FontSize="12" Foreground="#6B7280" Margin="0 4"
+                                       Visibility="{Binding HasNoTitles, Converter={StaticResource BoolToVisibility}}" />
+
+                            <ItemsControl ItemsSource="{Binding WindowTitles}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0 4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="120" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding DisplayTitle}"
+                                                       ToolTip="{Binding RawTitle}"
+                                                       Foreground="#D1D5DB" FontSize="12"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Margin="0 0 16 0" />
+
+                                            <TextBlock Grid.Column="1" Text="{Binding FormattedTime}"
+                                                       Foreground="#9CA3AF" FontSize="12"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Right"
+                                                       Margin="0 0 12 0" />
+
+                                            <Grid Grid.Column="2" VerticalAlignment="Center">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="40" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Percentage, StringFormat={}{0:F0}%}"
+                                                           Foreground="#9CA3AF" FontSize="11"
+                                                           VerticalAlignment="Center" />
+                                                <ProgressBar Grid.Column="1"
+                                                             Value="{Binding Percentage}"
+                                                             Maximum="100" Height="5"
+                                                             Background="#252535"
+                                                             Foreground="#6366F1"
+                                                             BorderThickness="0"
+                                                             VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
         </DataGrid>
 
     </Grid>

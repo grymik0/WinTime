@@ -8,14 +8,28 @@ namespace WinTime.ViewModels;
 
 public sealed class ProcessesViewModel : BaseViewModel
 {
-    private readonly UptimeRepository _uptimeRepo;
-    private readonly ActivityTracker  _tracker;
+    private readonly UptimeRepository  _uptimeRepo;
+    private readonly ActivityRepository _activityRepo;
+    private readonly ActivityTracker   _tracker;
 
     private List<ProcessUptimeItem> _allItems = [];
     private ObservableCollection<ProcessUptimeItem> _items = [];
     private TimePeriod _selectedPeriod = TimePeriod.Today;
     private string _searchText = string.Empty;
     private bool _isLoading;
+
+    private static readonly string[] TitleSuffixes =
+    [
+        " - Google Chrome",
+        " - Microsoft Edge",
+        " - Brave",
+        " - Mozilla Firefox",
+        " - Opera",
+        " - Visual Studio Code",
+        " - Visual Studio",
+        " - Telegram",
+        " - Discord"
+    ];
 
     public ObservableCollection<ProcessUptimeItem> Items
     {
@@ -54,22 +68,29 @@ public sealed class ProcessesViewModel : BaseViewModel
     public bool IsPeriodWeek  => _selectedPeriod == TimePeriod.Week;
     public bool IsPeriodMonth => _selectedPeriod == TimePeriod.Month;
 
-    public ICommand SetTodayCommand   { get; }
-    public ICommand SetWeekCommand    { get; }
-    public ICommand SetMonthCommand   { get; }
-    public ICommand RefreshCommand    { get; }
+    public ICommand SetTodayCommand     { get; }
+    public ICommand SetWeekCommand      { get; }
+    public ICommand SetMonthCommand     { get; }
+    public ICommand RefreshCommand      { get; }
+    public ICommand ToggleExpandCommand { get; }
 
-    public ProcessesViewModel(UptimeRepository uptimeRepo, ActivityTracker tracker)
+    public ProcessesViewModel(UptimeRepository uptimeRepo, ActivityRepository activityRepo, ActivityTracker tracker)
     {
-        _uptimeRepo = uptimeRepo;
-        _tracker    = tracker;
+        _uptimeRepo   = uptimeRepo;
+        _activityRepo = activityRepo;
+        _tracker      = tracker;
 
         _tracker.StateChanged += OnTrackerStateChanged;
 
-        SetTodayCommand = new RelayCommand(() => SelectedPeriod = TimePeriod.Today);
-        SetWeekCommand  = new RelayCommand(() => SelectedPeriod = TimePeriod.Week);
-        SetMonthCommand = new RelayCommand(() => SelectedPeriod = TimePeriod.Month);
-        RefreshCommand  = new RelayCommand(async () => await LoadAsync());
+        SetTodayCommand     = new RelayCommand(() => SelectedPeriod = TimePeriod.Today);
+        SetWeekCommand      = new RelayCommand(() => SelectedPeriod = TimePeriod.Week);
+        SetMonthCommand     = new RelayCommand(() => SelectedPeriod = TimePeriod.Month);
+        RefreshCommand      = new RelayCommand(async () => await LoadAsync());
+        ToggleExpandCommand = new RelayCommand<ProcessUptimeItem>(async item =>
+        {
+            if (item is null) return;
+            await ToggleExpandAsync(item);
+        });
     }
 
     private void OnTrackerStateChanged(object? sender, TrackerStateEventArgs e)
@@ -91,6 +112,32 @@ public sealed class ProcessesViewModel : BaseViewModel
                 if (item.AppId == e.AppId && !e.IsIdle)
                 {
                     item.TickActive();
+
+                    if (item.IsExpanded && !string.IsNullOrWhiteSpace(e.WindowTitle))
+                    {
+                        var titleItem = item.WindowTitles.FirstOrDefault(t => t.RawTitle == e.WindowTitle);
+                        if (titleItem is not null)
+                        {
+                            titleItem.TotalSeconds++;
+                        }
+                        else
+                        {
+                            var newItem = new WindowTitleStatItem
+                            {
+                                RawTitle = e.WindowTitle,
+                                DisplayTitle = CleanWindowTitle(e.WindowTitle, item.ProcessName),
+                                TotalSeconds = 1
+                            };
+                            item.WindowTitles.Add(newItem);
+                        }
+
+                        long grand = item.WindowTitles.Sum(t => t.TotalSeconds);
+                        if (grand > 0)
+                        {
+                            foreach (var t in item.WindowTitles)
+                                t.Percentage = Math.Round((double)t.TotalSeconds / grand * 100.0, 1);
+                        }
+                    }
                 }
             }
 
@@ -111,6 +158,57 @@ public sealed class ProcessesViewModel : BaseViewModel
         });
     }
 
+    private async Task ToggleExpandAsync(ProcessUptimeItem item)
+    {
+        item.IsExpanded = !item.IsExpanded;
+        if (item.IsExpanded)
+        {
+            await LoadTitlesForItemAsync(item);
+        }
+    }
+
+    public async Task LoadTitlesForItemAsync(ProcessUptimeItem item)
+    {
+        item.IsLoadingTitles = true;
+        try
+        {
+            var (from, to) = GetPeriodRange();
+            var toEnd = to.AddDays(1);
+            var titles = await _activityRepo.GetWindowTitlesForAppAsync(item.AppId, from, toEnd, 40);
+            long grandTotal = titles.Sum(t => t.Seconds);
+
+            var list = titles.Select(t => new WindowTitleStatItem
+            {
+                RawTitle     = t.Title,
+                DisplayTitle = CleanWindowTitle(t.Title, item.ProcessName),
+                TotalSeconds = t.Seconds,
+                Percentage   = grandTotal > 0 ? Math.Round((double)t.Seconds / grandTotal * 100.0, 1) : 0
+            }).ToList();
+
+            item.WindowTitles = new ObservableCollection<WindowTitleStatItem>(list);
+        }
+        catch { }
+        finally
+        {
+            item.IsLoadingTitles = false;
+        }
+    }
+
+    public static string CleanWindowTitle(string title, string processName)
+    {
+        if (string.IsNullOrWhiteSpace(title)) return "—";
+        var cleaned = title.Trim();
+        foreach (var suffix in TitleSuffixes)
+        {
+            if (cleaned.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+            {
+                cleaned = cleaned[..^suffix.Length].Trim();
+                break;
+            }
+        }
+        return string.IsNullOrWhiteSpace(cleaned) ? title.Trim() : cleaned;
+    }
+
     public async Task LoadAsync()
     {
         IsLoading = true;
@@ -125,6 +223,17 @@ public sealed class ProcessesViewModel : BaseViewModel
             foreach (var item in list)
             {
                 item.IsCurrentlyRunning = runningIds.Contains(item.AppId);
+            }
+
+            // Сохраняем состояние раскрытия
+            var expandedAppIds = _allItems.Where(i => i.IsExpanded).Select(i => i.AppId).ToHashSet();
+            foreach (var item in list)
+            {
+                if (expandedAppIds.Contains(item.AppId))
+                {
+                    item.IsExpanded = true;
+                    _ = LoadTitlesForItemAsync(item);
+                }
             }
 
             _allItems = list;
