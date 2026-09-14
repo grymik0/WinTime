@@ -22,6 +22,13 @@ internal static class NativeMethods
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     internal static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
+    internal const uint GA_PARENT    = 1;
+    internal const uint GA_ROOT      = 2;
+    internal const uint GA_ROOTOWNER = 3;
+
+    [DllImport("user32.dll", ExactSpelling = true)]
+    internal static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
+
     // ── Window enumeration ──────────────────────────────────────────────────
 
     internal delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);

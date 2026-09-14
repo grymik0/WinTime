@@ -25,6 +25,7 @@ public sealed class ProcessesViewModel : BaseViewModel
         " - Brave",
         " - Mozilla Firefox",
         " - Opera",
+        " - Microsoft Visual Studio",
         " - Visual Studio Code",
         " - Visual Studio",
         " - Telegram",
