@@ -172,6 +172,8 @@ public sealed class ProcessesViewModel : BaseViewModel
         item.IsLoadingTitles = true;
         try
         {
+            await _tracker.FlushToDbAsync();
+
             var (from, to) = GetPeriodRange();
             var toEnd = to.AddDays(1);
             var titles = await _activityRepo.GetWindowTitlesForAppAsync(item.AppId, from, toEnd, 40);

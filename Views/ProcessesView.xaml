@@ -5,6 +5,7 @@
              Background="#16161E">
 
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
 
         <Style x:Key="PeriodBtn" TargetType="Button">
             <Setter Property="Background"         Value="#252535" />
@@ -193,7 +194,7 @@
                   BorderBrush="#374151"
                   BorderThickness="1"
                   RowHeaderWidth="0"
-                  RowDetailsVisibilityMode="Collapsed"
+                  LoadingRow="AppsGrid_LoadingRow"
                   ColumnHeaderStyle="{StaticResource ColHeader}"
                   CellStyle="{StaticResource CellStyle}"
                   RowStyle="{StaticResource RowStyle}">
@@ -204,8 +205,7 @@
                 <DataGridTemplateColumn Width="42">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Command="{Binding DataContext.ToggleExpandCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                    CommandParameter="{Binding}"
+                            <Button Click="ToggleExpand_Click"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Cursor="Hand"
