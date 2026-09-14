@@ -69,6 +69,52 @@ public sealed class DashboardViewModel : BaseViewModel
     public bool IsPeriodWeek  { get => _selectedPeriod == TimePeriod.Week;   }
     public bool IsPeriodMonth { get => _selectedPeriod == TimePeriod.Month;  }
 
+    private string _trendPercentageText = string.Empty;
+    private string _trendDiffText       = string.Empty;
+    private string _trendColorHex       = "#9CA3AF";
+    private bool   _hasTrend;
+    private string _idleRatioText       = string.Empty;
+    private bool   _hasIdleRatio;
+    private string _subMetricText       = string.Empty;
+    private bool   _hasSubMetric;
+
+    private string _trendPeriodLabel    = string.Empty;
+
+    public string TrendPercentageText { get => _trendPercentageText; private set => SetProperty(ref _trendPercentageText, value); }
+    public string TrendDiffText       { get => _trendDiffText;       private set => SetProperty(ref _trendDiffText,       value); }
+    public string TrendPeriodLabel    { get => _trendPeriodLabel;    private set => SetProperty(ref _trendPeriodLabel,    value); }
+    public string TrendColorHex       { get => _trendColorHex;       private set => SetProperty(ref _trendColorHex,       value); }
+    public bool   HasTrend            { get => _hasTrend;            private set => SetProperty(ref _hasTrend,            value); }
+    public string IdleRatioText       { get => _idleRatioText;       private set => SetProperty(ref _idleRatioText,       value); }
+    public bool   HasIdleRatio        { get => _hasIdleRatio;        private set => SetProperty(ref _hasIdleRatio,        value); }
+    public string SubMetricText       { get => _subMetricText;       private set => SetProperty(ref _subMetricText,       value); }
+    public bool   HasSubMetric        { get => _hasSubMetric;        private set => SetProperty(ref _hasSubMetric,        value); }
+
+    private ObservableCollection<HeatmapWeekItem> _heatmapWeeks = [];
+    private string _heatmapStatsText = string.Empty;
+
+    public ObservableCollection<HeatmapWeekItem> HeatmapWeeks
+    {
+        get => _heatmapWeeks;
+        private set => SetProperty(ref _heatmapWeeks, value);
+    }
+
+    public string HeatmapStatsText
+    {
+        get => _heatmapStatsText;
+        private set => SetProperty(ref _heatmapStatsText, value);
+    }
+
+    private string _heatmapTotalTimeText   = "0с";
+    private string _heatmapBestDayText     = "—";
+    private string _heatmapAvgDayText      = "—";
+    private string _heatmapConsistencyText = "—";
+
+    public string HeatmapTotalTimeText   { get => _heatmapTotalTimeText;   private set => SetProperty(ref _heatmapTotalTimeText,   value); }
+    public string HeatmapBestDayText     { get => _heatmapBestDayText;     private set => SetProperty(ref _heatmapBestDayText,     value); }
+    public string HeatmapAvgDayText      { get => _heatmapAvgDayText;      private set => SetProperty(ref _heatmapAvgDayText,      value); }
+    public string HeatmapConsistencyText { get => _heatmapConsistencyText; private set => SetProperty(ref _heatmapConsistencyText, value); }
+
     // ── Commands
 
     public ICommand SetPeriodCommand { get; }
@@ -184,6 +230,11 @@ public sealed class DashboardViewModel : BaseViewModel
             TotalTime = Fmt(active);
             IdleTime  = Fmt(idle);
 
+            var (prevFrom, prevTo) = GetPreviousPeriodRange(from, to);
+            var (prevActive, _)    = await _activityRepo.GetTotalsAsync(prevFrom, prevTo);
+
+            ComputeTrendsAndMetrics(active, idle, prevActive, from);
+
             var apps = await _activityRepo.GetTopAppsAsync(from, to);
             TopApp = apps.FirstOrDefault()?.DisplayName ?? "—";
 
@@ -198,11 +249,234 @@ public sealed class DashboardViewModel : BaseViewModel
 
             BuildPieChart(apps, totalForPct);
             await BuildBarChartAsync(from, barLabels);
+            await BuildHeatmapAsync();
         }
         catch {  }
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private async Task BuildHeatmapAsync()
+    {
+        try
+        {
+            var today = DateTime.Today;
+            int currentDayOfWeek = (int)today.DayOfWeek;
+            int daysSinceMonday = currentDayOfWeek == 0 ? 6 : currentDayOfWeek - 1;
+            DateTime currentWeekMonday = today.AddDays(-daysSinceMonday);
+            DateTime startMonday = currentWeekMonday.AddDays(-19 * 7); // 20 недель
+
+            var dailyMap = await _activityRepo.GetDailyActivityHistoryAsync(startMonday);
+            var todayKey = today.ToString("yyyy-MM-dd");
+            dailyMap[todayKey] = Math.Max(dailyMap.GetValueOrDefault(todayKey, 0L), _rawActiveSeconds);
+
+            var weeks = new List<HeatmapWeekItem>();
+            int previousMonth = -1;
+            int activeDaysCount = 0;
+
+            for (int w = 0; w < 20; w++)
+            {
+                var weekMonday = startMonday.AddDays(w * 7);
+                var weekItem = new HeatmapWeekItem();
+
+                if (weekMonday.Month != previousMonth)
+                {
+                    var mName = weekMonday.ToString("MMM", new System.Globalization.CultureInfo("ru-RU")).TrimEnd('.');
+                    if (!string.IsNullOrEmpty(mName))
+                        weekItem.MonthLabel = char.ToUpper(mName[0]) + mName[1..];
+                    previousMonth = weekMonday.Month;
+                }
+
+                for (int d = 0; d < 7; d++)
+                {
+                    var dayDate = weekMonday.AddDays(d);
+                    var dayKey = dayDate.ToString("yyyy-MM-dd");
+                    bool isFuture = dayDate > today;
+                    bool isToday = dayDate == today;
+                    long sec = isFuture ? 0 : dailyMap.GetValueOrDefault(dayKey, 0L);
+
+                    if (sec > 0) activeDaysCount++;
+
+                    int intensity = 0;
+                    string color = isFuture ? "#181824" : "#252535";
+
+                    if (!isFuture && sec > 0)
+                    {
+                        if (sec < 3600)
+                        {
+                            intensity = 1;
+                            color = "#3730A3";
+                        }
+                        else if (sec < 3 * 3600)
+                        {
+                            intensity = 2;
+                            color = "#4F46E5";
+                        }
+                        else if (sec < 6 * 3600)
+                        {
+                            intensity = 3;
+                            color = "#6366F1";
+                        }
+                        else
+                        {
+                            intensity = 4;
+                            color = "#818CF8";
+                        }
+                    }
+
+                    string dayFormatted = dayDate.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("ru-RU"));
+                    string tooltip = isFuture
+                        ? dayFormatted
+                        : (sec > 0 ? $"{dayFormatted}: {Fmt(sec)} активности" : $"{dayFormatted}: нет активности");
+
+                    weekItem.Days.Add(new HeatmapDayItem
+                    {
+                        Date = dayDate,
+                        ActiveSeconds = sec,
+                        Intensity = intensity,
+                        ColorHex = color,
+                        TooltipText = tooltip,
+                        IsFuture = isFuture,
+                        IsToday = isToday
+                    });
+                }
+
+                weeks.Add(weekItem);
+            }
+
+            int streak = 0;
+            var checkDate = today;
+            if (dailyMap.GetValueOrDefault(checkDate.ToString("yyyy-MM-dd"), 0L) == 0)
+                checkDate = checkDate.AddDays(-1);
+
+            while (dailyMap.GetValueOrDefault(checkDate.ToString("yyyy-MM-dd"), 0L) > 0)
+            {
+                streak++;
+                checkDate = checkDate.AddDays(-1);
+            }
+
+            int totalDays = 20 * 7;
+            long totalPeriodSec = 0;
+            var bestDayDate = DateTime.MinValue;
+            long bestDaySec = 0;
+
+            foreach (var kv in dailyMap)
+            {
+                if (kv.Value > 0)
+                {
+                    totalPeriodSec += kv.Value;
+                    if (kv.Value > bestDaySec && DateTime.TryParse(kv.Key, out var parsedDate))
+                    {
+                        bestDaySec = kv.Value;
+                        bestDayDate = parsedDate;
+                    }
+                }
+            }
+
+            HeatmapTotalTimeText = Fmt(totalPeriodSec);
+            HeatmapAvgDayText = activeDaysCount > 0 ? Fmt(totalPeriodSec / activeDaysCount) : "0м";
+            HeatmapConsistencyText = $"{activeDaysCount} из {totalDays} дн. ({Math.Round((double)activeDaysCount / totalDays * 100):F0}%)";
+            HeatmapBestDayText = bestDaySec > 0
+                ? $"{bestDayDate.ToString("d MMM", new System.Globalization.CultureInfo("ru-RU"))} ({Fmt(bestDaySec)})"
+                : "—";
+
+            HeatmapStatsText = $"🔥 Серия: {streak} {GetDaysWord(streak)} · Всего активных: {activeDaysCount} дн.";
+            HeatmapWeeks = new ObservableCollection<HeatmapWeekItem>(weeks);
+        }
+        catch { }
+    }
+
+    private static string GetDaysWord(int count)
+    {
+        int c10 = count % 10;
+        int c100 = count % 100;
+        if (c100 >= 11 && c100 <= 14) return "дней";
+        if (c10 == 1) return "день";
+        if (c10 >= 2 && c10 <= 4) return "дня";
+        return "дней";
+    }
+
+    private (DateTime prevFrom, DateTime prevTo) GetPreviousPeriodRange(DateTime currentFrom, DateTime currentTo)
+    {
+        return _selectedPeriod switch
+        {
+            TimePeriod.Today => (currentFrom.AddDays(-1), currentFrom),
+            TimePeriod.Week  => (currentFrom.AddDays(-7), currentFrom),
+            TimePeriod.Month => (currentFrom.AddMonths(-1), currentFrom),
+            _                => (currentFrom.AddDays(-1), currentFrom)
+        };
+    }
+
+    private void ComputeTrendsAndMetrics(long active, long idle, long prevActive, DateTime from)
+    {
+        long totalSpan = active + idle;
+        if (totalSpan > 0 && idle > 0)
+        {
+            double idlePct = (double)idle / totalSpan * 100.0;
+            IdleRatioText = $"{idlePct:F0}% от общего времени";
+            HasIdleRatio = true;
+        }
+        else
+        {
+            HasIdleRatio = false;
+        }
+
+        TrendPeriodLabel = SelectedPeriod switch
+        {
+            TimePeriod.Today => "по сравнению со вчера",
+            TimePeriod.Week  => "по сравнению с прошлой неделей",
+            _                => "по сравнению с прошлым месяцем"
+        };
+
+        if (prevActive == 0 && active == 0)
+        {
+            HasTrend = false;
+        }
+        else if (prevActive == 0)
+        {
+            TrendPercentageText = "+100%";
+            TrendDiffText = $"на {Fmt(active)} больше";
+            TrendColorHex = "#818CF8";
+            HasTrend = true;
+        }
+        else
+        {
+            long diff = active - prevActive;
+            double pct = (double)diff / prevActive * 100.0;
+            string sign = pct > 0 ? "+" : "";
+            TrendPercentageText = $"{sign}{pct:F0}%";
+
+            if (diff < 0)
+                TrendDiffText = $"на {Fmt(Math.Abs(diff))} меньше";
+            else if (diff > 0)
+                TrendDiffText = $"на {Fmt(diff)} больше";
+            else
+                TrendDiffText = "столько же";
+
+            TrendColorHex = pct > 0 ? "#818CF8" : (pct < 0 ? "#34D399" : "#9CA3AF");
+            HasTrend = true;
+        }
+
+        var now = DateTime.Now;
+        if (SelectedPeriod == TimePeriod.Week)
+        {
+            int daysElapsed = (int)now.DayOfWeek == 0 ? 7 : (int)now.DayOfWeek;
+            long avg = active / Math.Max(1, daysElapsed);
+            SubMetricText = $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)";
+            HasSubMetric = true;
+        }
+        else if (SelectedPeriod == TimePeriod.Month)
+        {
+            int daysElapsed = Math.Max(1, now.Day);
+            long avg = active / daysElapsed;
+            SubMetricText = $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)";
+            HasSubMetric = true;
+        }
+        else
+        {
+            HasSubMetric = false;
         }
     }
 

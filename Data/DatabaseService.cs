@@ -73,6 +73,7 @@ public sealed class DatabaseService : IDisposable
 
             CREATE INDEX IF NOT EXISTS idx_sessions_start ON ActivitySessions(StartTime);
             CREATE INDEX IF NOT EXISTS idx_sessions_appid ON ActivitySessions(AppId);
+            CREATE INDEX IF NOT EXISTS idx_sessions_appid_start ON ActivitySessions(AppId, StartTime);
 
             CREATE TABLE IF NOT EXISTS AppUptime (
                 Id            INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -93,6 +93,26 @@ public sealed class ActivityRepository
         }).ToList();
     }
 
+    /// <summary>Топ заголовков окон/вкладок для конкретного приложения за период.</summary>
+    public async Task<List<(string Title, long Seconds)>> GetWindowTitlesForAppAsync(int appId, DateTime from, DateTime to, int limit = 50)
+    {
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT
+                s.WindowTitle,
+                SUM(s.DurationSeconds) AS TotalSeconds
+            FROM ActivitySessions s
+            WHERE s.AppId = @AppId
+              AND s.StartTime >= @From AND s.StartTime < @To
+              AND s.IsIdle = 0
+              AND TRIM(s.WindowTitle) != ''
+            GROUP BY s.WindowTitle
+            ORDER BY TotalSeconds DESC
+            LIMIT @Limit",
+            new { AppId = appId, From = Fmt(from), To = Fmt(to), Limit = limit });
+
+        return rows.Select(r => ((string)r.WindowTitle, (long)r.TotalSeconds)).ToList();
+    }
+
     /// <summary>Почасовая разбивка за день (массив 24 значений, секунды).</summary>
     public async Task<long[]> GetHourlyBreakdownAsync(DateTime date)
     {
@@ -169,6 +189,29 @@ public sealed class ActivityRepository
     public async Task ClearAllAsync()
     {
         await _db.Connection.ExecuteAsync("DELETE FROM ActivitySessions");
+    }
+
+    /// <summary>Суммарное активное время по дням начиная с fromDate (словарь yyyy-MM-dd -> секунды).</summary>
+    public async Task<Dictionary<string, long>> GetDailyActivityHistoryAsync(DateTime fromDate)
+    {
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT date(s.StartTime) AS DayDate,
+                   SUM(s.DurationSeconds) AS Total
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.StartTime >= @FromDate
+              AND s.IsIdle = 0
+              AND a.IsBlacklisted = 0
+            GROUP BY DayDate",
+            new { FromDate = Fmt(fromDate) });
+
+        var dict = new Dictionary<string, long>();
+        foreach (var r in rows)
+        {
+            if (r.DayDate is not null && r.Total is not null)
+                dict[(string)r.DayDate] = (long)r.Total;
+        }
+        return dict;
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

@@ -161,6 +161,28 @@ public sealed class ActivityTracker : IAsyncDisposable
         NativeMethods.GetWindowText(hwnd, titleBuf, 512);
         var windowTitle = titleBuf.ToString();
 
+        if (string.IsNullOrWhiteSpace(windowTitle))
+        {
+            var rootHwnd = NativeMethods.GetAncestor(hwnd, NativeMethods.GA_ROOT);
+            if (rootHwnd != IntPtr.Zero && rootHwnd != hwnd)
+            {
+                var rootBuf = new StringBuilder(512);
+                NativeMethods.GetWindowText(rootHwnd, rootBuf, 512);
+                windowTitle = rootBuf.ToString();
+            }
+
+            if (string.IsNullOrWhiteSpace(windowTitle))
+            {
+                var ownerHwnd = NativeMethods.GetAncestor(hwnd, NativeMethods.GA_ROOTOWNER);
+                if (ownerHwnd != IntPtr.Zero && ownerHwnd != hwnd && ownerHwnd != rootHwnd)
+                {
+                    var ownerBuf = new StringBuilder(512);
+                    NativeMethods.GetWindowText(ownerHwnd, ownerBuf, 512);
+                    windowTitle = ownerBuf.ToString();
+                }
+            }
+        }
+
         var lii = new NativeMethods.LASTINPUTINFO
         {
             cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.LASTINPUTINFO>()
