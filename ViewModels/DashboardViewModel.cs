@@ -87,6 +87,21 @@ public sealed class DashboardViewModel : BaseViewModel
     public string SubMetricText       { get => _subMetricText;       private set => SetProperty(ref _subMetricText,       value); }
     public bool   HasSubMetric        { get => _hasSubMetric;        private set => SetProperty(ref _hasSubMetric,        value); }
 
+    private ObservableCollection<HeatmapWeekItem> _heatmapWeeks = [];
+    private string _heatmapStatsText = string.Empty;
+
+    public ObservableCollection<HeatmapWeekItem> HeatmapWeeks
+    {
+        get => _heatmapWeeks;
+        private set => SetProperty(ref _heatmapWeeks, value);
+    }
+
+    public string HeatmapStatsText
+    {
+        get => _heatmapStatsText;
+        private set => SetProperty(ref _heatmapStatsText, value);
+    }
+
     // ── Commands
 
     public ICommand SetPeriodCommand { get; }
@@ -221,12 +236,128 @@ public sealed class DashboardViewModel : BaseViewModel
 
             BuildPieChart(apps, totalForPct);
             await BuildBarChartAsync(from, barLabels);
+            await BuildHeatmapAsync();
         }
         catch {  }
         finally
         {
             IsLoading = false;
         }
+    }
+
+    private async Task BuildHeatmapAsync()
+    {
+        try
+        {
+            var today = DateTime.Today;
+            int currentDayOfWeek = (int)today.DayOfWeek;
+            int daysSinceMonday = currentDayOfWeek == 0 ? 6 : currentDayOfWeek - 1;
+            DateTime currentWeekMonday = today.AddDays(-daysSinceMonday);
+            DateTime startMonday = currentWeekMonday.AddDays(-19 * 7); // 20 недель
+
+            var dailyMap = await _activityRepo.GetDailyActivityHistoryAsync(startMonday);
+            var todayKey = today.ToString("yyyy-MM-dd");
+            dailyMap[todayKey] = Math.Max(dailyMap.GetValueOrDefault(todayKey, 0L), _rawActiveSeconds);
+
+            var weeks = new List<HeatmapWeekItem>();
+            int previousMonth = -1;
+            int activeDaysCount = 0;
+
+            for (int w = 0; w < 20; w++)
+            {
+                var weekMonday = startMonday.AddDays(w * 7);
+                var weekItem = new HeatmapWeekItem();
+
+                if (weekMonday.Month != previousMonth)
+                {
+                    var mName = weekMonday.ToString("MMM", new System.Globalization.CultureInfo("ru-RU")).TrimEnd('.');
+                    if (!string.IsNullOrEmpty(mName))
+                        weekItem.MonthLabel = char.ToUpper(mName[0]) + mName[1..];
+                    previousMonth = weekMonday.Month;
+                }
+
+                for (int d = 0; d < 7; d++)
+                {
+                    var dayDate = weekMonday.AddDays(d);
+                    var dayKey = dayDate.ToString("yyyy-MM-dd");
+                    bool isFuture = dayDate > today;
+                    bool isToday = dayDate == today;
+                    long sec = isFuture ? 0 : dailyMap.GetValueOrDefault(dayKey, 0L);
+
+                    if (sec > 0) activeDaysCount++;
+
+                    int intensity = 0;
+                    string color = isFuture ? "#181824" : "#252535";
+
+                    if (!isFuture && sec > 0)
+                    {
+                        if (sec < 3600)
+                        {
+                            intensity = 1;
+                            color = "#3730A3";
+                        }
+                        else if (sec < 3 * 3600)
+                        {
+                            intensity = 2;
+                            color = "#4F46E5";
+                        }
+                        else if (sec < 6 * 3600)
+                        {
+                            intensity = 3;
+                            color = "#6366F1";
+                        }
+                        else
+                        {
+                            intensity = 4;
+                            color = "#818CF8";
+                        }
+                    }
+
+                    string dayFormatted = dayDate.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("ru-RU"));
+                    string tooltip = isFuture
+                        ? dayFormatted
+                        : (sec > 0 ? $"{dayFormatted}: {Fmt(sec)} активности" : $"{dayFormatted}: нет активности");
+
+                    weekItem.Days.Add(new HeatmapDayItem
+                    {
+                        Date = dayDate,
+                        ActiveSeconds = sec,
+                        Intensity = intensity,
+                        ColorHex = color,
+                        TooltipText = tooltip,
+                        IsFuture = isFuture,
+                        IsToday = isToday
+                    });
+                }
+
+                weeks.Add(weekItem);
+            }
+
+            int streak = 0;
+            var checkDate = today;
+            if (dailyMap.GetValueOrDefault(checkDate.ToString("yyyy-MM-dd"), 0L) == 0)
+                checkDate = checkDate.AddDays(-1);
+
+            while (dailyMap.GetValueOrDefault(checkDate.ToString("yyyy-MM-dd"), 0L) > 0)
+            {
+                streak++;
+                checkDate = checkDate.AddDays(-1);
+            }
+
+            HeatmapStatsText = $"🔥 Серия: {streak} {GetDaysWord(streak)} · Всего активных: {activeDaysCount} дн.";
+            HeatmapWeeks = new ObservableCollection<HeatmapWeekItem>(weeks);
+        }
+        catch { }
+    }
+
+    private static string GetDaysWord(int count)
+    {
+        int c10 = count % 10;
+        int c100 = count % 100;
+        if (c100 >= 11 && c100 <= 14) return "дней";
+        if (c10 == 1) return "день";
+        if (c10 >= 2 && c10 <= 4) return "дня";
+        return "дней";
     }
 
     private (DateTime prevFrom, DateTime prevTo) GetPreviousPeriodRange(DateTime currentFrom, DateTime currentTo)

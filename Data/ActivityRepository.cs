@@ -191,6 +191,29 @@ public sealed class ActivityRepository
         await _db.Connection.ExecuteAsync("DELETE FROM ActivitySessions");
     }
 
+    /// <summary>Суммарное активное время по дням начиная с fromDate (словарь yyyy-MM-dd -> секунды).</summary>
+    public async Task<Dictionary<string, long>> GetDailyActivityHistoryAsync(DateTime fromDate)
+    {
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT date(s.StartTime) AS DayDate,
+                   SUM(s.DurationSeconds) AS Total
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.StartTime >= @FromDate
+              AND s.IsIdle = 0
+              AND a.IsBlacklisted = 0
+            GROUP BY DayDate",
+            new { FromDate = Fmt(fromDate) });
+
+        var dict = new Dictionary<string, long>();
+        foreach (var r in rows)
+        {
+            if (r.DayDate is not null && r.Total is not null)
+                dict[(string)r.DayDate] = (long)r.Total;
+        }
+        return dict;
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static string Fmt(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss");

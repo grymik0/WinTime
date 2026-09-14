@@ -177,6 +177,87 @@
                 </Border>
             </Grid>
 
+            <!-- Календарь активности (Heatmap) -->
+            <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16" Margin="0 0 0 20">
+                <StackPanel>
+                    <Grid Margin="0 0 0 14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="📅  Календарь активности" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+                            <TextBlock Text=" (последние 20 недель)" FontSize="12" Foreground="#6B7280" Margin="6 2 0 0" />
+                        </StackPanel>
+
+                        <Border Grid.Column="1" Background="#252535" CornerRadius="6" Padding="10 4">
+                            <TextBlock Text="{Binding HeatmapStatsText}" FontSize="12" FontWeight="Medium" Foreground="#A5B4FC" />
+                        </Border>
+                    </Grid>
+
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 8">
+                            <!-- Подписи дней недели -->
+                            <StackPanel Margin="0 18 8 0">
+                                <TextBlock Text="Пн" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                                <TextBlock Text=""   FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                                <TextBlock Text="Ср" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                                <TextBlock Text=""   FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                                <TextBlock Text="Пт" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                                <TextBlock Text=""   FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                                <TextBlock Text="Вс" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <!-- Недели -->
+                            <ItemsControl ItemsSource="{Binding HeatmapWeeks}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="1.5 0">
+                                            <!-- Подпись месяца -->
+                                            <TextBlock Text="{Binding MonthLabel}"
+                                                       FontSize="10" Foreground="#9CA3AF"
+                                                       Height="18"
+                                                       TextTrimming="None" />
+
+                                            <!-- Дни недели (7 квадратов) -->
+                                            <ItemsControl ItemsSource="{Binding Days}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Width="12" Height="12" Margin="0 2"
+                                                                CornerRadius="2.5"
+                                                                Background="{Binding FillBrush}"
+                                                                BorderBrush="{Binding BorderBrush}"
+                                                                BorderThickness="{Binding BorderThickness}"
+                                                                ToolTip="{Binding TooltipText}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Легенда -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 6 0 0">
+                        <TextBlock Text="Меньше" FontSize="11" Foreground="#6B7280" VerticalAlignment="Center" Margin="0 0 6 0" />
+                        <Border Width="11" Height="11" CornerRadius="2" Background="#252535" Margin="2 0" ToolTip="0 ч" />
+                        <Border Width="11" Height="11" CornerRadius="2" Background="#3730A3" Margin="2 0" ToolTip="до 1 ч" />
+                        <Border Width="11" Height="11" CornerRadius="2" Background="#4F46E5" Margin="2 0" ToolTip="1–3 ч" />
+                        <Border Width="11" Height="11" CornerRadius="2" Background="#6366F1" Margin="2 0" ToolTip="3–6 ч" />
+                        <Border Width="11" Height="11" CornerRadius="2" Background="#818CF8" Margin="2 0" ToolTip="6+ ч" />
+                        <TextBlock Text="Больше" FontSize="11" Foreground="#6B7280" VerticalAlignment="Center" Margin="6 0 0 0" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
             <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16">
                 <StackPanel>
                     <TextBlock Text="Приложения" FontSize="15" FontWeight="SemiBold"
