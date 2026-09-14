@@ -43,3 +43,4 @@ public sealed class WindowTitleStatItem : BaseViewModel
         return $"{s}с";
     }
 }
+

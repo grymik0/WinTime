@@ -78,8 +78,11 @@ public sealed class DashboardViewModel : BaseViewModel
     private string _subMetricText       = string.Empty;
     private bool   _hasSubMetric;
 
+    private string _trendPeriodLabel    = string.Empty;
+
     public string TrendPercentageText { get => _trendPercentageText; private set => SetProperty(ref _trendPercentageText, value); }
     public string TrendDiffText       { get => _trendDiffText;       private set => SetProperty(ref _trendDiffText,       value); }
+    public string TrendPeriodLabel    { get => _trendPeriodLabel;    private set => SetProperty(ref _trendPeriodLabel,    value); }
     public string TrendColorHex       { get => _trendColorHex;       private set => SetProperty(ref _trendColorHex,       value); }
     public bool   HasTrend            { get => _hasTrend;            private set => SetProperty(ref _hasTrend,            value); }
     public string IdleRatioText       { get => _idleRatioText;       private set => SetProperty(ref _idleRatioText,       value); }
@@ -385,11 +388,11 @@ public sealed class DashboardViewModel : BaseViewModel
             HasIdleRatio = false;
         }
 
-        string periodTarget = SelectedPeriod switch
+        TrendPeriodLabel = SelectedPeriod switch
         {
-            TimePeriod.Today => "в прошлый день",
-            TimePeriod.Week  => "в прошлую неделю",
-            _                => "в прошлый месяц"
+            TimePeriod.Today => "по сравнению со вчера",
+            TimePeriod.Week  => "по сравнению с прошлой неделей",
+            _                => "по сравнению с прошлым месяцем"
         };
 
         if (prevActive == 0 && active == 0)
@@ -399,7 +402,7 @@ public sealed class DashboardViewModel : BaseViewModel
         else if (prevActive == 0)
         {
             TrendPercentageText = "+100%";
-            TrendDiffText = $"на {Fmt(active)} больше, чем {periodTarget}";
+            TrendDiffText = $"на {Fmt(active)} больше";
             TrendColorHex = "#818CF8";
             HasTrend = true;
         }
@@ -411,11 +414,11 @@ public sealed class DashboardViewModel : BaseViewModel
             TrendPercentageText = $"{sign}{pct:F0}%";
 
             if (diff < 0)
-                TrendDiffText = $"на {Fmt(Math.Abs(diff))} меньше, чем {periodTarget}";
+                TrendDiffText = $"на {Fmt(Math.Abs(diff))} меньше";
             else if (diff > 0)
-                TrendDiffText = $"на {Fmt(diff)} больше, чем {periodTarget}";
+                TrendDiffText = $"на {Fmt(diff)} больше";
             else
-                TrendDiffText = $"столько же, сколько {periodTarget}";
+                TrendDiffText = "столько же";
 
             TrendColorHex = pct > 0 ? "#818CF8" : (pct < 0 ? "#34D399" : "#9CA3AF");
             HasTrend = true;

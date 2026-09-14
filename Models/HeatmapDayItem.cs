@@ -42,3 +42,4 @@ public sealed class HeatmapWeekItem
     public string MonthLabel { get; set; } = string.Empty;
     public List<HeatmapDayItem> Days { get; set; } = [];
 }
+

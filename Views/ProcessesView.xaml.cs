@@ -38,3 +38,4 @@ public partial class ProcessesView : UserControl
         }
     }
 }
+
