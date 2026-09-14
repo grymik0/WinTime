@@ -385,6 +385,13 @@ public sealed class DashboardViewModel : BaseViewModel
             HasIdleRatio = false;
         }
 
+        string periodTarget = SelectedPeriod switch
+        {
+            TimePeriod.Today => "в прошлый день",
+            TimePeriod.Week  => "в прошлую неделю",
+            _                => "в прошлый месяц"
+        };
+
         if (prevActive == 0 && active == 0)
         {
             HasTrend = false;
@@ -392,12 +399,7 @@ public sealed class DashboardViewModel : BaseViewModel
         else if (prevActive == 0)
         {
             TrendPercentageText = "+100%";
-            TrendDiffText = SelectedPeriod switch
-            {
-                TimePeriod.Today => "+ " + Fmt(active) + " vs вчера",
-                TimePeriod.Week  => "+ " + Fmt(active) + " vs прошл. нед.",
-                _                => "+ " + Fmt(active) + " vs прошл. мес."
-            };
+            TrendDiffText = $"на {Fmt(active)} больше, чем {periodTarget}";
             TrendColorHex = "#818CF8";
             HasTrend = true;
         }
@@ -407,13 +409,14 @@ public sealed class DashboardViewModel : BaseViewModel
             double pct = (double)diff / prevActive * 100.0;
             string sign = pct > 0 ? "+" : "";
             TrendPercentageText = $"{sign}{pct:F0}%";
-            string periodLabel = SelectedPeriod switch
-            {
-                TimePeriod.Today => " vs вчера",
-                TimePeriod.Week  => " vs прошл. нед.",
-                _                => " vs прошл. мес."
-            };
-            TrendDiffText = (diff >= 0 ? "+" : "-") + Fmt(Math.Abs(diff)) + periodLabel;
+
+            if (diff < 0)
+                TrendDiffText = $"на {Fmt(Math.Abs(diff))} меньше, чем {periodTarget}";
+            else if (diff > 0)
+                TrendDiffText = $"на {Fmt(diff)} больше, чем {periodTarget}";
+            else
+                TrendDiffText = $"столько же, сколько {periodTarget}";
+
             TrendColorHex = pct > 0 ? "#818CF8" : (pct < 0 ? "#34D399" : "#9CA3AF");
             HasTrend = true;
         }
