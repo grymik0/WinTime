@@ -10,6 +10,9 @@
     <AssemblyName>WinTime</AssemblyName>
     <RootNamespace>WinTime</RootNamespace>
     <Platforms>x64</Platforms>
+    <Version>1.2.0</Version>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
     <!-- Suppress NU1701: transitive deps (OpenTK, SkiaSharp, WPF.UI) work via
          .NETFramework compatibility shim, not a true incompatibility -->
     <NoWarn>$(NoWarn);NU1701</NoWarn>

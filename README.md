@@ -1,7 +1,7 @@
 <div align="center">
   <h1>⏱ WinTime</h1>
-  <p><strong>Lightweight screen time tracker for Windows</strong></p>
-  <p>Know exactly where your time goes — by app, by hour, by day.</p>
+  <p><strong>Lightweight, privacy-first screen time and process tracker for Windows</strong></p>
+  <p>Know exactly where your time goes — by application, browser tab, window title, and hourly/daily trends.</p>
 
   ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)
   ![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows)
@@ -16,76 +16,77 @@
 
 ## What is WinTime?
 
-WinTime runs silently in your system tray and tracks which applications you use and for how long. No cloud, no telemetry — everything stays in a local SQLite database on your machine.
+WinTime runs quietly in your Windows system tray, tracking foreground window activity, process uptime, and detailed window titles / browser tabs without slowing down your system. 
+
+No cloud sync, no telemetry, and no account required — **100% of your data stays in a local SQLite database on your computer**.
 
 ---
 
-## Features
+## Key Features
 
 | Feature | Details |
 |---|---|
-| **Automatic tracking** | Detects the active foreground window every second |
-| **AFK detection** | Marks idle periods when no mouse/keyboard input is detected |
-| **Dashboard** | Summary cards + donut chart (top 5 apps) + hourly/daily/monthly bar chart |
-| **Applications list** | View, rename, and categorize every tracked app |
-| **Blacklist** | Exclude apps you don't want tracked |
-| **Data export** | Export activity history to CSV or JSON |
-| **System tray** | Runs minimized; window closes to tray instead of exiting |
-| **Single instance** | Only one copy of WinTime can run at a time |
-| **Startup option** | Optionally launch WinTime with Windows |
-| **Local-only** | All data stays on your machine in a SQLite `.db` file |
-
----
-
-## Screenshots
-
-> Dashboard · Applications · Settings
-
-<div align="center">
-<img src="assets/preview.jpg" alt="WinTime Dashboard" width="720" />
-</div>
+| 🔍 **Browser Tabs & Window Titles** | Deep tracking for active browser tabs (Chrome, Edge, Opera, etc.) and editor projects (VS Code, Visual Studio, JetBrains, etc.). Expand any app to see exact per-tab time spent. |
+| 📅 **Activity Heatmap** | GitHub-style 20-week contribution grid displaying your daily active hours, streaks, best productive days, and consistency metrics. |
+| 📊 **Trends & Period Comparisons** | Compare your screen time against the previous period (*e.g., Today vs. Yesterday, This Week vs. Last Week, This Month vs. Last Month*) with exact diffs and percentages. |
+| ⚡ **Process Uptime & Live Counters** | Monitor background and running Windows processes with real-time live ticking counters and launch timestamps. |
+| ⏱ **Automatic Activity & AFK Detection** | Accurately polls foreground windows every second while marking idle/inactive periods when mouse and keyboard input cease. |
+| 📈 **Interactive Visual Dashboard** | Clean Fluent Design UI featuring summary cards, top 5 donut breakdown, and adaptive hourly/daily/monthly activity bar charts. |
+| 🏷 **Applications & Category Management** | Browse, rename, customize, and categorize all tracked applications with high-resolution system icons. |
+| 🚫 **Process Blacklist** | Exclude confidential apps or background utilities from being logged. |
+| 💾 **Data Export** | Export your raw historical sessions and analytics directly to CSV or JSON formats at any time. |
+| 🪟 **Tray Integration & Autostart** | Minimizes to system tray on close; optional Windows autorun on system startup. Single-instance guaranteed. |
+| 🔒 **100% Offline & Private** | Zero network calls, zero trackers, zero cloud dependencies. Your data is stored locally in an embedded SQLite database. |
 
 ---
 
 ## Tech Stack
 
-- **UI** — WPF (.NET 10, C# 13)
-- **Charts** — [LiveChartsCore](https://livecharts.dev/) 2.0.5 (SkiaSharp)
-- **Database** — SQLite via [Microsoft.Data.Sqlite](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/) 10.0 + [Dapper](https://github.com/DapperLib/Dapper) ORM
-- **Fluent UI** — [WPF UI](https://wpfui.lepo.co/) 3.1
-- **Tray icon** — [Hardcodet.NotifyIcon.Wpf](https://github.com/hardcodet/wpf-notifyicon) 1.1
-- **Export** — [CsvHelper](https://joshclose.github.io/CsvHelper/) 33
-- **Architecture** — MVVM (BaseViewModel + RelayCommand, no framework)
+- **Framework**: WPF (.NET 10, C# 13)
+- **Fluent UI**: [WPF UI](https://wpfui.lepo.co/) 3.1
+- **Charts**: [LiveChartsCore](https://livecharts.dev/) 2.0.5 (SkiaSharp)
+- **Database**: SQLite via [Microsoft.Data.Sqlite](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/) 10.0 + [Dapper](https://github.com/DapperLib/Dapper) ORM
+- **Tray Icon**: [Hardcodet.NotifyIcon.Wpf](https://github.com/hardcodet/wpf-notifyicon) 1.1
+- **Exporting**: [CsvHelper](https://joshclose.github.io/CsvHelper/) 33
+- **Architecture**: MVVM pattern (no heavyweight frameworks, lightweight reactive properties)
 
 ---
 
 ## Requirements
 
-- Windows 10 / 11 (x64)
-- [.NET 10 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) (or SDK if building from source)
+- **Operating System**: Windows 10 (version 1809+) or Windows 11 (x64)
+- **Runtime**: [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) *(included if using self-contained builds)*
 
 ---
 
 ## Getting Started
 
-### Run from source
+### Run from Source
 
 ```bash
-git clone
+git clone https://github.com/grymik0/WinTime.git
 cd WinTime
 dotnet run -p:Platform=x64
 ```
 
 ### Build with Visual Studio
 
-1. Open `WinTime.sln` in **Visual Studio 2022** (v17.10+)
-2. Set configuration to **Debug | x64**
-3. Right-click the project → **Set as Startup Project**
-4. Press **F5**
+1. Open `WinTime.sln` in **Visual Studio 2022** (v17.10+) or JetBrains Rider.
+2. Select configuration **Release | x64** (or **Debug | x64**).
+3. Set `WinTime` as the Startup Project.
+4. Press **F5** to run.
 
-### First launch
+### Publish Self-Contained Executable
 
-On first launch WinTime asks you to choose a location for the `.db` database file. After that it starts tracking immediately and minimizes to the tray.
+To generate a standalone executable that runs without requiring a pre-installed .NET Runtime:
+
+```bash
+dotnet publish WinTime.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+```
+
+### First Launch
+
+When opening WinTime for the first time, a setup dialog guides you to pick a folder for storing your SQLite `.db` file (default: `%LOCALAPPDATA%\WinTime`). After selection, tracking begins automatically and the app docks to your Windows system tray.
 
 ---
 
@@ -93,22 +94,30 @@ On first launch WinTime asks you to choose a location for the `.db` database fil
 
 ```
 WinTime/
-├── Core/               # BaseViewModel, RelayCommand, SystemStartupManager
-├── Data/               # DatabaseService, ApplicationRepository, ActivityRepository
-├── Models/             # AppModel, AppStatItem, ActivitySession
-├── Services/           # SettingsService, ActivityTracker, IconService, ExportService, InMemoryBuffer
-├── ViewModels/         # MainWindowViewModel, DashboardViewModel, ApplicationsViewModel, SettingsViewModel
-├── Views/              # MainWindow, DashboardView, ApplicationsView, SettingsView, FirstRunDialog
-├── Converters/         # BooleanToVisibilityConverter
-├── AppServices.cs      # Static service locator / DI container
-├── App.xaml.cs         # Startup, tray icon, single-instance mutex
-└── WinTime.csproj
+├── Core/               # ActivityTracker, Native Win32 APIs, StartupManager, InMemoryBuffer
+├── Data/               # DatabaseService, ActivityRepository, ApplicationRepository, UptimeRepository
+├── Models/             # AppStatItem, WindowTitleStatItem, ProcessUptimeItem, HeatmapDayItem
+├── Services/           # SettingsService, ExportService, IconService
+├── ViewModels/         # DashboardViewModel, ProcessesViewModel, ApplicationsViewModel, SettingsViewModel
+├── Views/              # DashboardView, ProcessesView, ApplicationsView, SettingsView, FirstRunDialog
+├── Converters/         # SecondsToTimeConverter, BooleanToVisibilityConverter
+├── AppServices.cs      # Lightweight dependency injection / service registry
+├── App.xaml.cs         # App lifecycle, system tray hooks, single-instance mutex
+└── WinTime.csproj      # .NET 10 project definition
 ```
 
 ---
 
-## Privacy
+## Privacy Policy
 
-WinTime is **100% local**. No data ever leaves your machine. No analytics, no crash reporting, no network requests.
+WinTime was created with privacy as its primary foundation:
+- **No telemetry** or usage tracking.
+- **No crash dumps** uploaded to external servers.
+- **No internet requests** are ever performed by the application.
+- All window titles, timestamps, and uptime logs remain exclusively on your local storage.
 
 ---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
