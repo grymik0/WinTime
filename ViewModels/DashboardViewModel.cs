@@ -105,6 +105,16 @@ public sealed class DashboardViewModel : BaseViewModel
         private set => SetProperty(ref _heatmapStatsText, value);
     }
 
+    private string _heatmapTotalTimeText   = "0с";
+    private string _heatmapBestDayText     = "—";
+    private string _heatmapAvgDayText      = "—";
+    private string _heatmapConsistencyText = "—";
+
+    public string HeatmapTotalTimeText   { get => _heatmapTotalTimeText;   private set => SetProperty(ref _heatmapTotalTimeText,   value); }
+    public string HeatmapBestDayText     { get => _heatmapBestDayText;     private set => SetProperty(ref _heatmapBestDayText,     value); }
+    public string HeatmapAvgDayText      { get => _heatmapAvgDayText;      private set => SetProperty(ref _heatmapAvgDayText,      value); }
+    public string HeatmapConsistencyText { get => _heatmapConsistencyText; private set => SetProperty(ref _heatmapConsistencyText, value); }
+
     // ── Commands
 
     public ICommand SetPeriodCommand { get; }
@@ -346,6 +356,31 @@ public sealed class DashboardViewModel : BaseViewModel
                 streak++;
                 checkDate = checkDate.AddDays(-1);
             }
+
+            int totalDays = 20 * 7;
+            long totalPeriodSec = 0;
+            var bestDayDate = DateTime.MinValue;
+            long bestDaySec = 0;
+
+            foreach (var kv in dailyMap)
+            {
+                if (kv.Value > 0)
+                {
+                    totalPeriodSec += kv.Value;
+                    if (kv.Value > bestDaySec && DateTime.TryParse(kv.Key, out var parsedDate))
+                    {
+                        bestDaySec = kv.Value;
+                        bestDayDate = parsedDate;
+                    }
+                }
+            }
+
+            HeatmapTotalTimeText = Fmt(totalPeriodSec);
+            HeatmapAvgDayText = activeDaysCount > 0 ? Fmt(totalPeriodSec / activeDaysCount) : "0м";
+            HeatmapConsistencyText = $"{activeDaysCount} из {totalDays} дн. ({Math.Round((double)activeDaysCount / totalDays * 100):F0}%)";
+            HeatmapBestDayText = bestDaySec > 0
+                ? $"{bestDayDate.ToString("d MMM", new System.Globalization.CultureInfo("ru-RU"))} ({Fmt(bestDaySec)})"
+                : "—";
 
             HeatmapStatsText = $"🔥 Серия: {streak} {GetDaysWord(streak)} · Всего активных: {activeDaysCount} дн.";
             HeatmapWeeks = new ObservableCollection<HeatmapWeekItem>(weeks);
