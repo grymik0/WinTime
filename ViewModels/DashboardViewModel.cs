@@ -69,6 +69,24 @@ public sealed class DashboardViewModel : BaseViewModel
     public bool IsPeriodWeek  { get => _selectedPeriod == TimePeriod.Week;   }
     public bool IsPeriodMonth { get => _selectedPeriod == TimePeriod.Month;  }
 
+    private string _trendPercentageText = string.Empty;
+    private string _trendDiffText       = string.Empty;
+    private string _trendColorHex       = "#9CA3AF";
+    private bool   _hasTrend;
+    private string _idleRatioText       = string.Empty;
+    private bool   _hasIdleRatio;
+    private string _subMetricText       = string.Empty;
+    private bool   _hasSubMetric;
+
+    public string TrendPercentageText { get => _trendPercentageText; private set => SetProperty(ref _trendPercentageText, value); }
+    public string TrendDiffText       { get => _trendDiffText;       private set => SetProperty(ref _trendDiffText,       value); }
+    public string TrendColorHex       { get => _trendColorHex;       private set => SetProperty(ref _trendColorHex,       value); }
+    public bool   HasTrend            { get => _hasTrend;            private set => SetProperty(ref _hasTrend,            value); }
+    public string IdleRatioText       { get => _idleRatioText;       private set => SetProperty(ref _idleRatioText,       value); }
+    public bool   HasIdleRatio        { get => _hasIdleRatio;        private set => SetProperty(ref _hasIdleRatio,        value); }
+    public string SubMetricText       { get => _subMetricText;       private set => SetProperty(ref _subMetricText,       value); }
+    public bool   HasSubMetric        { get => _hasSubMetric;        private set => SetProperty(ref _hasSubMetric,        value); }
+
     // ── Commands
 
     public ICommand SetPeriodCommand { get; }
@@ -184,6 +202,11 @@ public sealed class DashboardViewModel : BaseViewModel
             TotalTime = Fmt(active);
             IdleTime  = Fmt(idle);
 
+            var (prevFrom, prevTo) = GetPreviousPeriodRange(from, to);
+            var (prevActive, _)    = await _activityRepo.GetTotalsAsync(prevFrom, prevTo);
+
+            ComputeTrendsAndMetrics(active, idle, prevActive, from);
+
             var apps = await _activityRepo.GetTopAppsAsync(from, to);
             TopApp = apps.FirstOrDefault()?.DisplayName ?? "—";
 
@@ -203,6 +226,85 @@ public sealed class DashboardViewModel : BaseViewModel
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private (DateTime prevFrom, DateTime prevTo) GetPreviousPeriodRange(DateTime currentFrom, DateTime currentTo)
+    {
+        return _selectedPeriod switch
+        {
+            TimePeriod.Today => (currentFrom.AddDays(-1), currentFrom),
+            TimePeriod.Week  => (currentFrom.AddDays(-7), currentFrom),
+            TimePeriod.Month => (currentFrom.AddMonths(-1), currentFrom),
+            _                => (currentFrom.AddDays(-1), currentFrom)
+        };
+    }
+
+    private void ComputeTrendsAndMetrics(long active, long idle, long prevActive, DateTime from)
+    {
+        long totalSpan = active + idle;
+        if (totalSpan > 0 && idle > 0)
+        {
+            double idlePct = (double)idle / totalSpan * 100.0;
+            IdleRatioText = $"{idlePct:F0}% от общего времени";
+            HasIdleRatio = true;
+        }
+        else
+        {
+            HasIdleRatio = false;
+        }
+
+        if (prevActive == 0 && active == 0)
+        {
+            HasTrend = false;
+        }
+        else if (prevActive == 0)
+        {
+            TrendPercentageText = "+100%";
+            TrendDiffText = SelectedPeriod switch
+            {
+                TimePeriod.Today => "+ " + Fmt(active) + " vs вчера",
+                TimePeriod.Week  => "+ " + Fmt(active) + " vs прошл. нед.",
+                _                => "+ " + Fmt(active) + " vs прошл. мес."
+            };
+            TrendColorHex = "#818CF8";
+            HasTrend = true;
+        }
+        else
+        {
+            long diff = active - prevActive;
+            double pct = (double)diff / prevActive * 100.0;
+            string sign = pct > 0 ? "+" : "";
+            TrendPercentageText = $"{sign}{pct:F0}%";
+            string periodLabel = SelectedPeriod switch
+            {
+                TimePeriod.Today => " vs вчера",
+                TimePeriod.Week  => " vs прошл. нед.",
+                _                => " vs прошл. мес."
+            };
+            TrendDiffText = (diff >= 0 ? "+" : "-") + Fmt(Math.Abs(diff)) + periodLabel;
+            TrendColorHex = pct > 0 ? "#818CF8" : (pct < 0 ? "#34D399" : "#9CA3AF");
+            HasTrend = true;
+        }
+
+        var now = DateTime.Now;
+        if (SelectedPeriod == TimePeriod.Week)
+        {
+            int daysElapsed = (int)now.DayOfWeek == 0 ? 7 : (int)now.DayOfWeek;
+            long avg = active / Math.Max(1, daysElapsed);
+            SubMetricText = $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)";
+            HasSubMetric = true;
+        }
+        else if (SelectedPeriod == TimePeriod.Month)
+        {
+            int daysElapsed = Math.Max(1, now.Day);
+            long avg = active / daysElapsed;
+            SubMetricText = $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)";
+            HasSubMetric = true;
+        }
+        else
+        {
+            HasSubMetric = false;
         }
     }
 
