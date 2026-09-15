@@ -68,7 +68,7 @@ public sealed class ApplicationRepository
         "pubg.exe", "tslgame.exe", "fortniteclient-win64-shipping.exe", "rocketleague.exe",
         "rust.exe", "rustclient.exe", "worldoftanks.exe", "wot.exe", "war_thunder.exe", "aces.exe",
         "fifa.exe", "fc24.exe", "fc25.exe", "baldursgate3.exe", "bg3.exe", "bg3_dx11.exe",
-        "eldenring.exe", "sekiro.exe", "dark souls.exe", "fallout4.exe", "skyrimse.exe", "skyrim.exe"
+        "eldenring.exe", "sekiro.exe", "dark souls.exe", "fallout4.exe", "skyrimse.exe", "skyrim.exe", "f1_25.exe", "f1_24.exe",
     };
 
     private static bool IsKnownGame(string processName)

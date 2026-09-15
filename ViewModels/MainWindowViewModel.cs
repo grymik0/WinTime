@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 
 namespace WinTime.ViewModels;
 
@@ -12,6 +12,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private readonly DashboardViewModel    _dashboard;
     private readonly ProcessesViewModel    _processes;
     private readonly ApplicationsViewModel _applications;
+    private readonly ProfileViewModel     _profile;
     private readonly SettingsViewModel     _settings;
 
     private object? _currentView;
@@ -37,6 +38,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateDashboardCommand    { get; }
     public ICommand NavigateProcessesCommand    { get; }
     public ICommand NavigateApplicationsCommand { get; }
+    public ICommand NavigateProfileCommand      { get; }
     public ICommand NavigateSettingsCommand     { get; }
     public ICommand ToggleTrackingCommand       { get; }
 
@@ -46,11 +48,13 @@ public sealed class MainWindowViewModel : BaseViewModel
         DashboardViewModel    dashboard,
         ProcessesViewModel    processes,
         ApplicationsViewModel applications,
+        ProfileViewModel      profile,
         SettingsViewModel     settings)
     {
         _dashboard    = dashboard;
         _processes    = processes;
         _applications = applications;
+        _profile      = profile;
         _settings     = settings;
 
         NavigateDashboardCommand = new RelayCommand(() =>
@@ -69,6 +73,12 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             CurrentView = _applications;
             _ = _applications.LoadAsync();
+        });
+
+        NavigateProfileCommand = new RelayCommand(() =>
+        {
+            CurrentView = _profile;
+            _ = _profile.LoadAsync();
         });
 
         NavigateSettingsCommand = new RelayCommand(() =>

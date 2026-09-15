@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using WinTime.Models;
 
 namespace WinTime.Data;
@@ -264,6 +264,42 @@ public sealed class ActivityRepository
         long clicks = row?.Clicks != null ? (long)row.Clicks : 0L;
         double dist = row?.Distance != null ? (double)row.Distance : 0.0;
         return (clicks, dist);
+    }
+
+    public async Task<(long LifetimeActiveSeconds, long MaxDaySeconds, int TotalActiveDays, long TotalClicks, double TotalDistanceMeters)> GetLifetimeStatsAsync()
+    {
+        var row = await _db.Connection.QueryFirstOrDefaultAsync<dynamic>(@"
+            SELECT 
+                SUM(s.DurationSeconds) AS TotalActive
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.IsIdle = 0 AND a.IsBlacklisted = 0");
+
+        var dayRows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT date(s.StartTime) AS DayDate, SUM(s.DurationSeconds) AS DayTotal
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.IsIdle = 0 AND a.IsBlacklisted = 0
+            GROUP BY DayDate");
+
+        var mouseRow = await _db.Connection.QueryFirstOrDefaultAsync<dynamic>(@"
+            SELECT SUM(MouseClicks) AS Clicks, SUM(DistanceMeters) AS Dist FROM DailyMetrics");
+
+        long lifetimeActive = row?.TotalActive != null ? (long)row.TotalActive : 0L;
+        long maxDay = 0;
+        int activeDays = 0;
+
+        foreach (var dr in dayRows)
+        {
+            activeDays++;
+            long dt = dr.DayTotal != null ? (long)dr.DayTotal : 0L;
+            if (dt > maxDay) maxDay = dt;
+        }
+
+        long totalClicks = mouseRow?.Clicks != null ? (long)mouseRow.Clicks : 0L;
+        double totalDist = mouseRow?.Dist != null ? (double)mouseRow.Dist : 0.0;
+
+        return (lifetimeActive, maxDay, activeDays, totalClicks, totalDist);
     }
 
     // Helpers

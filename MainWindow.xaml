@@ -24,6 +24,9 @@
         <DataTemplate DataType="{x:Type vm:ApplicationsViewModel}">
             <views:ApplicationsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
+            <views:ProfileView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
             <views:SettingsView />
         </DataTemplate>
@@ -102,6 +105,10 @@
                     <Button Content="🗂   Приложения"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateApplicationsCommand}"
+                            Margin="0 2" />
+                    <Button Content="🏆   Профиль"
+                            Style="{StaticResource NavBtn}"
+                            Command="{Binding NavigateProfileCommand}"
                             Margin="0 2" />
                     <Button Content="⚙   Настройки"
                             Style="{StaticResource NavBtn}"

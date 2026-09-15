@@ -1,4 +1,4 @@
-﻿using WinTime.Core;
+using WinTime.Core;
 using WinTime.Data;
 using WinTime.Services;
 using WinTime.ViewModels;
@@ -25,6 +25,7 @@ internal static class AppServices
     public static DashboardViewModel      DashboardVm     { get; private set; } = null!;
     public static ProcessesViewModel      ProcessesVm     { get; private set; } = null!;
     public static ApplicationsViewModel   ApplicationsVm  { get; private set; } = null!;
+    public static ProfileViewModel        ProfileVm       { get; private set; } = null!;
     public static SettingsViewModel       SettingsVm      { get; private set; } = null!;
     public static MainWindowViewModel     MainWindowVm    { get; private set; } = null!;
 
@@ -49,8 +50,9 @@ internal static class AppServices
         DashboardVm    = new DashboardViewModel(ActivityRepo, IconService, Tracker);
         ProcessesVm    = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker);
         ApplicationsVm = new ApplicationsViewModel(AppRepo, ActivityRepo);
+        ProfileVm      = new ProfileViewModel(ActivityRepo, Tracker);
         SettingsVm     = new SettingsViewModel(Settings, ActivityRepo, ExportService);
-        MainWindowVm   = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, SettingsVm);
+        MainWindowVm   = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, ProfileVm, SettingsVm);
     }
 
     public static async Task ShutdownAsync()
