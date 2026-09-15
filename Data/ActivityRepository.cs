@@ -93,6 +93,34 @@ public sealed class ActivityRepository
         }).ToList();
     }
 
+    /// <summary>Получает статистику активности по играм за период.</summary>
+    public async Task<List<AppStatItem>> GetGamesActivityAsync(DateTime from, DateTime to)
+    {
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT
+                a.Id AS AppId,
+                a.ProcessName,
+                COALESCE(a.DisplayName, a.ProcessName) AS DisplayName,
+                a.IconBlob,
+                SUM(s.DurationSeconds) AS TotalSeconds
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.StartTime >= @From AND s.StartTime < @To
+              AND s.IsIdle = 0 AND a.IsBlacklisted = 0
+              AND a.Category = 'Игры'
+            GROUP BY a.Id
+            ORDER BY TotalSeconds DESC",
+            new { From = Fmt(from), To = Fmt(to) });
+
+        return rows.Select(r => new AppStatItem
+        {
+            AppId        = (int)r.AppId,
+            ProcessName  = (string)r.ProcessName,
+            DisplayName  = (string)r.DisplayName,
+            TotalSeconds = (long)r.TotalSeconds
+        }).ToList();
+    }
+
     /// <summary>Топ заголовков окон/вкладок для конкретного приложения за период.</summary>
     public async Task<List<(string Title, long Seconds)>> GetWindowTitlesForAppAsync(int appId, DateTime from, DateTime to, int limit = 50)
     {

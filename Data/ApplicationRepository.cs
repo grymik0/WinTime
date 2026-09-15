@@ -41,21 +41,40 @@ public sealed class ApplicationRepository
 
         // Первый раз — создаём запись, DisplayName = имя без расширения
         var displayName = Path.GetFileNameWithoutExtension(processName);
+        var category = IsKnownGame(processName) ? "Игры" : "Без категории";
         var id = await _db.Connection.ExecuteScalarAsync<int>(@"
-            INSERT INTO Applications (ProcessName, DisplayName)
-            VALUES (@ProcessName, @DisplayName)
+            INSERT INTO Applications (ProcessName, DisplayName, Category)
+            VALUES (@ProcessName, @DisplayName, @Category)
             ON CONFLICT(ProcessName) DO UPDATE SET ProcessName = excluded.ProcessName;
             SELECT Id FROM Applications WHERE ProcessName = @ProcessName;",
-            new { ProcessName = processName, DisplayName = displayName });
+            new { ProcessName = processName, DisplayName = displayName, Category = category });
 
         var model = new AppModel
         {
             Id          = id,
             ProcessName = processName,
-            DisplayName = displayName
+            DisplayName = displayName,
+            Category    = category
         };
         _cache[processName] = model;
         return model;
+    }
+
+    private static readonly HashSet<string> KnownGameProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "csgo.exe", "cs2.exe", "dota2.exe", "dota.exe", "league of legends.exe", "valorant.exe", "valorant-win64-shipping.exe",
+        "gta5.exe", "rdr2.exe", "cyberpunk2077.exe", "witcher3.exe", "minecraft.exe", "javaw.exe",
+        "genshinimpact.exe", "starrail.exe", "zenlesszonezero.exe", "overwatch.exe", "apex.exe",
+        "pubg.exe", "tslgame.exe", "fortniteclient-win64-shipping.exe", "rocketleague.exe",
+        "rust.exe", "rustclient.exe", "worldoftanks.exe", "wot.exe", "war_thunder.exe", "aces.exe",
+        "fifa.exe", "fc24.exe", "fc25.exe", "baldursgate3.exe", "bg3.exe", "bg3_dx11.exe",
+        "eldenring.exe", "sekiro.exe", "dark souls.exe", "fallout4.exe", "skyrimse.exe", "skyrim.exe"
+    };
+
+    private static bool IsKnownGame(string processName)
+    {
+        var exe = Path.GetFileName(processName);
+        return KnownGameProcesses.Contains(exe);
     }
 
     // ── Read ─────────────────────────────────────────────────────────────────
