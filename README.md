@@ -10,7 +10,6 @@
 
   <br/>
 
-  <img src="assets/preview.jpg" alt="WinTime Dashboard" width="800" />
 </div>
 
 ---
