@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Threading;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
@@ -19,10 +19,11 @@ namespace WinTime;
 /// </summary>
 public partial class App : Application
 {
-    private TaskbarIcon?  _trayIcon;
-    private MainWindow?   _mainWindow;
-    private bool          _isExiting;
-    private Mutex?        _singleInstanceMutex;
+    private TaskbarIcon?         _trayIcon;
+    private MainWindow?          _mainWindow;
+    private DesktopWidgetWindow? _widgetWindow;
+    private bool                 _isExiting;
+    private Mutex?               _singleInstanceMutex;
 
     public bool IsExiting => _isExiting;
 
@@ -84,8 +85,40 @@ public partial class App : Application
 
         SetupTrayIcon();
 
+        // Инициализация виджета
+        InitDesktopWidget(settings);
+
         _mainWindow = new MainWindow();
         _mainWindow.Show();
+    }
+
+    private void InitDesktopWidget(SettingsService settings)
+    {
+        _widgetWindow = new DesktopWidgetWindow(AppServices.DesktopWidgetVm, settings);
+        _ = AppServices.DesktopWidgetVm.InitializeAsync();
+
+        if (settings.ShowWidget)
+        {
+            _widgetWindow.Show();
+        }
+
+        AppServices.SettingsVm.WidgetVisibilityChanged += (_, isVisible) =>
+        {
+            if (isVisible)
+            {
+                _widgetWindow.Show();
+                _widgetWindow.Activate();
+            }
+            else
+            {
+                _widgetWindow.Hide();
+            }
+        };
+
+        AppServices.SettingsVm.WidgetSettingsChanged += (_, _) =>
+        {
+            AppServices.DesktopWidgetVm.NotifySettingsChanged();
+        };
     }
 
     // Exit
@@ -93,6 +126,7 @@ public partial class App : Application
     protected override async void OnExit(ExitEventArgs e)
     {
         _isExiting = true;
+        _widgetWindow?.Close();
         _trayIcon?.Dispose();
 
         await AppServices.ShutdownAsync();
@@ -139,11 +173,18 @@ public partial class App : Application
             AppServices.MainWindowVm.NavigateSettingsCommand.Execute(null);
         };
 
+        var itemWidget = new System.Windows.Controls.MenuItem { Header = "🪟  Виджет на рабочем столе" };
+        itemWidget.Click += (_, _) =>
+        {
+            AppServices.SettingsVm.ShowWidget = !AppServices.SettingsVm.ShowWidget;
+        };
+
         var itemExit = new System.Windows.Controls.MenuItem { Header = "✕  Выход" };
         itemExit.Click += (_, _) => ExitApp();
 
         menu.Items.Add(itemOpen);
         menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(itemWidget);
         menu.Items.Add(itemPause);
         menu.Items.Add(itemSettings);
         menu.Items.Add(new System.Windows.Controls.Separator());

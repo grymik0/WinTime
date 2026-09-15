@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -46,6 +46,48 @@ public sealed class SettingsService
         set { _s.LaunchOnStartup = value; Save(); }
     }
 
+    public bool ShowWidget
+    {
+        get => _s.ShowWidget;
+        set { _s.ShowWidget = value; Save(); }
+    }
+
+    public double WidgetLeft
+    {
+        get => _s.WidgetLeft;
+        set { _s.WidgetLeft = value; Save(); }
+    }
+
+    public double WidgetTop
+    {
+        get => _s.WidgetTop;
+        set { _s.WidgetTop = value; Save(); }
+    }
+
+    public bool WidgetShowApp
+    {
+        get => _s.WidgetShowApp;
+        set { _s.WidgetShowApp = value; Save(); }
+    }
+
+    public bool WidgetShowTime
+    {
+        get => _s.WidgetShowTime;
+        set { _s.WidgetShowTime = value; Save(); }
+    }
+
+    public bool WidgetShowLevel
+    {
+        get => _s.WidgetShowLevel;
+        set { _s.WidgetShowLevel = value; Save(); }
+    }
+
+    public bool WidgetShowMouse
+    {
+        get => _s.WidgetShowMouse;
+        set { _s.WidgetShowMouse = value; Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -81,6 +123,13 @@ public sealed class SettingsService
         public string? DatabasePath { get; set; }
         public int AfkThresholdSeconds { get; set; } = 120;
         public bool LaunchOnStartup { get; set; }
+        public bool ShowWidget { get; set; } = false;
+        public double WidgetLeft { get; set; } = -1;
+        public double WidgetTop { get; set; } = -1;
+        public bool WidgetShowApp { get; set; } = true;
+        public bool WidgetShowTime { get; set; } = true;
+        public bool WidgetShowLevel { get; set; } = true;
+        public bool WidgetShowMouse { get; set; } = true;
     }
 }
 
