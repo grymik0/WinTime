@@ -13,6 +13,7 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
 
     private string _currentAppName   = "Ожидание...";
     private string _todayTimeText    = "0с";
+    private string _sessionTimeText  = "0с";
     private string _userLevelText    = "Ур. 1";
     private string _xpProgressText   = "0 / 1000 XP";
     private double _xpProgress       = 0;
@@ -20,6 +21,7 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
 
     public string CurrentAppName   { get => _currentAppName;   private set => SetProperty(ref _currentAppName,   value); }
     public string TodayTimeText    { get => _todayTimeText;    private set => SetProperty(ref _todayTimeText,    value); }
+    public string SessionTimeText  { get => _sessionTimeText;  private set => SetProperty(ref _sessionTimeText,  value); }
     public string UserLevelText    { get => _userLevelText;    private set => SetProperty(ref _userLevelText,    value); }
     public string XpProgressText   { get => _xpProgressText;   private set => SetProperty(ref _xpProgressText,   value); }
     public double XpProgress       { get => _xpProgress;       private set => SetProperty(ref _xpProgress,       value); }
@@ -78,6 +80,64 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
         }
     }
 
+    public bool ShowSession
+    {
+        get => _settings.WidgetShowSession;
+        set
+        {
+            if (_settings.WidgetShowSession != value)
+            {
+                _settings.WidgetShowSession = value;
+                OnPropertyChanged(nameof(ShowSession));
+            }
+        }
+    }
+
+    public bool IsCompactMode
+    {
+        get => _settings.WidgetCompactMode;
+        set
+        {
+            if (_settings.WidgetCompactMode != value)
+            {
+                _settings.WidgetCompactMode = value;
+                OnPropertyChanged(nameof(IsCompactMode));
+                OnPropertyChanged(nameof(IsNotCompactMode));
+                CompactModeChanged?.Invoke(this, value);
+            }
+        }
+    }
+
+    public bool IsNotCompactMode => !IsCompactMode;
+
+    public bool IsClickThrough
+    {
+        get => _settings.WidgetClickThrough;
+        set
+        {
+            if (_settings.WidgetClickThrough != value)
+            {
+                _settings.WidgetClickThrough = value;
+                OnPropertyChanged(nameof(IsClickThrough));
+                ClickThroughChanged?.Invoke(this, value);
+            }
+        }
+    }
+
+    public bool IsTopmost
+    {
+        get => _settings.WidgetTopmost;
+        set
+        {
+            if (_settings.WidgetTopmost != value)
+            {
+                _settings.WidgetTopmost = value;
+                OnPropertyChanged(nameof(IsTopmost));
+                TopmostChanged?.Invoke(this, value);
+            }
+        }
+    }
+
     public bool IsWidgetEnabled
     {
         get => _settings.ShowWidget;
@@ -114,12 +174,17 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
 
     public event EventHandler<bool>? WidgetVisibilityChanged;
     public event EventHandler<double>? WidgetOpacityChanged;
+    public event EventHandler<bool>? CompactModeChanged;
+    public event EventHandler<bool>? ClickThroughChanged;
+    public event EventHandler<bool>? TopmostChanged;
     public event EventHandler? ResetPositionRequested;
 
-    public ICommand ToggleWidgetCommand { get; }
+    public ICommand ToggleWidgetCommand  { get; }
     public ICommand ResetPositionCommand { get; }
+    public ICommand ToggleCompactCommand { get; }
 
     private long _todayActiveSeconds;
+    private long _continuousSessionSeconds;
     private int  _dbRefreshCounter;
 
     public DesktopWidgetViewModel(
@@ -133,6 +198,7 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
 
         ToggleWidgetCommand  = new RelayCommand(() => IsWidgetEnabled = !IsWidgetEnabled);
         ResetPositionCommand = new RelayCommand(() => ResetPositionRequested?.Invoke(this, EventArgs.Empty));
+        ToggleCompactCommand = new RelayCommand(() => IsCompactMode = !IsCompactMode);
 
         _tracker.StateChanged += OnTrackerStateChanged;
     }
@@ -168,11 +234,15 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
             if (!e.IsIdle)
             {
                 _todayActiveSeconds++;
+                _continuousSessionSeconds++;
                 TodayTimeText = Fmt(_todayActiveSeconds);
+                SessionTimeText = Fmt(_continuousSessionSeconds);
                 CurrentAppName = string.IsNullOrWhiteSpace(e.AppName) ? "Активность" : e.AppName;
             }
             else
             {
+                _continuousSessionSeconds = 0;
+                SessionTimeText = "0с";
                 CurrentAppName = "💤 AFK / Бездействие";
             }
 

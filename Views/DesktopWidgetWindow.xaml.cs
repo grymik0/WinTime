@@ -21,6 +21,8 @@ public partial class DesktopWidgetWindow : Window
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         Opacity = _settings.WidgetOpacity;
+        Topmost = _settings.WidgetTopmost;
+        UpdateClickThrough(_settings.WidgetClickThrough);
 
         // Восстанавливаем позицию если сохранена, иначе в правый верхний угол
         if (_settings.WidgetLeft >= 0 && _settings.WidgetTop >= 0)
@@ -46,6 +48,33 @@ public partial class DesktopWidgetWindow : Window
     public void UpdateOpacity()
     {
         Opacity = _settings.WidgetOpacity;
+    }
+
+    public void UpdateTopmost(bool topmost)
+    {
+        Topmost = topmost;
+    }
+
+    public void UpdateClickThrough(bool enable)
+    {
+        try
+        {
+            var helper = new System.Windows.Interop.WindowInteropHelper(this);
+            var hwnd = helper.Handle;
+            if (hwnd == IntPtr.Zero) return;
+
+            long exStyle = Core.NativeMethods.GetWindowLongPtr(hwnd, Core.NativeMethods.GWL_EXSTYLE);
+            if (enable)
+            {
+                exStyle |= Core.NativeMethods.WS_EX_TRANSPARENT;
+            }
+            else
+            {
+                exStyle &= ~Core.NativeMethods.WS_EX_TRANSPARENT;
+            }
+            Core.NativeMethods.SetWindowLongPtr(hwnd, Core.NativeMethods.GWL_EXSTYLE, new IntPtr(exStyle));
+        }
+        catch { }
     }
 
     private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

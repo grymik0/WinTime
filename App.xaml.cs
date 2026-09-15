@@ -120,6 +120,16 @@ public partial class App : Application
             _widgetWindow.UpdateOpacity();
         };
 
+        AppServices.DesktopWidgetVm.ClickThroughChanged += (_, enable) =>
+        {
+            _widgetWindow.UpdateClickThrough(enable);
+        };
+
+        AppServices.DesktopWidgetVm.TopmostChanged += (_, topmost) =>
+        {
+            _widgetWindow.UpdateTopmost(topmost);
+        };
+
         AppServices.DesktopWidgetVm.ResetPositionRequested += (_, _) =>
         {
             _widgetWindow.ResetPosition();
@@ -159,7 +169,7 @@ public partial class App : Application
         var itemOpen = new System.Windows.Controls.MenuItem { Header = "📊  Открыть статистику" };
         itemOpen.Click += (_, _) => ShowMainWindow();
 
-        var itemWidget = new System.Windows.Controls.MenuItem { Header = "🪟  Виджет на рабочем столе" };
+        var itemWidget = new System.Windows.Controls.MenuItem { Header = "📌  Виджет на рабочем столе" };
         itemWidget.Click += (_, _) =>
         {
             AppServices.DesktopWidgetVm.IsWidgetEnabled = !AppServices.DesktopWidgetVm.IsWidgetEnabled;

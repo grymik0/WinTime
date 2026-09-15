@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace WinTime.Core;
@@ -42,7 +42,9 @@ internal static class NativeMethods
     internal static extern bool IsWindowVisible(IntPtr hWnd);
 
     internal const int GWL_EXSTYLE = -20;
-    internal const long WS_EX_TOOLWINDOW = 0x00000080L;
+    internal const long WS_EX_TOOLWINDOW  = 0x00000080L;
+    internal const long WS_EX_TRANSPARENT = 0x00000020L;
+    internal const long WS_EX_LAYERED     = 0x00080000L;
 
     [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
     internal static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
@@ -55,6 +57,19 @@ internal static class NativeMethods
         if (IntPtr.Size == 8)
             return (long)GetWindowLongPtr64(hWnd, nIndex);
         return GetWindowLong32(hWnd, nIndex);
+    }
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
+    internal static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
+    internal static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+
+    internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+    {
+        if (IntPtr.Size == 8)
+            return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+        return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
     }
 
     // Process info

@@ -94,6 +94,30 @@ public sealed class SettingsService
         set { _s.WidgetOpacity = Math.Clamp(value, 0.3, 1.0); Save(); }
     }
 
+    public bool WidgetClickThrough
+    {
+        get => _s.WidgetClickThrough;
+        set { _s.WidgetClickThrough = value; Save(); }
+    }
+
+    public bool WidgetTopmost
+    {
+        get => _s.WidgetTopmost;
+        set { _s.WidgetTopmost = value; Save(); }
+    }
+
+    public bool WidgetShowSession
+    {
+        get => _s.WidgetShowSession;
+        set { _s.WidgetShowSession = value; Save(); }
+    }
+
+    public bool WidgetCompactMode
+    {
+        get => _s.WidgetCompactMode;
+        set { _s.WidgetCompactMode = value; Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -137,6 +161,10 @@ public sealed class SettingsService
         public bool WidgetShowLevel { get; set; } = true;
         public bool WidgetShowMouse { get; set; } = true;
         public double WidgetOpacity { get; set; } = 0.95;
+        public bool WidgetClickThrough { get; set; } = false;
+        public bool WidgetTopmost { get; set; } = true;
+        public bool WidgetShowSession { get; set; } = true;
+        public bool WidgetCompactMode { get; set; } = false;
     }
 }
 

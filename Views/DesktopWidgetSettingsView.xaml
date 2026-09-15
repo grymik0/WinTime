@@ -17,7 +17,7 @@
             <Setter Property="Background"      Value="#252535" />
             <Setter Property="Foreground"      Value="#E5E7EB" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding"         Value="18 10" />
+            <Setter Property="Padding"         Value="16 9" />
             <Setter Property="FontSize"        Value="13" />
             <Setter Property="Cursor"          Value="Hand" />
             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -57,7 +57,7 @@
             <!-- Основной контент: 2 колонки (Слева настройки, справа интерактивный предпросмотр) -->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="340" MaxWidth="440" />
+                    <ColumnDefinition Width="*" MinWidth="340" MaxWidth="460" />
                     <ColumnDefinition Width="40" />
                     <ColumnDefinition Width="300" />
                 </Grid.ColumnDefinitions>
@@ -65,17 +65,16 @@
                 <!-- Левая колонка: Опции и переключатели -->
                 <StackPanel Grid.Column="0">
 
-                    <!-- Статус и главная кнопка -->
+                    <!-- Статус и главные кнопки управления -->
                     <Border Background="#1E1E2E" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
                         <StackPanel>
                             <Grid Margin="0 0 0 12">
                                 <StackPanel>
                                     <TextBlock Text="Состояние виджета" FontSize="14" FontWeight="SemiBold" Foreground="White" />
-                                    <TextBlock Text="Отображение поверх окон рабочего стола" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
+                                    <TextBlock Text="Отображение на экране Windows" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
                                 </StackPanel>
                                 <Border HorizontalAlignment="Right" VerticalAlignment="Center"
-                                        CornerRadius="6" Padding="10 4"
-                                        Background="{Binding IsWidgetEnabled, Converter={x:Null}}">
+                                        CornerRadius="6" Padding="10 4">
                                     <TextBlock FontSize="12" FontWeight="Bold">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
@@ -109,12 +108,54 @@
                                     <TextBlock Text="{Binding WidgetToggleLabel}" />
                                 </Button>
 
+                                <Button Command="{Binding ToggleCompactCommand}"
+                                        Style="{StaticResource ActionButton}"
+                                        Margin="0 0 8 8">
+                                    <TextBlock>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="📐  Компактный вид" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCompactMode}" Value="True">
+                                                        <Setter Property="Text" Value="📖  Развёрнутый вид" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Button>
+
                                 <Button Content="📍  Сбросить позицию"
                                         Command="{Binding ResetPositionCommand}"
                                         Style="{StaticResource ActionButton}"
                                         Margin="0 0 0 8"
                                         ToolTip="Вернуть виджет в правый верхний угол экрана" />
                             </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Поведение и взаимодействие (Сквозные клики и слой) -->
+                    <TextBlock Text="ПОВЕДЕНИЕ И ВЗАИМОДЕЙСТВИЕ" Style="{StaticResource SettingSectionTitle}" />
+
+                    <Border Background="#1E1E2E" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
+                        <StackPanel>
+                            <!-- Сквозные клики (Click-through) -->
+                            <CheckBox IsChecked="{Binding IsClickThrough}" Margin="0 0 0 14" Cursor="Hand">
+                                <StackPanel Margin="6 0 0 0">
+                                    <TextBlock Text="🔒  Пропускать клики сквозь виджет (Click-through)" FontSize="13" Foreground="White" FontWeight="Medium" />
+                                    <TextBlock Text="Курсор проходит насквозь в окна позади него, не мешая работе и играм" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                </StackPanel>
+                            </CheckBox>
+
+                            <Border Height="1" Background="#252535" Margin="0 0 0 14" />
+
+                            <!-- Слой (Поверх всех окон) -->
+                            <CheckBox IsChecked="{Binding IsTopmost}" Cursor="Hand">
+                                <StackPanel Margin="6 0 0 0">
+                                    <TextBlock Text="📌  Всегда поверх всех окон" FontSize="13" Foreground="White" FontWeight="Medium" />
+                                    <TextBlock Text="Если выключить — виджет останется на рабочем столе и скроется под окнами" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                </StackPanel>
+                            </CheckBox>
                         </StackPanel>
                     </Border>
 
@@ -136,6 +177,16 @@
                                 <StackPanel Margin="6 0 0 0">
                                     <TextBlock Text="Экранное время за сегодня" FontSize="13" Foreground="White" FontWeight="Medium" />
                                     <TextBlock Text="Общее время активного использования компьютера" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                </StackPanel>
+                            </CheckBox>
+
+                            <Border Height="1" Background="#252535" Margin="0 0 0 14" />
+
+                            <!-- Новое: Таймер непрерывной сессии -->
+                            <CheckBox IsChecked="{Binding ShowSession}" Margin="0 0 0 14" Cursor="Hand">
+                                <StackPanel Margin="6 0 0 0">
+                                    <TextBlock Text="Таймер непрерывной текущей сессии" FontSize="13" Foreground="White" FontWeight="Medium" />
+                                    <TextBlock Text="Время непрерывной работы без отдыха (сбрасывается при уходе в AFK)" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
 
@@ -203,49 +254,75 @@
                                 </Border.Effect>
 
                                 <StackPanel>
-                                    <!-- Шапка -->
-                                    <Grid Margin="0 0 0 8">
+                                    <!-- 1. Компактный режим в предпросмотре -->
+                                    <Grid Visibility="{Binding IsCompactMode, Converter={StaticResource BoolToVis}}">
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <TextBlock Text="⏱" FontSize="13" VerticalAlignment="Center" Margin="0 0 6 0" />
-                                            <TextBlock Text="WinTime" FontSize="12" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="1" Text="✕" FontSize="11" Foreground="#6B7280" VerticalAlignment="Center" />
+
+                                        <TextBlock Grid.Column="0" Text="⏱" FontSize="13" VerticalAlignment="Center" Margin="0 0 6 0" />
+                                        <TextBlock Grid.Column="1" Text="{Binding TodayTimeText}" FontSize="13" FontWeight="Bold" Foreground="#10B981" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2" Text="▾" FontSize="13" Foreground="#9CA3AF" Margin="4 0" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="3" Text="✕" FontSize="11" Foreground="#6B7280" VerticalAlignment="Center" />
                                     </Grid>
 
-                                    <!-- Блок 1: Активное приложение -->
-                                    <StackPanel Visibility="{Binding ShowApp, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                                        <TextBlock Text="В фокусе" FontSize="9" Foreground="#6B7280" />
-                                        <TextBlock Text="{Binding CurrentAppName}" FontSize="13" FontWeight="SemiBold" Foreground="#6366F1" TextTrimming="CharacterEllipsis" Margin="0 1 0 0" />
-                                    </StackPanel>
-
-                                    <!-- Блок 2: Время за сегодня -->
-                                    <StackPanel Visibility="{Binding ShowTime, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                                        <TextBlock Text="Сегодня за ПК" FontSize="9" Foreground="#6B7280" />
-                                        <TextBlock Text="{Binding TodayTimeText}" FontSize="15" FontWeight="Bold" Foreground="#10B981" Margin="0 1 0 0" />
-                                    </StackPanel>
-
-                                    <!-- Блок 3: Уровень и XP -->
-                                    <StackPanel Visibility="{Binding ShowLevel, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                                        <Grid Margin="0 0 0 2">
-                                            <TextBlock Text="{Binding UserLevelText}" FontSize="11" FontWeight="Bold" Foreground="#F59E0B" />
-                                            <TextBlock Text="{Binding XpProgressText}" FontSize="9" Foreground="#9CA3AF" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                    <!-- 2. Развёрнутый режим в предпросмотре -->
+                                    <StackPanel Visibility="{Binding IsNotCompactMode, Converter={StaticResource BoolToVis}}">
+                                        <!-- Шапка -->
+                                        <Grid Margin="0 0 0 8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="⏱" FontSize="13" VerticalAlignment="Center" Margin="0 0 6 0" />
+                                                <TextBlock Text="WinTime" FontSize="12" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="▴" FontSize="12" Foreground="#9CA3AF" Margin="0 0 6 0" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Text="✕" FontSize="11" Foreground="#6B7280" VerticalAlignment="Center" />
                                         </Grid>
-                                        <ProgressBar Height="4" Value="{Binding XpProgress, Mode=OneWay}" Maximum="100"
-                                                     Background="#252535" Foreground="#F59E0B" BorderThickness="0">
-                                            <ProgressBar.Clip>
-                                                <RectangleGeometry Rect="0,0,1000,4" RadiusX="2" RadiusY="2" />
-                                            </ProgressBar.Clip>
-                                        </ProgressBar>
-                                    </StackPanel>
 
-                                    <!-- Блок 4: Мышь -->
-                                    <StackPanel Visibility="{Binding ShowMouse, Converter={StaticResource BoolToVis}}">
-                                        <TextBlock Text="Активность мыши" FontSize="9" Foreground="#6B7280" />
-                                        <TextBlock Text="{Binding MouseSummaryText}" FontSize="12" FontWeight="SemiBold" Foreground="#818CF8" Margin="0 1 0 0" />
+                                        <!-- Блок 1: Активное приложение -->
+                                        <StackPanel Visibility="{Binding ShowApp, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
+                                            <TextBlock Text="В фокусе" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{Binding CurrentAppName}" FontSize="13" FontWeight="SemiBold" Foreground="#6366F1" TextTrimming="CharacterEllipsis" Margin="0 1 0 0" />
+                                        </StackPanel>
+
+                                        <!-- Блок 2: Время за сегодня -->
+                                        <StackPanel Visibility="{Binding ShowTime, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
+                                            <TextBlock Text="Сегодня за ПК" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{Binding TodayTimeText}" FontSize="15" FontWeight="Bold" Foreground="#10B981" Margin="0 1 0 0" />
+                                        </StackPanel>
+
+                                        <!-- Блок 3: Текущая сессия -->
+                                        <StackPanel Visibility="{Binding ShowSession, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
+                                            <TextBlock Text="Текущая сессия" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{Binding SessionTimeText}" FontSize="13" FontWeight="SemiBold" Foreground="#38BDF8" Margin="0 1 0 0" />
+                                        </StackPanel>
+
+                                        <!-- Блок 4: Уровень и XP -->
+                                        <StackPanel Visibility="{Binding ShowLevel, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
+                                            <Grid Margin="0 0 0 2">
+                                                <TextBlock Text="{Binding UserLevelText}" FontSize="11" FontWeight="Bold" Foreground="#F59E0B" />
+                                                <TextBlock Text="{Binding XpProgressText}" FontSize="9" Foreground="#9CA3AF" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                            </Grid>
+                                            <ProgressBar Height="4" Value="{Binding XpProgress, Mode=OneWay}" Maximum="100"
+                                                         Background="#252535" Foreground="#F59E0B" BorderThickness="0">
+                                                <ProgressBar.Clip>
+                                                    <RectangleGeometry Rect="0,0,1000,4" RadiusX="2" RadiusY="2" />
+                                                </ProgressBar.Clip>
+                                            </ProgressBar>
+                                        </StackPanel>
+
+                                        <!-- Блок 5: Мышь -->
+                                        <StackPanel Visibility="{Binding ShowMouse, Converter={StaticResource BoolToVis}}">
+                                            <TextBlock Text="Активность мыши" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{Binding MouseSummaryText}" FontSize="12" FontWeight="SemiBold" Foreground="#818CF8" Margin="0 1 0 0" />
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
