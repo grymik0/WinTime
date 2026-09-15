@@ -1,4 +1,4 @@
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace WinTime.ViewModels;
 
@@ -32,7 +32,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     /// <summary>Текст кнопки «Пауза / Возобновить» в боковой панели.</summary>
     public string TrackingLabel => _isTracking ? "⏸  Приостановить" : "▶  Возобновить";
 
-    // ── Commands ──────────────────────────────────────────────────────────────
+    // Commands
 
     public ICommand NavigateDashboardCommand    { get; }
     public ICommand NavigateProcessesCommand    { get; }
@@ -40,7 +40,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateSettingsCommand     { get; }
     public ICommand ToggleTrackingCommand       { get; }
 
-    // ── Constructor ───────────────────────────────────────────────────────────
+    // Constructor
 
     public MainWindowViewModel(
         DashboardViewModel    dashboard,

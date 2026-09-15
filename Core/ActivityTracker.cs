@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Text;
 using WinTime.Data;
@@ -27,7 +27,7 @@ public sealed class ActivityTracker : IAsyncDisposable
     private readonly Dictionary<int, int> _uptimeBuffer = [];
     private volatile HashSet<int> _runningAppIds = [];
 
-    // ── Mouse tracking
+    // Mouse tracking
     private Task? _mouseTask;
     private long _pendingClicks;
     private double _pendingDistancePixels;
@@ -35,7 +35,7 @@ public sealed class ActivityTracker : IAsyncDisposable
     private double _totalDistanceMetersToday;
     private readonly object _mouseLock = new();
 
-    // ── Filtry
+    // Filtry
 
     private static readonly HashSet<string> IgnoredClasses = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -49,7 +49,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         "SearchHost", "StartMenuExperienceHost", "TextInputHost", "ApplicationFrameHost", "SystemSettings"
     };
 
-    // ── State
+    // State
 
     private volatile bool _isPaused;
 
@@ -65,7 +65,7 @@ public sealed class ActivityTracker : IAsyncDisposable
     /// <summary>Вызывается при каждом обновлении (раз в секунду) из UI-потока или фонового.</summary>
     public event EventHandler<TrackerStateEventArgs>? StateChanged;
 
-    // ── Constructor
+    // Constructor
 
     public ActivityTracker(
         ApplicationRepository appRepo,
@@ -103,7 +103,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         catch { }
     }
 
-    // ── Lifecycle
+    // Lifecycle
 
     public void Start()
     {
@@ -134,7 +134,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         _cts.Dispose();
     }
 
-    // ── Worker loops
+    // Worker loops
 
     private async Task MouseLoopAsync(CancellationToken ct)
     {
@@ -229,7 +229,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         catch (OperationCanceledException) { }
     }
 
-    // ── Tick processing
+    // Tick processing
 
     private async Task ProcessTickAsync()
     {
@@ -400,7 +400,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         catch { }
     }
 
-    // ── Helpers
+    // Helpers
 
     private static (string name, string path) GetProcessInfo(uint pid)
     {

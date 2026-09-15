@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using Dapper;
 using WinTime.Models;
 
@@ -18,7 +18,7 @@ public sealed class ApplicationRepository
 
     public ApplicationRepository(DatabaseService db) => _db = db;
 
-    // ── Get or Create ────────────────────────────────────────────────────────
+    // Get or Create
 
     /// <summary>
     /// Ищет приложение по ProcessName в кэше и БД.
@@ -77,7 +77,7 @@ public sealed class ApplicationRepository
         return KnownGameProcesses.Contains(exe);
     }
 
-    // ── Read ─────────────────────────────────────────────────────────────────
+    // Read
 
     public async Task<List<AppModel>> GetAllAsync()
     {
@@ -86,7 +86,7 @@ public sealed class ApplicationRepository
         return rows.AsList();
     }
 
-    // ── Update ───────────────────────────────────────────────────────────────
+    // Update
 
     public async Task UpdateDisplayNameAsync(int id, string displayName)
     {
@@ -112,7 +112,7 @@ public sealed class ApplicationRepository
         InvalidateCacheById(id);
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // Helpers
 
     private void InvalidateCacheById(int id)
     {

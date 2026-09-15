@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Threading;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
@@ -26,7 +26,7 @@ public partial class App : Application
 
     public bool IsExiting => _isExiting;
 
-    // ── Startup
+    // Startup
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -88,7 +88,7 @@ public partial class App : Application
         _mainWindow.Show();
     }
 
-    // ── Exit
+    // Exit
 
     protected override async void OnExit(ExitEventArgs e)
     {
@@ -103,7 +103,7 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    // ── Tray
+    // Tray
 
     private void SetupTrayIcon()
     {
@@ -167,7 +167,7 @@ public partial class App : Application
         Shutdown();
     }
 
-    // ── Icon generation
+    // Icon generation
 
     /// <summary>
     /// Загружает иконку трея из встроенного ресурса Assets/icon.ico.

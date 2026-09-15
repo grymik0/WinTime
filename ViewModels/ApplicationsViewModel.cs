@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using WinTime.Data;
 using WinTime.Models;
@@ -39,19 +39,19 @@ public sealed class ApplicationsViewModel : BaseViewModel
         private set => SetProperty(ref _isLoading, value);
     }
 
-    // ── Категории (static, доступны из XAML) ─────────────────────────────────
+    // Категории (static, доступны из XAML)
 
     public static string[] Categories { get; } =
     [
         "Без категории", "Работа", "Отдых", "Учёба", "Игры", "Браузеры", "Разработка", "Связь"
     ];
 
-    // ── Commands ──────────────────────────────────────────────────────────────
+    // Commands
 
     public ICommand SaveRowCommand     { get; }
     public ICommand RefreshCommand     { get; }
 
-    // ── Constructor ───────────────────────────────────────────────────────────
+    // Constructor
 
     public ApplicationsViewModel(ApplicationRepository appRepo, ActivityRepository activityRepo)
     {
@@ -62,7 +62,7 @@ public sealed class ApplicationsViewModel : BaseViewModel
         RefreshCommand  = new RelayCommand(async () => await LoadAsync());
     }
 
-    // ── Load ──────────────────────────────────────────────────────────────────
+    // Load
 
     public async Task LoadAsync()
     {
@@ -75,7 +75,7 @@ public sealed class ApplicationsViewModel : BaseViewModel
         finally { IsLoading = false; }
     }
 
-    // ── Save ──────────────────────────────────────────────────────────────────
+    // Save
 
     private async Task SaveAppAsync(AppModel app)
     {
@@ -88,7 +88,7 @@ public sealed class ApplicationsViewModel : BaseViewModel
         catch { /* тихо */ }
     }
 
-    // ── Filter ────────────────────────────────────────────────────────────────
+    // Filter
 
     private void ApplyFilter()
     {

@@ -1,4 +1,4 @@
-using WinTime.Core;
+﻿using WinTime.Core;
 using WinTime.Data;
 using WinTime.Services;
 using WinTime.ViewModels;
@@ -28,7 +28,7 @@ internal static class AppServices
     public static SettingsViewModel       SettingsVm      { get; private set; } = null!;
     public static MainWindowViewModel     MainWindowVm    { get; private set; } = null!;
 
-    // ── Initialization
+    // Initialization
 
     public static void Initialize(SettingsService settings)
     {

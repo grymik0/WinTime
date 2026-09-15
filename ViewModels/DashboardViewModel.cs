@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -25,7 +25,7 @@ public sealed class DashboardViewModel : BaseViewModel
     private readonly ActivityRepository _activityRepo;
     private readonly IconService        _iconService;
 
-    // ── Bindable Properties
+    // Bindable Properties
 
     private TimePeriod _selectedPeriod = TimePeriod.Today;
     private string _totalTime  = "—";
@@ -120,11 +120,11 @@ public sealed class DashboardViewModel : BaseViewModel
     public string MouseClicksText   { get => _mouseClicksText;   private set => SetProperty(ref _mouseClicksText,   value); }
     public string MouseDistanceText { get => _mouseDistanceText; private set => SetProperty(ref _mouseDistanceText, value); }
 
-    // ── Commands
+    // Commands
 
     public ICommand SetPeriodCommand { get; }
 
-    // ── Colour palette
+    // Colour palette
 
     private static readonly SKColor[] Palette =
     [
@@ -144,7 +144,7 @@ public sealed class DashboardViewModel : BaseViewModel
     private DateTime _currentFrom = DateTime.Today;
     private int  _chartRefreshCounter;
 
-    // ── Constructor
+    // Constructor
 
     public DashboardViewModel(ActivityRepository activityRepo, IconService iconService, ActivityTracker tracker)
     {
@@ -230,7 +230,7 @@ public sealed class DashboardViewModel : BaseViewModel
         catch { }
     }
 
-    // ── Data loading
+    // Data loading
 
     public async Task LoadDataAsync()
     {
@@ -509,7 +509,7 @@ public sealed class DashboardViewModel : BaseViewModel
         }
     }
 
-    // ── Chart builders
+    // Chart builders
 
     private void BuildPieChart(List<AppStatItem> apps, long total)
     {
@@ -604,7 +604,7 @@ public sealed class DashboardViewModel : BaseViewModel
         ];
     }
 
-    // ── Period range
+    // Period range
 
     private (DateTime from, DateTime to, string[] labels) GetPeriodRange()
     {

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -20,7 +20,7 @@ public sealed class SettingsService
 
     private AppSettings _s = new();
 
-    // ── Properties ──────────────────────────────────────────────────────────
+    // Properties
 
     /// <summary>Путь к файлу SQLite. null если пользователь ещё не выбрал.</summary>
     public string? DatabasePath
@@ -46,7 +46,7 @@ public sealed class SettingsService
         set { _s.LaunchOnStartup = value; Save(); }
     }
 
-    // ── Load / Save ─────────────────────────────────────────────────────────
+    // Load / Save
 
     public void Load()
     {
@@ -74,7 +74,7 @@ public sealed class SettingsService
         catch { /* не ломаем приложение из-за настроек */ }
     }
 
-    // ── Internal model ───────────────────────────────────────────────────────
+    // Internal model
 
     private sealed class AppSettings
     {

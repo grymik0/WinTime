@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using WinTime.Models;
 
 namespace WinTime.Data;
@@ -12,7 +12,7 @@ public sealed class ActivityRepository
 
     public ActivityRepository(DatabaseService db) => _db = db;
 
-    // ── Write ─────────────────────────────────────────────────────────────────
+    // Write
 
     /// <summary>
     /// Вставляет список сессий одной транзакцией (30-секундный flush).
@@ -47,7 +47,7 @@ public sealed class ActivityRepository
         }
     }
 
-    // ── Analytics ─────────────────────────────────────────────────────────────
+    // Analytics
 
     /// <summary>Суммарное активное и idle время за период.</summary>
     public async Task<(long Active, long Idle)> GetTotalsAsync(DateTime from, DateTime to)
@@ -266,7 +266,7 @@ public sealed class ActivityRepository
         return (clicks, dist);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // Helpers
 
     private static string Fmt(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss");
 }

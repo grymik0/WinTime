@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -22,7 +22,7 @@ public sealed class ExportService
         _appRepo      = appRepo;
     }
 
-    // ── CSV ───────────────────────────────────────────────────────────────────
+    // CSV
 
     public async Task ExportToCsvAsync(string filePath)
     {
@@ -52,7 +52,7 @@ public sealed class ExportService
         }
     }
 
-    // ── JSON ──────────────────────────────────────────────────────────────────
+    // JSON
 
     public async Task ExportToJsonAsync(string filePath)
     {

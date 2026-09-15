@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using System.IO;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -16,7 +16,7 @@ public sealed class DatabaseService : IDisposable
     public SqliteConnection Connection =>
         _connection ?? throw new InvalidOperationException("DatabaseService не инициализирован.");
 
-    // ── Initialization ───────────────────────────────────────────────────────
+    // Initialization
 
     public void Initialize(string dbPath)
     {
@@ -100,7 +100,7 @@ public sealed class DatabaseService : IDisposable
         _connection = null;
     }
 
-    // ── Dapper TypeHandler: INTEGER ↔ bool ──────────────────────────────────
+    // Dapper TypeHandler: INTEGER ↔ bool
 
     private sealed class BoolTypeHandler : SqlMapper.TypeHandler<bool>
     {

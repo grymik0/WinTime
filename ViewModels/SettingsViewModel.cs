@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
@@ -27,7 +27,7 @@ public sealed class SettingsViewModel : BaseViewModel
     private string _databasePath = string.Empty;
     private string _dbChangeNote = string.Empty;
 
-    // ── Properties ────────────────────────────────────────────────────────────
+    // Properties
 
     public int AfkThresholdMinutes
     {
@@ -67,14 +67,14 @@ public sealed class SettingsViewModel : BaseViewModel
         private set => SetProperty(ref _dbChangeNote, value);
     }
 
-    // ── Commands ──────────────────────────────────────────────────────────────
+    // Commands
 
     public ICommand ChooseDbPathCommand  { get; }
     public ICommand ExportCsvCommand     { get; }
     public ICommand ExportJsonCommand    { get; }
     public ICommand ClearHistoryCommand  { get; }
 
-    // ── Constructor ───────────────────────────────────────────────────────────
+    // Constructor
 
     public SettingsViewModel(
         SettingsService    settings,
@@ -95,7 +95,7 @@ public sealed class SettingsViewModel : BaseViewModel
         ClearHistoryCommand = new RelayCommand(async () => await ClearHistoryAsync());
     }
 
-    // ── Handlers ─────────────────────────────────────────────────────────────
+    // Handlers
 
     private void ChooseDbPath()
     {

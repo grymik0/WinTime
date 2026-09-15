@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 namespace WinTime.Core;
@@ -8,7 +8,7 @@ namespace WinTime.Core;
 /// </summary>
 internal static class NativeMethods
 {
-    // ── Foreground window ───────────────────────────────────────────────────
+    // Foreground window
 
     [DllImport("user32.dll")]
     internal static extern IntPtr GetForegroundWindow();
@@ -29,7 +29,7 @@ internal static class NativeMethods
     [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
 
-    // ── Window enumeration ──────────────────────────────────────────────────
+    // Window enumeration
 
     internal delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
@@ -57,7 +57,7 @@ internal static class NativeMethods
         return GetWindowLong32(hWnd, nIndex);
     }
 
-    // ── Process info ────────────────────────────────────────────────────────
+    // Process info
 
     internal const uint PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
 
@@ -73,7 +73,7 @@ internal static class NativeMethods
         IntPtr hProcess, int dwFlags,
         StringBuilder lpExeName, ref int lpdwSize);
 
-    // ── Idle / AFK detection ────────────────────────────────────────────────
+    // Idle / AFK detection
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct LASTINPUTINFO
@@ -86,7 +86,7 @@ internal static class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
 
-    // ── Mouse tracking ──────────────────────────────────────────────────────
+    // Mouse tracking
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct POINT
