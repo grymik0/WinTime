@@ -26,6 +26,11 @@ No cloud sync, no telemetry, and no account required — **100% of your data sta
 
 | Feature | Details |
 |---|---|
+| 📌 **Customizable Desktop Mini-Widget** | Floating, draggable desktop overlay with live screen time, active app, continuous session timer, profile XP, and mouse metrics. Features click-through mode, topmost toggle, opacity slider, and one-click compact collapse. |
+| 🏆 **Gamification, Levels & Achievements** | Earn XP for active time (10 XP/min), unlock levels from Novice to Grandmaster, and earn 12 tiered badges for milestones, consistency, records, and mouse activity. |
+| 🌙 **Sleep & Daily Rhythm Analysis** | Automatic tracking of your daily first PC turn-on (wake up) and last shutdown (bedtime) times, average night rest durations, and routine regularity assessments. |
+| 🖱 **Mouse Activity (Clicks & Distance)** | High-frequency background tracking of mouse clicks and cursor distance traveled in meters/kilometers with jump rejection and formatted counters. |
+| 🎮 **Gaming Mode & Detection** | Automatic recognition of games and launchers (Steam, Epic Games, Riot, etc.) with dedicated process filtering. |
 | 🔍 **Browser Tabs & Window Titles** | Deep tracking for active browser tabs (Chrome, Edge, Opera, etc.) and editor projects (VS Code, Visual Studio, JetBrains, etc.). Expand any app to see exact per-tab time spent. |
 | 📅 **Activity Heatmap** | GitHub-style 20-week contribution grid displaying your daily active hours, streaks, best productive days, and consistency metrics. |
 | 📊 **Trends & Period Comparisons** | Compare your screen time against the previous period (*e.g., Today vs. Yesterday, This Week vs. Last Week, This Month vs. Last Month*) with exact diffs and percentages. |
@@ -96,10 +101,10 @@ When opening WinTime for the first time, a setup dialog guides you to pick a fol
 WinTime/
 ├── Core/               # ActivityTracker, Native Win32 APIs, StartupManager, InMemoryBuffer
 ├── Data/               # DatabaseService, ActivityRepository, ApplicationRepository, UptimeRepository
-├── Models/             # AppStatItem, WindowTitleStatItem, ProcessUptimeItem, HeatmapDayItem
+├── Models/             # AppStatItem, WindowTitleStatItem, ProcessUptimeItem, AchievementItem
 ├── Services/           # SettingsService, ExportService, IconService
-├── ViewModels/         # DashboardViewModel, ProcessesViewModel, ApplicationsViewModel, SettingsViewModel
-├── Views/              # DashboardView, ProcessesView, ApplicationsView, SettingsView, FirstRunDialog
+├── ViewModels/         # Dashboard, Processes, Applications, Profile, DesktopWidget, Settings
+├── Views/              # Dashboard, Processes, Applications, Profile, DesktopWidgetWindow/Settings
 ├── Converters/         # SecondsToTimeConverter, BooleanToVisibilityConverter
 ├── AppServices.cs      # Lightweight dependency injection / service registry
 ├── App.xaml.cs         # App lifecycle, system tray hooks, single-instance mutex
