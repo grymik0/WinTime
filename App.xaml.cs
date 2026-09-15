@@ -79,6 +79,9 @@ public partial class App : Application
 
         AppServices.Tracker.Start();
 
+        // Автоматически обновляем путь в реестре Windows на текущий запущенный EXE-файл
+        SystemStartupManager.SyncCurrentExePath(settings.LaunchOnStartup);
+
         SetupTrayIcon();
 
         _mainWindow = new MainWindow();
@@ -178,11 +181,7 @@ public partial class App : Application
                 new Uri("pack://application:,,,/Assets/icon.ico"))?.Stream;
             if (stream is not null)
             {
-                using var bmp   = new System.Drawing.Bitmap(stream);
-                var hIcon       = bmp.GetHicon();
-                var icon        = (Icon)Icon.FromHandle(hIcon).Clone();
-                NativeMethods.DestroyIcon(hIcon);
-                return icon;
+                return new Icon(stream, new System.Drawing.Size(32, 32));
             }
         }
         catch {  }

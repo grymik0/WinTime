@@ -40,5 +40,32 @@ public static class SystemStartupManager
         }
         catch { return false; }
     }
+
+    /// <summary>
+    /// Автоматически обновляет путь в автозапуске на текущий запущенный EXE-файл,
+    /// если автозапуск был включен или если в реестре остался путь от старой версии.
+    /// </summary>
+    public static void SyncCurrentExePath(bool forceEnableIfConfigured = false)
+    {
+        try
+        {
+            var currentExe = Environment.ProcessPath;
+            if (string.IsNullOrEmpty(currentExe)) return;
+
+            using var key = Registry.CurrentUser.OpenSubKey(RegKey, writable: true);
+            if (key is null) return;
+
+            var existing = key.GetValue(AppName) as string;
+            if (existing is not null || forceEnableIfConfigured)
+            {
+                var expected = $"\"{currentExe}\"";
+                if (!string.Equals(existing, expected, StringComparison.OrdinalIgnoreCase))
+                {
+                    key.SetValue(AppName, expected);
+                }
+            }
+        }
+        catch { }
+    }
 }
 

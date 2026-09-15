@@ -10,7 +10,8 @@
     <AssemblyName>WinTime</AssemblyName>
     <RootNamespace>WinTime</RootNamespace>
     <Platforms>x64</Platforms>
-    <Version>1.2.0</Version>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <Version>1.2.1</Version>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
     <FileVersion>1.2.0.0</FileVersion>
     <!-- Suppress NU1701: transitive deps (OpenTK, SkiaSharp, WPF.UI) work via
