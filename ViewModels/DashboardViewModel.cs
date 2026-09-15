@@ -135,6 +135,8 @@ public sealed class DashboardViewModel : BaseViewModel
 
     private long _rawActiveSeconds;
     private long _rawIdleSeconds;
+    private long _rawPrevActiveSeconds;
+    private DateTime _currentFrom = DateTime.Today;
     private int  _chartRefreshCounter;
 
     // ── Constructor
@@ -192,6 +194,9 @@ public sealed class DashboardViewModel : BaseViewModel
                 IdleTime = Fmt(_rawIdleSeconds);
             }
 
+            // Пересчитываем тренды и сравнение в реальном времени при каждом тике
+            ComputeTrendsAndMetrics(_rawActiveSeconds, _rawIdleSeconds, _rawPrevActiveSeconds, _currentFrom);
+
             if (++_chartRefreshCounter >= 30)
             {
                 _chartRefreshCounter = 0;
@@ -223,6 +228,7 @@ public sealed class DashboardViewModel : BaseViewModel
             await _tracker.FlushToDbAsync();
 
             var (from, to, barLabels) = GetPeriodRange();
+            _currentFrom = from;
 
             var (active, idle) = await _activityRepo.GetTotalsAsync(from, to);
             _rawActiveSeconds = active;
@@ -232,6 +238,7 @@ public sealed class DashboardViewModel : BaseViewModel
 
             var (prevFrom, prevTo) = GetPreviousPeriodRange(from, to);
             var (prevActive, _)    = await _activityRepo.GetTotalsAsync(prevFrom, prevTo);
+            _rawPrevActiveSeconds  = prevActive;
 
             ComputeTrendsAndMetrics(active, idle, prevActive, from);
 
