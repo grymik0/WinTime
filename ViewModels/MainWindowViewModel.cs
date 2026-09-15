@@ -9,11 +9,12 @@ namespace WinTime.ViewModels;
 /// </summary>
 public sealed class MainWindowViewModel : BaseViewModel
 {
-    private readonly DashboardViewModel    _dashboard;
-    private readonly ProcessesViewModel    _processes;
-    private readonly ApplicationsViewModel _applications;
-    private readonly ProfileViewModel     _profile;
-    private readonly SettingsViewModel     _settings;
+    private readonly DashboardViewModel     _dashboard;
+    private readonly ProcessesViewModel     _processes;
+    private readonly ApplicationsViewModel  _applications;
+    private readonly ProfileViewModel      _profile;
+    private readonly DesktopWidgetViewModel _widget;
+    private readonly SettingsViewModel      _settings;
 
     private object? _currentView;
     private bool    _isTracking = true;
@@ -39,22 +40,25 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateProcessesCommand    { get; }
     public ICommand NavigateApplicationsCommand { get; }
     public ICommand NavigateProfileCommand      { get; }
+    public ICommand NavigateWidgetCommand       { get; }
     public ICommand NavigateSettingsCommand     { get; }
     public ICommand ToggleTrackingCommand       { get; }
 
     // Constructor
 
     public MainWindowViewModel(
-        DashboardViewModel    dashboard,
-        ProcessesViewModel    processes,
-        ApplicationsViewModel applications,
-        ProfileViewModel      profile,
-        SettingsViewModel     settings)
+        DashboardViewModel     dashboard,
+        ProcessesViewModel     processes,
+        ApplicationsViewModel  applications,
+        ProfileViewModel       profile,
+        DesktopWidgetViewModel widget,
+        SettingsViewModel      settings)
     {
         _dashboard    = dashboard;
         _processes    = processes;
         _applications = applications;
         _profile      = profile;
+        _widget       = widget;
         _settings     = settings;
 
         NavigateDashboardCommand = new RelayCommand(() =>
@@ -79,6 +83,11 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             CurrentView = _profile;
             _ = _profile.LoadAsync();
+        });
+
+        NavigateWidgetCommand = new RelayCommand(() =>
+        {
+            CurrentView = _widget;
         });
 
         NavigateSettingsCommand = new RelayCommand(() =>

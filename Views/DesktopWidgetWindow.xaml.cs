@@ -20,6 +20,8 @@ public partial class DesktopWidgetWindow : Window
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        Opacity = _settings.WidgetOpacity;
+
         // Восстанавливаем позицию если сохранена, иначе в правый верхний угол
         if (_settings.WidgetLeft >= 0 && _settings.WidgetTop >= 0)
         {
@@ -28,10 +30,22 @@ public partial class DesktopWidgetWindow : Window
         }
         else
         {
-            var workArea = SystemParameters.WorkArea;
-            Left = workArea.Right - Width - 24;
-            Top  = workArea.Top + 36;
+            ResetPosition();
         }
+    }
+
+    public void ResetPosition()
+    {
+        var workArea = SystemParameters.WorkArea;
+        Left = workArea.Right - Width - 24;
+        Top  = workArea.Top + 36;
+        _settings.WidgetLeft = Left;
+        _settings.WidgetTop  = Top;
+    }
+
+    public void UpdateOpacity()
+    {
+        Opacity = _settings.WidgetOpacity;
     }
 
     private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

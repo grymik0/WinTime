@@ -102,7 +102,7 @@ public partial class App : Application
             _widgetWindow.Show();
         }
 
-        AppServices.SettingsVm.WidgetVisibilityChanged += (_, isVisible) =>
+        AppServices.DesktopWidgetVm.WidgetVisibilityChanged += (_, isVisible) =>
         {
             if (isVisible)
             {
@@ -115,9 +115,14 @@ public partial class App : Application
             }
         };
 
-        AppServices.SettingsVm.WidgetSettingsChanged += (_, _) =>
+        AppServices.DesktopWidgetVm.WidgetOpacityChanged += (_, _) =>
         {
-            AppServices.DesktopWidgetVm.NotifySettingsChanged();
+            _widgetWindow.UpdateOpacity();
+        };
+
+        AppServices.DesktopWidgetVm.ResetPositionRequested += (_, _) =>
+        {
+            _widgetWindow.ResetPosition();
         };
     }
 
@@ -154,6 +159,12 @@ public partial class App : Application
         var itemOpen = new System.Windows.Controls.MenuItem { Header = "📊  Открыть статистику" };
         itemOpen.Click += (_, _) => ShowMainWindow();
 
+        var itemWidget = new System.Windows.Controls.MenuItem { Header = "🪟  Виджет на рабочем столе" };
+        itemWidget.Click += (_, _) =>
+        {
+            AppServices.DesktopWidgetVm.IsWidgetEnabled = !AppServices.DesktopWidgetVm.IsWidgetEnabled;
+        };
+
         var itemPause = new System.Windows.Controls.MenuItem { Header = "⏸  Приостановить учёт" };
         itemPause.Click += (_, _) =>
         {
@@ -171,12 +182,6 @@ public partial class App : Application
         {
             ShowMainWindow();
             AppServices.MainWindowVm.NavigateSettingsCommand.Execute(null);
-        };
-
-        var itemWidget = new System.Windows.Controls.MenuItem { Header = "🪟  Виджет на рабочем столе" };
-        itemWidget.Click += (_, _) =>
-        {
-            AppServices.SettingsVm.ShowWidget = !AppServices.SettingsVm.ShowWidget;
         };
 
         var itemExit = new System.Windows.Controls.MenuItem { Header = "✕  Выход" };

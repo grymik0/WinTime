@@ -26,10 +26,98 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
     public string MouseSummaryText { get => _mouseSummaryText; private set => SetProperty(ref _mouseSummaryText, value); }
 
     // Visibility toggles from settings
-    public bool ShowApp   => _settings.WidgetShowApp;
-    public bool ShowTime  => _settings.WidgetShowTime;
-    public bool ShowLevel => _settings.WidgetShowLevel;
-    public bool ShowMouse => _settings.WidgetShowMouse;
+    public bool ShowApp
+    {
+        get => _settings.WidgetShowApp;
+        set
+        {
+            if (_settings.WidgetShowApp != value)
+            {
+                _settings.WidgetShowApp = value;
+                OnPropertyChanged(nameof(ShowApp));
+            }
+        }
+    }
+
+    public bool ShowTime
+    {
+        get => _settings.WidgetShowTime;
+        set
+        {
+            if (_settings.WidgetShowTime != value)
+            {
+                _settings.WidgetShowTime = value;
+                OnPropertyChanged(nameof(ShowTime));
+            }
+        }
+    }
+
+    public bool ShowLevel
+    {
+        get => _settings.WidgetShowLevel;
+        set
+        {
+            if (_settings.WidgetShowLevel != value)
+            {
+                _settings.WidgetShowLevel = value;
+                OnPropertyChanged(nameof(ShowLevel));
+            }
+        }
+    }
+
+    public bool ShowMouse
+    {
+        get => _settings.WidgetShowMouse;
+        set
+        {
+            if (_settings.WidgetShowMouse != value)
+            {
+                _settings.WidgetShowMouse = value;
+                OnPropertyChanged(nameof(ShowMouse));
+            }
+        }
+    }
+
+    public bool IsWidgetEnabled
+    {
+        get => _settings.ShowWidget;
+        set
+        {
+            if (_settings.ShowWidget != value)
+            {
+                _settings.ShowWidget = value;
+                OnPropertyChanged(nameof(IsWidgetEnabled));
+                OnPropertyChanged(nameof(WidgetToggleLabel));
+                WidgetVisibilityChanged?.Invoke(this, value);
+            }
+        }
+    }
+
+    public string WidgetToggleLabel => IsWidgetEnabled ? "Скрыть виджет с экрана" : "Включить виджет на рабочем столе";
+
+    public double WidgetOpacity
+    {
+        get => _settings.WidgetOpacity;
+        set
+        {
+            if (Math.Abs(_settings.WidgetOpacity - value) > 0.01)
+            {
+                _settings.WidgetOpacity = value;
+                OnPropertyChanged(nameof(WidgetOpacity));
+                OnPropertyChanged(nameof(WidgetOpacityPercentText));
+                WidgetOpacityChanged?.Invoke(this, value);
+            }
+        }
+    }
+
+    public string WidgetOpacityPercentText => $"{(int)Math.Round(WidgetOpacity * 100)}%";
+
+    public event EventHandler<bool>? WidgetVisibilityChanged;
+    public event EventHandler<double>? WidgetOpacityChanged;
+    public event EventHandler? ResetPositionRequested;
+
+    public ICommand ToggleWidgetCommand { get; }
+    public ICommand ResetPositionCommand { get; }
 
     private long _todayActiveSeconds;
     private int  _dbRefreshCounter;
@@ -42,6 +130,9 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
         _tracker      = tracker;
         _activityRepo = activityRepo;
         _settings     = settings;
+
+        ToggleWidgetCommand  = new RelayCommand(() => IsWidgetEnabled = !IsWidgetEnabled);
+        ResetPositionCommand = new RelayCommand(() => ResetPositionRequested?.Invoke(this, EventArgs.Empty));
 
         _tracker.StateChanged += OnTrackerStateChanged;
     }

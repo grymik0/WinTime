@@ -54,7 +54,7 @@ internal static class AppServices
         ProfileVm       = new ProfileViewModel(ActivityRepo, Tracker);
         SettingsVm      = new SettingsViewModel(Settings, ActivityRepo, ExportService);
         DesktopWidgetVm = new DesktopWidgetViewModel(Tracker, ActivityRepo, Settings);
-        MainWindowVm    = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, ProfileVm, SettingsVm);
+        MainWindowVm    = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, ProfileVm, DesktopWidgetVm, SettingsVm);
     }
 
     public static async Task ShutdownAsync()

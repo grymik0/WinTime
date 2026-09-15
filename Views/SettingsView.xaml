@@ -89,30 +89,8 @@
             <CheckBox IsChecked="{Binding LaunchOnStartup}"
                       Foreground="#E5E7EB" FontSize="14"
                       Content="Запускать WinTime при старте Windows"
-                      Margin="0 0 0 16"
+                      Margin="0 0 0 20"
                       Cursor="Hand" />
-
-            <TextBlock Text="ВИДЖЕТ НА РАБОЧИЙ СТОЛ" Style="{StaticResource SectionHeader}" />
-
-            <CheckBox IsChecked="{Binding ShowWidget}"
-                      Foreground="#E5E7EB" FontSize="14" FontWeight="SemiBold"
-                      Content="Отображать плавающий мини-виджет на рабочем столе"
-                      Margin="0 0 0 8"
-                      Cursor="Hand" />
-            <TextBlock Style="{StaticResource SettingHint}"
-                       Text="Компактный полупрозрачный виджет поверх окон или на рабочем столе. Его можно перетаскивать мышью." />
-
-            <Border Background="#1E1E2E" CornerRadius="8" Padding="14 10" Margin="0 0 0 20">
-                <StackPanel>
-                    <TextBlock Text="Отображаемые элементы виджета:" FontSize="12" Foreground="#9CA3AF" Margin="0 0 0 8" />
-                    <WrapPanel>
-                        <CheckBox IsChecked="{Binding WidgetShowApp}" Content="Текущее приложение" Foreground="#E5E7EB" Margin="0 0 16 6" Cursor="Hand" />
-                        <CheckBox IsChecked="{Binding WidgetShowTime}" Content="Время за сегодня" Foreground="#E5E7EB" Margin="0 0 16 6" Cursor="Hand" />
-                        <CheckBox IsChecked="{Binding WidgetShowLevel}" Content="Уровень и опыт (XP)" Foreground="#E5E7EB" Margin="0 0 16 6" Cursor="Hand" />
-                        <CheckBox IsChecked="{Binding WidgetShowMouse}" Content="Мышь (клики и км)" Foreground="#E5E7EB" Margin="0 0 16 6" Cursor="Hand" />
-                    </WrapPanel>
-                </StackPanel>
-            </Border>
 
             <TextBlock Text="БАЗА ДАННЫХ" Style="{StaticResource SectionHeader}" />
 

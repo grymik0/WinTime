@@ -88,6 +88,12 @@ public sealed class SettingsService
         set { _s.WidgetShowMouse = value; Save(); }
     }
 
+    public double WidgetOpacity
+    {
+        get => _s.WidgetOpacity;
+        set { _s.WidgetOpacity = Math.Clamp(value, 0.3, 1.0); Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -130,6 +136,7 @@ public sealed class SettingsService
         public bool WidgetShowTime { get; set; } = true;
         public bool WidgetShowLevel { get; set; } = true;
         public bool WidgetShowMouse { get; set; } = true;
+        public double WidgetOpacity { get; set; } = 0.95;
     }
 }
 
