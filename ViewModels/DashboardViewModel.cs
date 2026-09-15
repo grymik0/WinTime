@@ -120,6 +120,15 @@ public sealed class DashboardViewModel : BaseViewModel
     public string MouseClicksText   { get => _mouseClicksText;   private set => SetProperty(ref _mouseClicksText,   value); }
     public string MouseDistanceText { get => _mouseDistanceText; private set => SetProperty(ref _mouseDistanceText, value); }
 
+    private string _rhythmWakeUpText       = "—";
+    private string _rhythmSleepText        = "—";
+    private string _rhythmRestDurationText = "—";
+    private string _rhythmNoteText         = "Данные собираются";
+    public string RhythmWakeUpText       { get => _rhythmWakeUpText;       private set => SetProperty(ref _rhythmWakeUpText,       value); }
+    public string RhythmSleepText        { get => _rhythmSleepText;        private set => SetProperty(ref _rhythmSleepText,        value); }
+    public string RhythmRestDurationText { get => _rhythmRestDurationText; private set => SetProperty(ref _rhythmRestDurationText, value); }
+    public string RhythmNoteText         { get => _rhythmNoteText;         private set => SetProperty(ref _rhythmNoteText,         value); }
+
     // Commands
 
     public ICommand SetPeriodCommand { get; }
@@ -269,6 +278,7 @@ public sealed class DashboardViewModel : BaseViewModel
             BuildPieChart(apps, totalForPct);
             await BuildBarChartAsync(from, barLabels);
             await BuildHeatmapAsync();
+            await BuildSleepRhythmAsync();
 
             var (periodClicks, periodDistMeters) = await _activityRepo.GetDailyMetricsAsync(from, to);
             if (SelectedPeriod == TimePeriod.Today)
@@ -413,6 +423,73 @@ public sealed class DashboardViewModel : BaseViewModel
 
             HeatmapStatsText = $"🔥 Серия: {streak} {GetDaysWord(streak)} · Всего активных: {activeDaysCount} дн.";
             HeatmapWeeks = new ObservableCollection<HeatmapWeekItem>(weeks);
+        }
+        catch { }
+    }
+
+    private async Task BuildSleepRhythmAsync()
+    {
+        try
+        {
+            var rhythms = await _activityRepo.GetDailyRhythmsAsync(30);
+            if (rhythms.Count == 0)
+            {
+                RhythmWakeUpText = "—";
+                RhythmSleepText = "—";
+                RhythmRestDurationText = "—";
+                RhythmNoteText = "Недостаточно данных";
+                return;
+            }
+
+            // Среднее время первого включения (пробуждения / начала работы)
+            double avgFirstMinutes = rhythms.Average(r => r.FirstActive.TotalMinutes);
+            var avgFirst = TimeSpan.FromMinutes(avgFirstMinutes);
+            RhythmWakeUpText = $"~{avgFirst.Hours:D2}:{avgFirst.Minutes:D2}";
+
+            // Среднее время последнего выключения (завершения работы / отхода ко сну)
+            double avgLastMinutes = rhythms.Average(r => r.LastActive.TotalMinutes);
+            var avgLast = TimeSpan.FromMinutes(avgLastMinutes);
+            RhythmSleepText = $"~{avgLast.Hours:D2}:{avgLast.Minutes:D2}";
+
+            // Средний ночной перерыв между соседними днями
+            var restDurations = new List<double>();
+            for (int i = 0; i < rhythms.Count - 1; i++)
+            {
+                var cur = rhythms[i];
+                var next = rhythms[i + 1];
+                if ((next.Date - cur.Date).TotalDays <= 2)
+                {
+                    // От cur.LastActive до next.FirstActive следующего дня
+                    var endCur = cur.Date.Add(cur.LastActive);
+                    var startNext = next.Date.Add(next.FirstActive);
+                    var restHours = (startNext - endCur).TotalHours;
+                    if (restHours >= 2 && restHours <= 20)
+                    {
+                        restDurations.Add(restHours);
+                    }
+                }
+            }
+
+            if (restDurations.Count > 0)
+            {
+                double avgRestH = restDurations.Average();
+                int h = (int)avgRestH;
+                int m = (int)((avgRestH - h) * 60);
+                RhythmRestDurationText = $"{h}ч {m:D2}м";
+                
+                if (avgRestH >= 7 && avgRestH <= 9)
+                    RhythmNoteText = "Здоровый баланс сна и отдыха";
+                else if (avgRestH < 6)
+                    RhythmNoteText = "Короткий ночной перерыв (< 6ч)";
+                else
+                    RhythmNoteText = "Длительный ночной перерыв";
+            }
+            else
+            {
+                // Если только 1 день или нет непрерывных пар
+                RhythmRestDurationText = "—";
+                RhythmNoteText = $"По данным за {rhythms.Count} {GetDaysWord(rhythms.Count)}";
+            }
         }
         catch { }
     }

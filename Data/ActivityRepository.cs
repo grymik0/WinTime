@@ -302,6 +302,42 @@ public sealed class ActivityRepository
         return (lifetimeActive, maxDay, activeDays, totalClicks, totalDist);
     }
 
+    /// <summary>
+    /// Анализ режима дня и ночного перерыва:
+    /// возвращает время первого и последнего активного действия за каждый день за последние N дней (по умолчанию 30).
+    /// </summary>
+    public async Task<List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>> GetDailyRhythmsAsync(int days = 30)
+    {
+        var fromDate = DateTime.Today.AddDays(-days);
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT 
+                date(s.StartTime) AS DayDate,
+                MIN(time(s.StartTime)) AS MinTime,
+                MAX(time(datetime(s.StartTime, '+' || s.DurationSeconds || ' seconds'))) AS MaxTime
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.StartTime >= @FromDate
+              AND s.IsIdle = 0
+              AND a.IsBlacklisted = 0
+            GROUP BY DayDate
+            ORDER BY DayDate ASC",
+            new { FromDate = Fmt(fromDate) });
+
+        var result = new List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>();
+        foreach (var r in rows)
+        {
+            if (r.DayDate is not null && DateTime.TryParse((string)r.DayDate, out DateTime d))
+            {
+                if (TimeSpan.TryParse((string)r.MinTime, out TimeSpan minT) &&
+                    TimeSpan.TryParse((string)r.MaxTime, out TimeSpan maxT))
+                {
+                    result.Add((d, minT, maxT));
+                }
+            }
+        }
+        return result;
+    }
+
     // Helpers
 
     private static string Fmt(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss");

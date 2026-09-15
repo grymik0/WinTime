@@ -358,6 +358,56 @@
                 </StackPanel>
             </Border>
 
+            <!-- Анализ режима дня и сна -->
+            <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16" Margin="0 0 0 20">
+                <StackPanel>
+                    <Grid Margin="0 0 0 14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="🌙  Режим дня и сон" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+                            <TextBlock Text=" (по времени активности ПК)" FontSize="12" Foreground="#6B7280" Margin="6 2 0 0" />
+                        </StackPanel>
+
+                        <Border Grid.Column="1" Background="#252535" CornerRadius="6" Padding="10 4">
+                            <TextBlock Text="{Binding RhythmNoteText}" FontSize="12" FontWeight="Medium" Foreground="#A5B4FC" />
+                        </Border>
+                    </Grid>
+
+                    <UniformGrid Columns="3" Margin="0 4 0 0">
+                        <!-- Включение / Подъём -->
+                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="0 0 8 0">
+                            <StackPanel>
+                                <TextBlock Text="🌅  Первое включение (подъём)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="{Binding RhythmWakeUpText}" FontSize="20" FontWeight="Bold" Foreground="#F59E0B" />
+                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Выключение / Отбой -->
+                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="4 0 4 0">
+                            <StackPanel>
+                                <TextBlock Text="🌃  Последнее выключение (отбой)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="{Binding RhythmSleepText}" FontSize="20" FontWeight="Bold" Foreground="#818CF8" />
+                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Ночной перерыв -->
+                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="8 0 0 0">
+                            <StackPanel>
+                                <TextBlock Text="💤  Ночной перерыв (сон/отдых)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="{Binding RhythmRestDurationText}" FontSize="20" FontWeight="Bold" Foreground="#10B981" />
+                                <TextBlock Text="интервал выключенного ПК" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
             <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16">
                 <StackPanel>
                     <TextBlock Text="Приложения" FontSize="15" FontWeight="SemiBold"
