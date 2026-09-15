@@ -99,7 +99,7 @@
                             <TextBlock Text="{Binding LevelProgressText}" FontSize="12" Foreground="#9CA3AF" HorizontalAlignment="Right" />
                         </Grid>
 
-                        <ProgressBar Height="10" Value="{Binding LevelProgress}" Maximum="100"
+                        <ProgressBar Height="10" Value="{Binding LevelProgress, Mode=OneWay}" Maximum="100"
                                      Background="#16161E" Foreground="#6366F1" BorderThickness="0">
                             <ProgressBar.Clip>
                                 <RectangleGeometry Rect="0,0,10000,10" RadiusX="5" RadiusY="5" />
@@ -150,7 +150,7 @@
 
                                         <!-- Прогресс достижения -->
                                         <Grid Margin="0 2 0 0">
-                                            <ProgressBar Height="5" Value="{Binding Progress}" Maximum="100"
+                                            <ProgressBar Height="5" Value="{Binding Progress, Mode=OneWay}" Maximum="100"
                                                          Background="#16161E" Foreground="#10B981" BorderThickness="0" />
                                         </Grid>
                                         <TextBlock Text="{Binding ProgressText}" FontSize="10" Foreground="#6B7280" Margin="0 4 0 0" />

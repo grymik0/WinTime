@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -205,8 +205,8 @@ public sealed class DashboardViewModel : BaseViewModel
             if (SelectedPeriod == TimePeriod.Today)
             {
                 var (curClicks, curDistMeters) = _tracker.GetTodayMouseMetrics();
-                MouseClicksText = $"{curClicks:N0}";
-                MouseDistanceText = curDistMeters >= 1000.0 ? $"{curDistMeters / 1000.0:F2} км" : $"{curDistMeters:F0} м";
+                MouseClicksText = FormatClicks(curClicks);
+                MouseDistanceText = FormatDistance(curDistMeters);
             }
 
             if (++_chartRefreshCounter >= 30)
@@ -277,8 +277,8 @@ public sealed class DashboardViewModel : BaseViewModel
                 periodClicks = Math.Max(periodClicks, liveClicks);
                 periodDistMeters = Math.Max(periodDistMeters, liveDist);
             }
-            MouseClicksText = $"{periodClicks:N0}";
-            MouseDistanceText = periodDistMeters >= 1000.0 ? $"{periodDistMeters / 1000.0:F2} км" : $"{periodDistMeters:F0} м";
+            MouseClicksText = FormatClicks(periodClicks);
+            MouseDistanceText = FormatDistance(periodDistMeters);
         }
         catch {  }
         finally
@@ -638,5 +638,19 @@ public sealed class DashboardViewModel : BaseViewModel
         if (ts.TotalMinutes >= 1) return $"{ts.Minutes}м {ts.Seconds:D2}с";
         return $"{ts.Seconds}с";
     }
+
+    public static string FormatClicks(long clicks) => clicks switch
+    {
+        >= 1_000_000 => $"{clicks / 1_000_000.0:F1}M",
+        >= 10_000    => $"{clicks / 1_000.0:F1}k",
+        _            => $"{clicks:N0}"
+    };
+
+    public static string FormatDistance(double meters) => meters switch
+    {
+        >= 10_000 => $"{meters / 1000.0:F1} км",
+        >= 1_000  => $"{meters / 1000.0:F2} км",
+        _         => $"{meters:F0} м"
+    };
 }
 

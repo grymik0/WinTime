@@ -169,7 +169,8 @@
                             <!-- Клики -->
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="{Binding MouseClicksText}"
-                                           FontSize="22" FontWeight="Bold" Foreground="#10B981" />
+                                           FontSize="20" FontWeight="Bold" Foreground="#10B981"
+                                           TextTrimming="CharacterEllipsis" />
                                 <TextBlock Text="кликов" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
                             </StackPanel>
 
@@ -179,7 +180,8 @@
                             <!-- Дистанция -->
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="{Binding MouseDistanceText}"
-                                           FontSize="22" FontWeight="Bold" Foreground="#818CF8" />
+                                           FontSize="20" FontWeight="Bold" Foreground="#818CF8"
+                                           TextTrimming="CharacterEllipsis" />
                                 <TextBlock Text="дистанция" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
                             </StackPanel>
                         </Grid>

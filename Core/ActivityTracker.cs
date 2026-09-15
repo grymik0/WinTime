@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using WinTime.Data;
@@ -163,10 +163,14 @@ public sealed class ActivityTracker : IAsyncDisposable
                         if (dx != 0 || dy != 0)
                         {
                             double distPx = Math.Sqrt(dx * dx + dy * dy);
-                            lock (_mouseLock)
+                            // Игнорируем скачки курсора между мониторами / после выхода из сна (> 500 px за 25мс = 20,000 px/сек)
+                            if (distPx > 0 && distPx < 500)
                             {
-                                _pendingDistancePixels += distPx;
-                                _totalDistanceMetersToday += distPx * metersPerPixel;
+                                lock (_mouseLock)
+                                {
+                                    _pendingDistancePixels += distPx;
+                                    _totalDistanceMetersToday += distPx * metersPerPixel;
+                                }
                             }
                         }
                     }
