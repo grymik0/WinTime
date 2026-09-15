@@ -84,6 +84,12 @@ public sealed class DatabaseService : IDisposable
             );
 
             CREATE INDEX IF NOT EXISTS idx_app_uptime_date ON AppUptime(Date);
+
+            CREATE TABLE IF NOT EXISTS DailyMetrics (
+                Date            TEXT PRIMARY KEY,
+                MouseClicks     INTEGER NOT NULL DEFAULT 0,
+                DistanceMeters  REAL    NOT NULL DEFAULT 0
+            );
         ";
         cmd.ExecuteNonQuery();
     }

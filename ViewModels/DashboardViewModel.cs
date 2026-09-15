@@ -115,6 +115,11 @@ public sealed class DashboardViewModel : BaseViewModel
     public string HeatmapAvgDayText      { get => _heatmapAvgDayText;      private set => SetProperty(ref _heatmapAvgDayText,      value); }
     public string HeatmapConsistencyText { get => _heatmapConsistencyText; private set => SetProperty(ref _heatmapConsistencyText, value); }
 
+    private string _mouseClicksText   = "0";
+    private string _mouseDistanceText = "0 м";
+    public string MouseClicksText   { get => _mouseClicksText;   private set => SetProperty(ref _mouseClicksText,   value); }
+    public string MouseDistanceText { get => _mouseDistanceText; private set => SetProperty(ref _mouseDistanceText, value); }
+
     // ── Commands
 
     public ICommand SetPeriodCommand { get; }
@@ -197,6 +202,13 @@ public sealed class DashboardViewModel : BaseViewModel
             // Пересчитываем тренды и сравнение в реальном времени при каждом тике
             ComputeTrendsAndMetrics(_rawActiveSeconds, _rawIdleSeconds, _rawPrevActiveSeconds, _currentFrom);
 
+            if (SelectedPeriod == TimePeriod.Today)
+            {
+                var (curClicks, curDistMeters) = _tracker.GetTodayMouseMetrics();
+                MouseClicksText = $"{curClicks:N0}";
+                MouseDistanceText = curDistMeters >= 1000.0 ? $"{curDistMeters / 1000.0:F2} км" : $"{curDistMeters:F0} м";
+            }
+
             if (++_chartRefreshCounter >= 30)
             {
                 _chartRefreshCounter = 0;
@@ -257,6 +269,16 @@ public sealed class DashboardViewModel : BaseViewModel
             BuildPieChart(apps, totalForPct);
             await BuildBarChartAsync(from, barLabels);
             await BuildHeatmapAsync();
+
+            var (periodClicks, periodDistMeters) = await _activityRepo.GetDailyMetricsAsync(from, to);
+            if (SelectedPeriod == TimePeriod.Today)
+            {
+                var (liveClicks, liveDist) = _tracker.GetTodayMouseMetrics();
+                periodClicks = Math.Max(periodClicks, liveClicks);
+                periodDistMeters = Math.Max(periodDistMeters, liveDist);
+            }
+            MouseClicksText = $"{periodClicks:N0}";
+            MouseDistanceText = periodDistMeters >= 1000.0 ? $"{periodDistMeters / 1000.0:F2} км" : $"{periodDistMeters:F0} м";
         }
         catch {  }
         finally

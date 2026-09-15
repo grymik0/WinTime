@@ -86,6 +86,28 @@ internal static class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
 
+    // ── Mouse tracking ──────────────────────────────────────────────────────
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct POINT
+    {
+        public int X;
+        public int Y;
+    }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetCursorPos(out POINT lpPoint);
+
+    [DllImport("user32.dll")]
+    internal static extern short GetAsyncKeyState(int vKey);
+
+    internal const int VK_LBUTTON  = 0x01;
+    internal const int VK_RBUTTON  = 0x02;
+    internal const int VK_MBUTTON  = 0x04;
+    internal const int VK_XBUTTON1 = 0x05;
+    internal const int VK_XBUTTON2 = 0x06;
+
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool DestroyIcon(IntPtr hIcon);

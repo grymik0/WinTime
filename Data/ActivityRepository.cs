@@ -214,6 +214,30 @@ public sealed class ActivityRepository
         return dict;
     }
 
+    public async Task SaveDailyMetricsAsync(string date, long clicks, double distanceMeters)
+    {
+        await _db.Connection.ExecuteAsync(@"
+            INSERT INTO DailyMetrics (Date, MouseClicks, DistanceMeters)
+            VALUES (@Date, @MouseClicks, @DistanceMeters)
+            ON CONFLICT(Date) DO UPDATE SET
+                MouseClicks = MouseClicks + @MouseClicks,
+                DistanceMeters = DistanceMeters + @DistanceMeters",
+            new { Date = date, MouseClicks = clicks, DistanceMeters = distanceMeters });
+    }
+
+    public async Task<(long Clicks, double DistanceMeters)> GetDailyMetricsAsync(DateTime from, DateTime to)
+    {
+        var row = await _db.Connection.QueryFirstOrDefaultAsync<dynamic>(@"
+            SELECT SUM(MouseClicks) AS Clicks, SUM(DistanceMeters) AS Distance
+            FROM DailyMetrics
+            WHERE Date >= @FromDate AND Date < @ToDate",
+            new { FromDate = from.ToString("yyyy-MM-dd"), ToDate = to.ToString("yyyy-MM-dd") });
+
+        long clicks = row?.Clicks != null ? (long)row.Clicks : 0L;
+        double dist = row?.Distance != null ? (double)row.Distance : 0.0;
+        return (clicks, dist);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static string Fmt(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss");
