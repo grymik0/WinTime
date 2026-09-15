@@ -69,7 +69,7 @@ No cloud sync, no telemetry, and no account required — **100% of your data sta
 ### Run from Source
 
 ```bash
-git clone https://github.com/grymik0/WinTime.git
+git clone
 cd WinTime
 dotnet run -p:Platform=x64
 ```
