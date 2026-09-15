@@ -27,7 +27,15 @@ public sealed class ActivityTracker : IAsyncDisposable
     private readonly Dictionary<int, int> _uptimeBuffer = [];
     private volatile HashSet<int> _runningAppIds = [];
 
-    // ── Filtry
+    // Mouse tracking
+    private Task? _mouseTask;
+    private long _pendingClicks;
+    private double _pendingDistancePixels;
+    private long _totalClicksToday;
+    private double _totalDistanceMetersToday;
+    private readonly object _mouseLock = new();
+
+    // Filtry
 
     private static readonly HashSet<string> IgnoredClasses = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -41,7 +49,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         "SearchHost", "StartMenuExperienceHost", "TextInputHost", "ApplicationFrameHost", "SystemSettings"
     };
 
-    // ── State
+    // State
 
     private volatile bool _isPaused;
 
@@ -57,7 +65,7 @@ public sealed class ActivityTracker : IAsyncDisposable
     /// <summary>Вызывается при каждом обновлении (раз в секунду) из UI-потока или фонового.</summary>
     public event EventHandler<TrackerStateEventArgs>? StateChanged;
 
-    // ── Constructor
+    // Constructor
 
     public ActivityTracker(
         ApplicationRepository appRepo,
@@ -73,13 +81,37 @@ public sealed class ActivityTracker : IAsyncDisposable
         _settings     = settings;
     }
 
-    // ── Lifecycle
+    public (long Clicks, double DistanceMeters) GetTodayMouseMetrics()
+    {
+        lock (_mouseLock)
+        {
+            return (_totalClicksToday, _totalDistanceMetersToday);
+        }
+    }
+
+    public async Task InitTodayMouseMetricsAsync()
+    {
+        try
+        {
+            var (clicks, dist) = await _activityRepo.GetDailyMetricsAsync(DateTime.Today, DateTime.Today.AddDays(1));
+            lock (_mouseLock)
+            {
+                _totalClicksToday = clicks + _pendingClicks;
+                _totalDistanceMetersToday = dist + (_pendingDistancePixels * 0.0002645833);
+            }
+        }
+        catch { }
+    }
+
+    // Lifecycle
 
     public void Start()
     {
         _cts         = new CancellationTokenSource();
+        _ = InitTodayMouseMetricsAsync();
         _workerTask  = Task.Run(() => TrackLoopAsync(_cts.Token));
         _flushTask   = Task.Run(() => FlushLoopAsync(_cts.Token));
+        _mouseTask   = Task.Run(() => MouseLoopAsync(_cts.Token));
     }
 
     public async Task StopAsync()
@@ -89,6 +121,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         {
             if (_workerTask is not null) await _workerTask;
             if (_flushTask  is not null) await _flushTask;
+            if (_mouseTask  is not null) await _mouseTask;
         }
         catch (OperationCanceledException) { }
 
@@ -101,7 +134,76 @@ public sealed class ActivityTracker : IAsyncDisposable
         _cts.Dispose();
     }
 
-    // ── Worker loops
+    // Worker loops
+
+    private async Task MouseLoopAsync(CancellationToken ct)
+    {
+        // 96 DPI standard: 1 inch = 2.54 cm = 0.0254 m. 1 px = 0.0254 / 96 = ~0.0002645833 meters
+        const double metersPerPixel = 0.0002645833;
+        NativeMethods.POINT lastPt = default;
+        bool hasLastPt = false;
+
+        bool prevLeft = false;
+        bool prevRight = false;
+        bool prevMiddle = false;
+
+        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(25));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(ct))
+            {
+                if (_isPaused) continue;
+
+                if (NativeMethods.GetCursorPos(out var pt))
+                {
+                    if (hasLastPt)
+                    {
+                        int dx = pt.X - lastPt.X;
+                        int dy = pt.Y - lastPt.Y;
+                        if (dx != 0 || dy != 0)
+                        {
+                            double distPx = Math.Sqrt(dx * dx + dy * dy);
+                            // Игнорируем скачки курсора между мониторами / после выхода из сна (> 500 px за 25мс = 20,000 px/сек)
+                            if (distPx > 0 && distPx < 500)
+                            {
+                                lock (_mouseLock)
+                                {
+                                    _pendingDistancePixels += distPx;
+                                    _totalDistanceMetersToday += distPx * metersPerPixel;
+                                }
+                            }
+                        }
+                    }
+                    lastPt = pt;
+                    hasLastPt = true;
+                }
+
+                // Check button transitions (key down edge)
+                bool curLeft   = (NativeMethods.GetAsyncKeyState(NativeMethods.VK_LBUTTON) & 0x8000) != 0;
+                bool curRight  = (NativeMethods.GetAsyncKeyState(NativeMethods.VK_RBUTTON) & 0x8000) != 0;
+                bool curMiddle = (NativeMethods.GetAsyncKeyState(NativeMethods.VK_MBUTTON) & 0x8000) != 0;
+
+                int clicks = 0;
+                if (curLeft && !prevLeft) clicks++;
+                if (curRight && !prevRight) clicks++;
+                if (curMiddle && !prevMiddle) clicks++;
+
+                prevLeft   = curLeft;
+                prevRight  = curRight;
+                prevMiddle = curMiddle;
+
+                if (clicks > 0)
+                {
+                    lock (_mouseLock)
+                    {
+                        _pendingClicks += clicks;
+                        _totalClicksToday += clicks;
+                    }
+                }
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
 
     private async Task TrackLoopAsync(CancellationToken ct)
     {
@@ -131,7 +233,7 @@ public sealed class ActivityTracker : IAsyncDisposable
         catch (OperationCanceledException) { }
     }
 
-    // ── Tick processing
+    // Tick processing
 
     private async Task ProcessTickAsync()
     {
@@ -282,11 +384,27 @@ public sealed class ActivityTracker : IAsyncDisposable
                 var today = DateTime.Now.ToString("yyyy-MM-dd");
                 await _uptimeRepo.AddUptimeBatchAsync(today, uptimeList);
             }
+
+            long clicksToSave;
+            double distMetersToSave;
+            lock (_mouseLock)
+            {
+                clicksToSave = _pendingClicks;
+                distMetersToSave = _pendingDistancePixels * 0.0002645833;
+                _pendingClicks = 0;
+                _pendingDistancePixels = 0;
+            }
+
+            if (clicksToSave > 0 || distMetersToSave > 0.01)
+            {
+                var today = DateTime.Now.ToString("yyyy-MM-dd");
+                await _activityRepo.SaveDailyMetricsAsync(today, clicksToSave, distMetersToSave);
+            }
         }
         catch { }
     }
 
-    // ── Helpers
+    // Helpers
 
     private static (string name, string path) GetProcessInfo(uint pid)
     {

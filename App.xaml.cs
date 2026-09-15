@@ -19,14 +19,15 @@ namespace WinTime;
 /// </summary>
 public partial class App : Application
 {
-    private TaskbarIcon?  _trayIcon;
-    private MainWindow?   _mainWindow;
-    private bool          _isExiting;
-    private Mutex?        _singleInstanceMutex;
+    private TaskbarIcon?         _trayIcon;
+    private MainWindow?          _mainWindow;
+    private DesktopWidgetWindow? _widgetWindow;
+    private bool                 _isExiting;
+    private Mutex?               _singleInstanceMutex;
 
     public bool IsExiting => _isExiting;
 
-    // ── Startup
+    // Startup
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -84,15 +85,63 @@ public partial class App : Application
 
         SetupTrayIcon();
 
+        // Инициализация виджета
+        InitDesktopWidget(settings);
+
         _mainWindow = new MainWindow();
         _mainWindow.Show();
     }
 
-    // ── Exit
+    private void InitDesktopWidget(SettingsService settings)
+    {
+        _widgetWindow = new DesktopWidgetWindow(AppServices.DesktopWidgetVm, settings);
+        _ = AppServices.DesktopWidgetVm.InitializeAsync();
+
+        if (settings.ShowWidget)
+        {
+            _widgetWindow.Show();
+        }
+
+        AppServices.DesktopWidgetVm.WidgetVisibilityChanged += (_, isVisible) =>
+        {
+            if (isVisible)
+            {
+                _widgetWindow.Show();
+                _widgetWindow.Activate();
+            }
+            else
+            {
+                _widgetWindow.Hide();
+            }
+        };
+
+        AppServices.DesktopWidgetVm.WidgetOpacityChanged += (_, _) =>
+        {
+            _widgetWindow.UpdateOpacity();
+        };
+
+        AppServices.DesktopWidgetVm.ClickThroughChanged += (_, enable) =>
+        {
+            _widgetWindow.UpdateClickThrough(enable);
+        };
+
+        AppServices.DesktopWidgetVm.TopmostChanged += (_, topmost) =>
+        {
+            _widgetWindow.UpdateTopmost(topmost);
+        };
+
+        AppServices.DesktopWidgetVm.ResetPositionRequested += (_, _) =>
+        {
+            _widgetWindow.ResetPosition();
+        };
+    }
+
+    // Exit
 
     protected override async void OnExit(ExitEventArgs e)
     {
         _isExiting = true;
+        _widgetWindow?.Close();
         _trayIcon?.Dispose();
 
         await AppServices.ShutdownAsync();
@@ -103,7 +152,7 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    // ── Tray
+    // Tray
 
     private void SetupTrayIcon()
     {
@@ -119,6 +168,12 @@ public partial class App : Application
 
         var itemOpen = new System.Windows.Controls.MenuItem { Header = "📊  Открыть статистику" };
         itemOpen.Click += (_, _) => ShowMainWindow();
+
+        var itemWidget = new System.Windows.Controls.MenuItem { Header = "📌  Виджет на рабочем столе" };
+        itemWidget.Click += (_, _) =>
+        {
+            AppServices.DesktopWidgetVm.IsWidgetEnabled = !AppServices.DesktopWidgetVm.IsWidgetEnabled;
+        };
 
         var itemPause = new System.Windows.Controls.MenuItem { Header = "⏸  Приостановить учёт" };
         itemPause.Click += (_, _) =>
@@ -144,6 +199,7 @@ public partial class App : Application
 
         menu.Items.Add(itemOpen);
         menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(itemWidget);
         menu.Items.Add(itemPause);
         menu.Items.Add(itemSettings);
         menu.Items.Add(new System.Windows.Controls.Separator());
@@ -167,7 +223,7 @@ public partial class App : Application
         Shutdown();
     }
 
-    // ── Icon generation
+    // Icon generation
 
     /// <summary>
     /// Загружает иконку трея из встроенного ресурса Assets/icon.ico.

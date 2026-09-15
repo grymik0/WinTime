@@ -25,7 +25,7 @@ public sealed class DashboardViewModel : BaseViewModel
     private readonly ActivityRepository _activityRepo;
     private readonly IconService        _iconService;
 
-    // ── Bindable Properties
+    // Bindable Properties
 
     private TimePeriod _selectedPeriod = TimePeriod.Today;
     private string _totalTime  = "—";
@@ -115,11 +115,25 @@ public sealed class DashboardViewModel : BaseViewModel
     public string HeatmapAvgDayText      { get => _heatmapAvgDayText;      private set => SetProperty(ref _heatmapAvgDayText,      value); }
     public string HeatmapConsistencyText { get => _heatmapConsistencyText; private set => SetProperty(ref _heatmapConsistencyText, value); }
 
-    // ── Commands
+    private string _mouseClicksText   = "0";
+    private string _mouseDistanceText = "0 м";
+    public string MouseClicksText   { get => _mouseClicksText;   private set => SetProperty(ref _mouseClicksText,   value); }
+    public string MouseDistanceText { get => _mouseDistanceText; private set => SetProperty(ref _mouseDistanceText, value); }
+
+    private string _rhythmWakeUpText       = "—";
+    private string _rhythmSleepText        = "—";
+    private string _rhythmRestDurationText = "—";
+    private string _rhythmNoteText         = "Данные собираются";
+    public string RhythmWakeUpText       { get => _rhythmWakeUpText;       private set => SetProperty(ref _rhythmWakeUpText,       value); }
+    public string RhythmSleepText        { get => _rhythmSleepText;        private set => SetProperty(ref _rhythmSleepText,        value); }
+    public string RhythmRestDurationText { get => _rhythmRestDurationText; private set => SetProperty(ref _rhythmRestDurationText, value); }
+    public string RhythmNoteText         { get => _rhythmNoteText;         private set => SetProperty(ref _rhythmNoteText,         value); }
+
+    // Commands
 
     public ICommand SetPeriodCommand { get; }
 
-    // ── Colour palette
+    // Colour palette
 
     private static readonly SKColor[] Palette =
     [
@@ -139,7 +153,7 @@ public sealed class DashboardViewModel : BaseViewModel
     private DateTime _currentFrom = DateTime.Today;
     private int  _chartRefreshCounter;
 
-    // ── Constructor
+    // Constructor
 
     public DashboardViewModel(ActivityRepository activityRepo, IconService iconService, ActivityTracker tracker)
     {
@@ -197,6 +211,13 @@ public sealed class DashboardViewModel : BaseViewModel
             // Пересчитываем тренды и сравнение в реальном времени при каждом тике
             ComputeTrendsAndMetrics(_rawActiveSeconds, _rawIdleSeconds, _rawPrevActiveSeconds, _currentFrom);
 
+            if (SelectedPeriod == TimePeriod.Today)
+            {
+                var (curClicks, curDistMeters) = _tracker.GetTodayMouseMetrics();
+                MouseClicksText = FormatClicks(curClicks);
+                MouseDistanceText = FormatDistance(curDistMeters);
+            }
+
             if (++_chartRefreshCounter >= 30)
             {
                 _chartRefreshCounter = 0;
@@ -218,7 +239,7 @@ public sealed class DashboardViewModel : BaseViewModel
         catch { }
     }
 
-    // ── Data loading
+    // Data loading
 
     public async Task LoadDataAsync()
     {
@@ -257,6 +278,17 @@ public sealed class DashboardViewModel : BaseViewModel
             BuildPieChart(apps, totalForPct);
             await BuildBarChartAsync(from, barLabels);
             await BuildHeatmapAsync();
+            await BuildSleepRhythmAsync();
+
+            var (periodClicks, periodDistMeters) = await _activityRepo.GetDailyMetricsAsync(from, to);
+            if (SelectedPeriod == TimePeriod.Today)
+            {
+                var (liveClicks, liveDist) = _tracker.GetTodayMouseMetrics();
+                periodClicks = Math.Max(periodClicks, liveClicks);
+                periodDistMeters = Math.Max(periodDistMeters, liveDist);
+            }
+            MouseClicksText = FormatClicks(periodClicks);
+            MouseDistanceText = FormatDistance(periodDistMeters);
         }
         catch {  }
         finally
@@ -395,6 +427,73 @@ public sealed class DashboardViewModel : BaseViewModel
         catch { }
     }
 
+    private async Task BuildSleepRhythmAsync()
+    {
+        try
+        {
+            var rhythms = await _activityRepo.GetDailyRhythmsAsync(30);
+            if (rhythms.Count == 0)
+            {
+                RhythmWakeUpText = "—";
+                RhythmSleepText = "—";
+                RhythmRestDurationText = "—";
+                RhythmNoteText = "Недостаточно данных";
+                return;
+            }
+
+            // Среднее время первого включения (пробуждения / начала работы)
+            double avgFirstMinutes = rhythms.Average(r => r.FirstActive.TotalMinutes);
+            var avgFirst = TimeSpan.FromMinutes(avgFirstMinutes);
+            RhythmWakeUpText = $"~{avgFirst.Hours:D2}:{avgFirst.Minutes:D2}";
+
+            // Среднее время последнего выключения (завершения работы / отхода ко сну)
+            double avgLastMinutes = rhythms.Average(r => r.LastActive.TotalMinutes);
+            var avgLast = TimeSpan.FromMinutes(avgLastMinutes);
+            RhythmSleepText = $"~{avgLast.Hours:D2}:{avgLast.Minutes:D2}";
+
+            // Средний ночной перерыв между соседними днями
+            var restDurations = new List<double>();
+            for (int i = 0; i < rhythms.Count - 1; i++)
+            {
+                var cur = rhythms[i];
+                var next = rhythms[i + 1];
+                if ((next.Date - cur.Date).TotalDays <= 2)
+                {
+                    // От cur.LastActive до next.FirstActive следующего дня
+                    var endCur = cur.Date.Add(cur.LastActive);
+                    var startNext = next.Date.Add(next.FirstActive);
+                    var restHours = (startNext - endCur).TotalHours;
+                    if (restHours >= 2 && restHours <= 20)
+                    {
+                        restDurations.Add(restHours);
+                    }
+                }
+            }
+
+            if (restDurations.Count > 0)
+            {
+                double avgRestH = restDurations.Average();
+                int h = (int)avgRestH;
+                int m = (int)((avgRestH - h) * 60);
+                RhythmRestDurationText = $"{h}ч {m:D2}м";
+                
+                if (avgRestH >= 7 && avgRestH <= 9)
+                    RhythmNoteText = "Здоровый баланс сна и отдыха";
+                else if (avgRestH < 6)
+                    RhythmNoteText = "Короткий ночной перерыв (< 6ч)";
+                else
+                    RhythmNoteText = "Длительный ночной перерыв";
+            }
+            else
+            {
+                // Если только 1 день или нет непрерывных пар
+                RhythmRestDurationText = "—";
+                RhythmNoteText = $"По данным за {rhythms.Count} {GetDaysWord(rhythms.Count)}";
+            }
+        }
+        catch { }
+    }
+
     private static string GetDaysWord(int count)
     {
         int c10 = count % 10;
@@ -487,7 +586,7 @@ public sealed class DashboardViewModel : BaseViewModel
         }
     }
 
-    // ── Chart builders
+    // Chart builders
 
     private void BuildPieChart(List<AppStatItem> apps, long total)
     {
@@ -582,7 +681,7 @@ public sealed class DashboardViewModel : BaseViewModel
         ];
     }
 
-    // ── Period range
+    // Period range
 
     private (DateTime from, DateTime to, string[] labels) GetPeriodRange()
     {
@@ -616,5 +715,19 @@ public sealed class DashboardViewModel : BaseViewModel
         if (ts.TotalMinutes >= 1) return $"{ts.Minutes}м {ts.Seconds:D2}с";
         return $"{ts.Seconds}с";
     }
+
+    public static string FormatClicks(long clicks) => clicks switch
+    {
+        >= 1_000_000 => $"{clicks / 1_000_000.0:F1}M",
+        >= 10_000    => $"{clicks / 1_000.0:F1}k",
+        _            => $"{clicks:N0}"
+    };
+
+    public static string FormatDistance(double meters) => meters switch
+    {
+        >= 10_000 => $"{meters / 1000.0:F1} км",
+        >= 1_000  => $"{meters / 1000.0:F2} км",
+        _         => $"{meters:F0} м"
+    };
 }
 

@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -25,7 +25,7 @@ public partial class MainWindow : Window
         catch { }
     }
 
-    // ── Navigation animation
+    // Navigation animation
 
     private void OnVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -55,7 +55,7 @@ public partial class MainWindow : Window
             new DoubleAnimation(12, 0, duration) { EasingFunction = ease });
     }
 
-    // ── Window closing
+    // Window closing
 
     /// <summary>
     /// Закрытие окна прячет его в трей вместо завершения приложения.

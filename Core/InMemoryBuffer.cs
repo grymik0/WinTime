@@ -1,4 +1,4 @@
-using WinTime.Models;
+﻿using WinTime.Models;
 
 namespace WinTime.Core;
 
@@ -13,7 +13,7 @@ public sealed class InMemoryBuffer
     private ActiveEntry? _current;
     private readonly List<ActivitySession> _completed = [];
 
-    // ── Public API ──────────────────────────────────────────────────────────
+    // Public API
 
     /// <summary>
     /// Вызывается каждую секунду из ActivityTracker.
@@ -83,7 +83,7 @@ public sealed class InMemoryBuffer
         }
     }
 
-    // ── Private ──────────────────────────────────────────────────────────────
+    // Private
 
     private sealed class ActiveEntry(int appId, string windowTitle, bool isIdle, DateTime startTime)
     {

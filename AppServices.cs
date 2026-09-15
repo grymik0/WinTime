@@ -25,10 +25,12 @@ internal static class AppServices
     public static DashboardViewModel      DashboardVm     { get; private set; } = null!;
     public static ProcessesViewModel      ProcessesVm     { get; private set; } = null!;
     public static ApplicationsViewModel   ApplicationsVm  { get; private set; } = null!;
+    public static ProfileViewModel        ProfileVm       { get; private set; } = null!;
     public static SettingsViewModel       SettingsVm      { get; private set; } = null!;
     public static MainWindowViewModel     MainWindowVm    { get; private set; } = null!;
+    public static DesktopWidgetViewModel  DesktopWidgetVm { get; private set; } = null!;
 
-    // ── Initialization
+    // Initialization
 
     public static void Initialize(SettingsService settings)
     {
@@ -46,11 +48,13 @@ internal static class AppServices
         Tracker = new ActivityTracker(AppRepo, ActivityRepo, UptimeRepo, Buffer, Settings);
 
         // ViewModels
-        DashboardVm    = new DashboardViewModel(ActivityRepo, IconService, Tracker);
-        ProcessesVm    = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker);
-        ApplicationsVm = new ApplicationsViewModel(AppRepo, ActivityRepo);
-        SettingsVm     = new SettingsViewModel(Settings, ActivityRepo, ExportService);
-        MainWindowVm   = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, SettingsVm);
+        DashboardVm     = new DashboardViewModel(ActivityRepo, IconService, Tracker);
+        ProcessesVm     = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker);
+        ApplicationsVm  = new ApplicationsViewModel(AppRepo, ActivityRepo);
+        ProfileVm       = new ProfileViewModel(ActivityRepo, Tracker);
+        SettingsVm      = new SettingsViewModel(Settings, ActivityRepo, ExportService);
+        DesktopWidgetVm = new DesktopWidgetViewModel(Tracker, ActivityRepo, Settings);
+        MainWindowVm    = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, ProfileVm, DesktopWidgetVm, SettingsVm);
     }
 
     public static async Task ShutdownAsync()

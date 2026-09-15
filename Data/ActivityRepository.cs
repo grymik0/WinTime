@@ -12,7 +12,7 @@ public sealed class ActivityRepository
 
     public ActivityRepository(DatabaseService db) => _db = db;
 
-    // ── Write ─────────────────────────────────────────────────────────────────
+    // Write
 
     /// <summary>
     /// Вставляет список сессий одной транзакцией (30-секундный flush).
@@ -47,7 +47,7 @@ public sealed class ActivityRepository
         }
     }
 
-    // ── Analytics ─────────────────────────────────────────────────────────────
+    // Analytics
 
     /// <summary>Суммарное активное и idle время за период.</summary>
     public async Task<(long Active, long Idle)> GetTotalsAsync(DateTime from, DateTime to)
@@ -89,6 +89,34 @@ public sealed class ActivityRepository
             AppId       = (int)r.AppId,
             ProcessName = (string)r.ProcessName,
             DisplayName = (string)r.DisplayName,
+            TotalSeconds = (long)r.TotalSeconds
+        }).ToList();
+    }
+
+    /// <summary>Получает статистику активности по играм за период.</summary>
+    public async Task<List<AppStatItem>> GetGamesActivityAsync(DateTime from, DateTime to)
+    {
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT
+                a.Id AS AppId,
+                a.ProcessName,
+                COALESCE(a.DisplayName, a.ProcessName) AS DisplayName,
+                a.IconBlob,
+                SUM(s.DurationSeconds) AS TotalSeconds
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.StartTime >= @From AND s.StartTime < @To
+              AND s.IsIdle = 0 AND a.IsBlacklisted = 0
+              AND a.Category = 'Игры'
+            GROUP BY a.Id
+            ORDER BY TotalSeconds DESC",
+            new { From = Fmt(from), To = Fmt(to) });
+
+        return rows.Select(r => new AppStatItem
+        {
+            AppId        = (int)r.AppId,
+            ProcessName  = (string)r.ProcessName,
+            DisplayName  = (string)r.DisplayName,
             TotalSeconds = (long)r.TotalSeconds
         }).ToList();
     }
@@ -214,7 +242,103 @@ public sealed class ActivityRepository
         return dict;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    public async Task SaveDailyMetricsAsync(string date, long clicks, double distanceMeters)
+    {
+        await _db.Connection.ExecuteAsync(@"
+            INSERT INTO DailyMetrics (Date, MouseClicks, DistanceMeters)
+            VALUES (@Date, @MouseClicks, @DistanceMeters)
+            ON CONFLICT(Date) DO UPDATE SET
+                MouseClicks = MouseClicks + @MouseClicks,
+                DistanceMeters = DistanceMeters + @DistanceMeters",
+            new { Date = date, MouseClicks = clicks, DistanceMeters = distanceMeters });
+    }
+
+    public async Task<(long Clicks, double DistanceMeters)> GetDailyMetricsAsync(DateTime from, DateTime to)
+    {
+        var row = await _db.Connection.QueryFirstOrDefaultAsync<dynamic>(@"
+            SELECT SUM(MouseClicks) AS Clicks, SUM(DistanceMeters) AS Distance
+            FROM DailyMetrics
+            WHERE Date >= @FromDate AND Date < @ToDate",
+            new { FromDate = from.ToString("yyyy-MM-dd"), ToDate = to.ToString("yyyy-MM-dd") });
+
+        long clicks = row?.Clicks != null ? (long)row.Clicks : 0L;
+        double dist = row?.Distance != null ? (double)row.Distance : 0.0;
+        return (clicks, dist);
+    }
+
+    public async Task<(long LifetimeActiveSeconds, long MaxDaySeconds, int TotalActiveDays, long TotalClicks, double TotalDistanceMeters)> GetLifetimeStatsAsync()
+    {
+        var row = await _db.Connection.QueryFirstOrDefaultAsync<dynamic>(@"
+            SELECT 
+                SUM(s.DurationSeconds) AS TotalActive
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.IsIdle = 0 AND a.IsBlacklisted = 0");
+
+        var dayRows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT date(s.StartTime) AS DayDate, SUM(s.DurationSeconds) AS DayTotal
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.IsIdle = 0 AND a.IsBlacklisted = 0
+            GROUP BY DayDate");
+
+        var mouseRow = await _db.Connection.QueryFirstOrDefaultAsync<dynamic>(@"
+            SELECT SUM(MouseClicks) AS Clicks, SUM(DistanceMeters) AS Dist FROM DailyMetrics");
+
+        long lifetimeActive = row?.TotalActive != null ? (long)row.TotalActive : 0L;
+        long maxDay = 0;
+        int activeDays = 0;
+
+        foreach (var dr in dayRows)
+        {
+            activeDays++;
+            long dt = dr.DayTotal != null ? (long)dr.DayTotal : 0L;
+            if (dt > maxDay) maxDay = dt;
+        }
+
+        long totalClicks = mouseRow?.Clicks != null ? (long)mouseRow.Clicks : 0L;
+        double totalDist = mouseRow?.Dist != null ? (double)mouseRow.Dist : 0.0;
+
+        return (lifetimeActive, maxDay, activeDays, totalClicks, totalDist);
+    }
+
+    /// <summary>
+    /// Анализ режима дня и ночного перерыва:
+    /// возвращает время первого и последнего активного действия за каждый день за последние N дней (по умолчанию 30).
+    /// </summary>
+    public async Task<List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>> GetDailyRhythmsAsync(int days = 30)
+    {
+        var fromDate = DateTime.Today.AddDays(-days);
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT 
+                date(s.StartTime) AS DayDate,
+                MIN(time(s.StartTime)) AS MinTime,
+                MAX(time(datetime(s.StartTime, '+' || s.DurationSeconds || ' seconds'))) AS MaxTime
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.StartTime >= @FromDate
+              AND s.IsIdle = 0
+              AND a.IsBlacklisted = 0
+            GROUP BY DayDate
+            ORDER BY DayDate ASC",
+            new { FromDate = Fmt(fromDate) });
+
+        var result = new List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>();
+        foreach (var r in rows)
+        {
+            if (r.DayDate is not null && DateTime.TryParse((string)r.DayDate, out DateTime d))
+            {
+                if (TimeSpan.TryParse((string)r.MinTime, out TimeSpan minT) &&
+                    TimeSpan.TryParse((string)r.MaxTime, out TimeSpan maxT))
+                {
+                    result.Add((d, minT, maxT));
+                }
+            }
+        }
+        return result;
+    }
+
+    // Helpers
 
     private static string Fmt(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss");
 }

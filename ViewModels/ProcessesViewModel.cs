@@ -65,6 +65,32 @@ public sealed class ProcessesViewModel : BaseViewModel
         }
     }
 
+    private bool _onlyGames;
+
+    public bool OnlyGames
+    {
+        get => _onlyGames;
+        set
+        {
+            if (SetProperty(ref _onlyGames, value))
+            {
+                OnPropertyChanged(nameof(FilterAllBackground));
+                OnPropertyChanged(nameof(FilterGamesBackground));
+                OnPropertyChanged(nameof(FilterAllForeground));
+                OnPropertyChanged(nameof(FilterGamesForeground));
+                ApplyFilter();
+            }
+        }
+    }
+
+    public string FilterAllBackground   => !OnlyGames ? "#6366F1" : "#252535";
+    public string FilterAllForeground   => !OnlyGames ? "White" : "#9CA3AF";
+    public string FilterGamesBackground => OnlyGames ? "#EC4899" : "#252535";
+    public string FilterGamesForeground => OnlyGames ? "White" : "#9CA3AF";
+
+    public ICommand ShowAllProcessesCommand => new RelayCommand(() => OnlyGames = false);
+    public ICommand ShowOnlyGamesCommand    => new RelayCommand(() => OnlyGames = true);
+
     public bool IsPeriodToday => _selectedPeriod == TimePeriod.Today;
     public bool IsPeriodWeek  => _selectedPeriod == TimePeriod.Week;
     public bool IsPeriodMonth => _selectedPeriod == TimePeriod.Month;
@@ -251,13 +277,21 @@ public sealed class ProcessesViewModel : BaseViewModel
     private void ApplyFilter()
     {
         var q = _searchText.Trim();
-        var filtered = string.IsNullOrEmpty(q)
-            ? _allItems
-            : _allItems.Where(a =>
+        var source = _allItems.AsEnumerable();
+
+        if (OnlyGames)
+        {
+            source = source.Where(a => string.Equals(a.Category, "Игры", StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrEmpty(q))
+        {
+            source = source.Where(a =>
                 a.FriendlyName.Contains(q, StringComparison.OrdinalIgnoreCase) ||
                 a.ProcessName.Contains(q, StringComparison.OrdinalIgnoreCase));
+        }
 
-        Items = new ObservableCollection<ProcessUptimeItem>(filtered);
+        Items = new ObservableCollection<ProcessUptimeItem>(source);
     }
 
     private (DateTime from, DateTime to) GetPeriodRange()

@@ -20,7 +20,7 @@ public sealed class SettingsService
 
     private AppSettings _s = new();
 
-    // ── Properties ──────────────────────────────────────────────────────────
+    // Properties
 
     /// <summary>Путь к файлу SQLite. null если пользователь ещё не выбрал.</summary>
     public string? DatabasePath
@@ -46,7 +46,79 @@ public sealed class SettingsService
         set { _s.LaunchOnStartup = value; Save(); }
     }
 
-    // ── Load / Save ─────────────────────────────────────────────────────────
+    public bool ShowWidget
+    {
+        get => _s.ShowWidget;
+        set { _s.ShowWidget = value; Save(); }
+    }
+
+    public double WidgetLeft
+    {
+        get => _s.WidgetLeft;
+        set { _s.WidgetLeft = value; Save(); }
+    }
+
+    public double WidgetTop
+    {
+        get => _s.WidgetTop;
+        set { _s.WidgetTop = value; Save(); }
+    }
+
+    public bool WidgetShowApp
+    {
+        get => _s.WidgetShowApp;
+        set { _s.WidgetShowApp = value; Save(); }
+    }
+
+    public bool WidgetShowTime
+    {
+        get => _s.WidgetShowTime;
+        set { _s.WidgetShowTime = value; Save(); }
+    }
+
+    public bool WidgetShowLevel
+    {
+        get => _s.WidgetShowLevel;
+        set { _s.WidgetShowLevel = value; Save(); }
+    }
+
+    public bool WidgetShowMouse
+    {
+        get => _s.WidgetShowMouse;
+        set { _s.WidgetShowMouse = value; Save(); }
+    }
+
+    public double WidgetOpacity
+    {
+        get => _s.WidgetOpacity;
+        set { _s.WidgetOpacity = Math.Clamp(value, 0.3, 1.0); Save(); }
+    }
+
+    public bool WidgetClickThrough
+    {
+        get => _s.WidgetClickThrough;
+        set { _s.WidgetClickThrough = value; Save(); }
+    }
+
+    public bool WidgetTopmost
+    {
+        get => _s.WidgetTopmost;
+        set { _s.WidgetTopmost = value; Save(); }
+    }
+
+    public bool WidgetShowSession
+    {
+        get => _s.WidgetShowSession;
+        set { _s.WidgetShowSession = value; Save(); }
+    }
+
+    public bool WidgetCompactMode
+    {
+        get => _s.WidgetCompactMode;
+        set { _s.WidgetCompactMode = value; Save(); }
+    }
+
+    // Load / Save
 
     public void Load()
     {
@@ -74,13 +146,25 @@ public sealed class SettingsService
         catch { /* не ломаем приложение из-за настроек */ }
     }
 
-    // ── Internal model ───────────────────────────────────────────────────────
+    // Internal model
 
     private sealed class AppSettings
     {
         public string? DatabasePath { get; set; }
         public int AfkThresholdSeconds { get; set; } = 120;
         public bool LaunchOnStartup { get; set; }
+        public bool ShowWidget { get; set; } = false;
+        public double WidgetLeft { get; set; } = -1;
+        public double WidgetTop { get; set; } = -1;
+        public bool WidgetShowApp { get; set; } = true;
+        public bool WidgetShowTime { get; set; } = true;
+        public bool WidgetShowLevel { get; set; } = true;
+        public bool WidgetShowMouse { get; set; } = true;
+        public double WidgetOpacity { get; set; } = 0.95;
+        public bool WidgetClickThrough { get; set; } = false;
+        public bool WidgetTopmost { get; set; } = true;
+        public bool WidgetShowSession { get; set; } = true;
+        public bool WidgetCompactMode { get; set; } = false;
     }
 }
 

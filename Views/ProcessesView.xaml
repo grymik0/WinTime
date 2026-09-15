@@ -152,7 +152,8 @@
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
@@ -167,7 +168,23 @@
                      BorderThickness="1"
                      VerticalContentAlignment="Center" />
 
-            <Button Grid.Column="2"
+            <!-- Переключатель режима (Все / Только игры) -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="14 0 0 0">
+                <Button Content="Все процессы"
+                        Command="{Binding ShowAllProcessesCommand}"
+                        Background="{Binding FilterAllBackground}"
+                        Foreground="{Binding FilterAllForeground}"
+                        Style="{StaticResource PeriodBtn}"
+                        Margin="0 0 6 0" />
+
+                <Button Content="🎮  Игровой режим"
+                        Command="{Binding ShowOnlyGamesCommand}"
+                        Background="{Binding FilterGamesBackground}"
+                        Foreground="{Binding FilterGamesForeground}"
+                        Style="{StaticResource PeriodBtn}" />
+            </StackPanel>
+
+            <Button Grid.Column="3"
                     Content="🔄  Обновить"
                     Command="{Binding RefreshCommand}"
                     Padding="14 7"

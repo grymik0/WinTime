@@ -101,14 +101,14 @@
 
             </StackPanel>
 
-            <UniformGrid Columns="3" Margin="0 0 0 20">
+            <UniformGrid Columns="4" Margin="0 0 0 20">
 
-                <Border Style="{StaticResource StatCard}" Margin="0 0 10 0">
+                <Border Style="{StaticResource StatCard}" Margin="0 0 8 0">
                     <StackPanel>
                         <TextBlock Text="⏱  Экранное время"
                                    FontSize="12" Foreground="#6B7280" Margin="0 0 0 6" />
                         <TextBlock Text="{Binding TotalTime}"
-                                   FontSize="30" FontWeight="Bold" Foreground="White" />
+                                   FontSize="26" FontWeight="Bold" Foreground="White" />
 
                         <StackPanel Orientation="Horizontal" Margin="0 6 0 0"
                                     Visibility="{Binding HasTrend, Converter={StaticResource BoolToVisibility}}">
@@ -126,12 +126,12 @@
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource StatCard}" Margin="5 0 5 0">
+                <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
                     <StackPanel>
                         <TextBlock Text="💤  Время AFK"
                                    FontSize="12" Foreground="#6B7280" Margin="0 0 0 6" />
                         <TextBlock Text="{Binding IdleTime}"
-                                   FontSize="30" FontWeight="Bold" Foreground="#F59E0B" />
+                                   FontSize="26" FontWeight="Bold" Foreground="#F59E0B" />
 
                         <TextBlock Text="{Binding IdleRatioText}"
                                    FontSize="11" Foreground="#9CA3AF" Margin="0 8 0 0"
@@ -139,7 +139,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource StatCard}" Margin="10 0 0 0">
+                <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
                     <StackPanel>
                         <TextBlock Text="🏆  Топ приложение"
                                    FontSize="12" Foreground="#6B7280" Margin="0 0 0 6" />
@@ -151,6 +151,40 @@
                                    FontSize="11" Foreground="#9CA3AF" Margin="0 14 0 0"
                                    TextTrimming="CharacterEllipsis"
                                    Visibility="{Binding HasSubMetric, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCard}" Margin="8 0 0 0">
+                    <StackPanel>
+                        <TextBlock Text="🖱  Активность мыши"
+                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 8" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Клики -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding MouseClicksText}"
+                                           FontSize="20" FontWeight="Bold" Foreground="#10B981"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="кликов" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
+                            </StackPanel>
+
+                            <!-- Тонкий вертикальный разделитель -->
+                            <Border Grid.Column="1" Width="1" Background="#252535" Margin="4 2 8 2" />
+
+                            <!-- Дистанция -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{Binding MouseDistanceText}"
+                                           FontSize="20" FontWeight="Bold" Foreground="#818CF8"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="дистанция" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </Border>
 
@@ -321,6 +355,56 @@
                             </Grid>
                         </StackPanel>
                     </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Анализ режима дня и сна -->
+            <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16" Margin="0 0 0 20">
+                <StackPanel>
+                    <Grid Margin="0 0 0 14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="🌙  Режим дня и сон" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+                            <TextBlock Text=" (по времени активности ПК)" FontSize="12" Foreground="#6B7280" Margin="6 2 0 0" />
+                        </StackPanel>
+
+                        <Border Grid.Column="1" Background="#252535" CornerRadius="6" Padding="10 4">
+                            <TextBlock Text="{Binding RhythmNoteText}" FontSize="12" FontWeight="Medium" Foreground="#A5B4FC" />
+                        </Border>
+                    </Grid>
+
+                    <UniformGrid Columns="3" Margin="0 4 0 0">
+                        <!-- Включение / Подъём -->
+                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="0 0 8 0">
+                            <StackPanel>
+                                <TextBlock Text="🌅  Первое включение (подъём)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="{Binding RhythmWakeUpText}" FontSize="20" FontWeight="Bold" Foreground="#F59E0B" />
+                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Выключение / Отбой -->
+                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="4 0 4 0">
+                            <StackPanel>
+                                <TextBlock Text="🌃  Последнее выключение (отбой)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="{Binding RhythmSleepText}" FontSize="20" FontWeight="Bold" Foreground="#818CF8" />
+                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Ночной перерыв -->
+                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="8 0 0 0">
+                            <StackPanel>
+                                <TextBlock Text="💤  Ночной перерыв (сон/отдых)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="{Binding RhythmRestDurationText}" FontSize="20" FontWeight="Bold" Foreground="#10B981" />
+                                <TextBlock Text="интервал выключенного ПК" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
                 </StackPanel>
             </Border>
 
