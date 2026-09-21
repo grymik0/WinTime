@@ -4,7 +4,7 @@ using System.Text;
 namespace WinTime.Core;
 
 /// <summary>
-/// P/Invoke-обёртки для Win32 API (user32.dll, kernel32.dll).
+/// P/Invoke bindings for Win32 API (user32.dll and kernel32.dll).
 /// </summary>
 internal static class NativeMethods
 {

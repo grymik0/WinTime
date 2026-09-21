@@ -4,8 +4,7 @@ using WinTime.ViewModels;
 namespace WinTime.Models;
 
 /// <summary>
-/// DTO для одной строки в таблице статистики на дашборде.
-/// Поддерживает автоматическое обновление в UI при инкременте времени.
+/// Display model for an application row in the dashboard top list.
 /// </summary>
 public sealed class AppStatItem : BaseViewModel
 {
@@ -16,7 +15,6 @@ public sealed class AppStatItem : BaseViewModel
     public string ProcessName { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
 
-    /// <summary>Суммарное экранное время в секундах.</summary>
     public long TotalSeconds
     {
         get => _totalSeconds;
@@ -27,10 +25,8 @@ public sealed class AppStatItem : BaseViewModel
         }
     }
 
-    /// <summary>Иконка приложения (загружается лениво через IconService).</summary>
     public BitmapSource? Icon { get; set; }
 
-    /// <summary>Доля от общего времени за период (0–100).</summary>
     public double Percentage
     {
         get => _percentage;
@@ -56,3 +52,4 @@ public sealed class AppStatItem : BaseViewModel
         return $"{ts.Seconds}с";
     }
 }
+

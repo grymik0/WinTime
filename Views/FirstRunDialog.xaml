@@ -1,8 +1,8 @@
 <Window x:Class="WinTime.Views.FirstRunDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Добро пожаловать в WinTime"
-        Width="540" Height="320"
+        Title="{DynamicResource Setup_Title}"
+        Width="560" Height="380"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="#1C1C28"
@@ -11,9 +11,11 @@
     <Grid Margin="32">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="12" />
+            <RowDefinition Height="14" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -21,18 +23,45 @@
 
         <!-- Title -->
         <StackPanel Grid.Row="0">
-            <TextBlock Text="⏱  WinTime" FontSize="26" FontWeight="Bold" Foreground="#6366F1" />
-            <TextBlock Text="Учёт экранного времени" FontSize="13" Foreground="#9CA3AF" Margin="0 4 0 0" />
+            <TextBlock Text="⏱  WinTime" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock Text="{DynamicResource App_Subtitle}" FontSize="13" Foreground="#9CA3AF" Margin="0 4 0 0" />
         </StackPanel>
 
+        <!-- Language Selector -->
+        <Border Grid.Row="2" Background="#252535" CornerRadius="8" Padding="12 10" BorderBrush="#374151" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{DynamicResource Setup_SelectLanguage}"
+                           VerticalAlignment="Center"
+                           FontSize="12" Foreground="#D1D5DB" FontWeight="Medium" />
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button x:Name="BtnLangRu" Content="🇷🇺 Русский"
+                            Click="BtnLangRu_Click"
+                            Padding="12 5" Margin="0 0 6 0"
+                            FontSize="12" FontWeight="SemiBold"
+                            BorderThickness="1" Cursor="Hand" />
+                    <Button x:Name="BtnLangEn" Content="🇬🇧 English"
+                            Click="BtnLangEn_Click"
+                            Padding="12 5"
+                            FontSize="12" FontWeight="SemiBold"
+                            BorderThickness="1" Cursor="Hand" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
         <!-- Description -->
-        <TextBlock Grid.Row="2"
-                   Text="Выберите файл, в котором WinTime будет хранить базу данных.&#10;Если файл не существует — он будет создан автоматически."
+        <TextBlock Grid.Row="4"
+                   Text="{DynamicResource Setup_Desc}"
                    FontSize="13" Foreground="#D1D5DB"
-                   TextWrapping="Wrap" LineHeight="22" />
+                   TextWrapping="Wrap" LineHeight="20" />
 
         <!-- Path input -->
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="8" />
@@ -48,10 +77,10 @@
                      Foreground="White"
                      BorderBrush="#374151"
                      VerticalContentAlignment="Center"
-                     Text="Путь не выбран…" />
+                     Text="{DynamicResource Setup_PathEmpty}" />
 
             <Button Grid.Column="2"
-                    Content="Обзор…"
+                    Content="{DynamicResource Setup_Browse}"
                     Click="BtnBrowse_Click"
                     Padding="16 6"
                     FontSize="13"
@@ -62,13 +91,13 @@
         </Grid>
 
         <!-- Start button -->
-        <Button Grid.Row="6"
-                Content="Начать отслеживание  →"
+        <Button Grid.Row="8"
+                Content="{DynamicResource Setup_Start}"
                 Click="BtnStart_Click"
                 HorizontalAlignment="Right"
                 Padding="20 10"
                 FontSize="14" FontWeight="SemiBold"
-                Background="#6366F1"
+                Background="{DynamicResource AccentBrush}"
                 Foreground="White"
                 BorderThickness="0"
                 Cursor="Hand"

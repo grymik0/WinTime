@@ -103,13 +103,11 @@ public sealed class ProfileViewModel : BaseViewModel
             var (lifetimeActive, maxDaySec, activeDays, totalClicks, totalDistMeters) =
                 await _activityRepo.GetLifetimeStatsAsync();
 
-            // 1 минута активности = 10 XP (т.е. 1 час = 600 XP)
+            // 1 minute of activity = 10 XP (600 XP/hr)
             long totalXp = (lifetimeActive / 60) * 10;
             CurrentXp = totalXp;
 
-            // Расчет уровня: каждый уровень требует 1000 XP
-            // Уровень 1: 0 - 999 XP
-            // Уровень 2: 1000 - 1999 XP и т.д.
+            // Level progression: each level requires 1000 XP
             const int xpPerLevel = 1000;
             int level = (int)(totalXp / xpPerLevel) + 1;
             UserLevel = level;

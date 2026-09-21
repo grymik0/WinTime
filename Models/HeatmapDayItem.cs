@@ -4,7 +4,7 @@ using System.Windows.Media;
 namespace WinTime.Models;
 
 /// <summary>
-/// Представляет один день в сетке календаря активности (Heatmap).
+/// Represents a single calendar day cell in the activity heatmap.
 /// </summary>
 public sealed class HeatmapDayItem
 {
@@ -23,7 +23,7 @@ public sealed class HeatmapDayItem
 
     public DateTime Date { get; set; }
     public long ActiveSeconds { get; set; }
-    public int Intensity { get; set; } // 0..4
+    public int Intensity { get; set; }
     public string ColorHex { get; set; } = "#252535";
     public string TooltipText { get; set; } = string.Empty;
     public bool IsFuture { get; set; }
@@ -35,7 +35,7 @@ public sealed class HeatmapDayItem
 }
 
 /// <summary>
-/// Колонка одной недели для тепловой карты (содержит до 7 дней: Пн..Вс).
+/// Column of days representing a single week in the activity heatmap.
 /// </summary>
 public sealed class HeatmapWeekItem
 {

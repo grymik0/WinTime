@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace WinTime.Services;
 
 /// <summary>
-/// Хранит и сохраняет пользовательские настройки в %AppData%\WinTime\settings.json.
+/// Persists and manages user configuration in %AppData%\WinTime\settings.json.
 /// </summary>
 public sealed class SettingsService
 {
@@ -20,20 +20,15 @@ public sealed class SettingsService
 
     private AppSettings _s = new();
 
-    // Properties
-
-    /// <summary>Путь к файлу SQLite. null если пользователь ещё не выбрал.</summary>
     public string? DatabasePath
     {
         get => _s.DatabasePath;
         set { _s.DatabasePath = value; Save(); }
     }
 
-    /// <summary>true если пользователь уже выбрал путь к БД.</summary>
     public bool IsDatabaseConfigured =>
         !string.IsNullOrWhiteSpace(_s.DatabasePath);
 
-    /// <summary>Порог AFK в секундах (default 120).</summary>
     public int AfkThresholdSeconds
     {
         get => _s.AfkThresholdSeconds;
@@ -118,6 +113,24 @@ public sealed class SettingsService
         set { _s.WidgetCompactMode = value; Save(); }
     }
 
+    public string ThemeMode
+    {
+        get => _s.ThemeMode;
+        set { _s.ThemeMode = value; Save(); }
+    }
+
+    public string AccentColor
+    {
+        get => _s.AccentColor;
+        set { _s.AccentColor = value; Save(); }
+    }
+
+    public string Language
+    {
+        get => _s.Language;
+        set { _s.Language = value; Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -143,7 +156,7 @@ public sealed class SettingsService
             Directory.CreateDirectory(SettingsDir);
             File.WriteAllText(SettingsPath, JsonSerializer.Serialize(_s, _json));
         }
-        catch { /* не ломаем приложение из-за настроек */ }
+        catch { }
     }
 
     // Internal model
@@ -165,6 +178,9 @@ public sealed class SettingsService
         public bool WidgetTopmost { get; set; } = true;
         public bool WidgetShowSession { get; set; } = true;
         public bool WidgetCompactMode { get; set; } = false;
+        public string ThemeMode { get; set; } = "Dark";
+        public string AccentColor { get; set; } = "Indigo";
+        public string Language { get; set; } = "Ru";
     }
 }
 

@@ -4,8 +4,7 @@ using System.Windows.Data;
 namespace WinTime.Converters;
 
 /// <summary>
-/// Конвертирует long/int секунды в читаемую строку «1ч 23м» / «45м 10с» / «30с».
-/// Используется в XAML через {Binding ..., Converter={x:Static conv:SecondsToTimeConverter.Instance}}.
+/// Converts seconds (long/int) into human-readable duration strings.
 /// </summary>
 [ValueConversion(typeof(long), typeof(string))]
 public sealed class SecondsToTimeConverter : IValueConverter
@@ -23,10 +22,10 @@ public sealed class SecondsToTimeConverter : IValueConverter
 
         var ts = TimeSpan.FromSeconds(seconds);
         if (ts.TotalHours >= 1)
-            return $"{(int)ts.TotalHours}ч {ts.Minutes:D2}м";
+            return $"{(int)ts.TotalHours}h {ts.Minutes:D2}m";
         if (ts.TotalMinutes >= 1)
-            return $"{ts.Minutes}м {ts.Seconds:D2}с";
-        return $"{ts.Seconds}с";
+            return $"{ts.Minutes}m {ts.Seconds:D2}s";
+        return $"{ts.Seconds}s";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

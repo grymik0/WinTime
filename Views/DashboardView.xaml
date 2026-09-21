@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              xmlns:vm="clr-namespace:WinTime.ViewModels"
-             Background="#16161E">
+             Background="{DynamicResource AppBgBrush}">
 
     <UserControl.Resources>
         <Style x:Key="PeriodBtn" TargetType="Button">
-            <Setter Property="Background"         Value="#252535" />
-            <Setter Property="Foreground"         Value="#9CA3AF" />
+            <Setter Property="Background"         Value="{DynamicResource ControlBgBrush}" />
+            <Setter Property="Foreground"         Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="BorderThickness"    Value="0" />
             <Setter Property="Padding"            Value="18 7" />
             <Setter Property="FontSize"           Value="13" />
@@ -28,9 +28,11 @@
         </Style>
 
         <Style x:Key="StatCard" TargetType="Border">
-            <Setter Property="Background"   Value="#1E1E2E" />
+            <Setter Property="Background"   Value="{DynamicResource CardBgBrush}" />
+            <Setter Property="BorderBrush"  Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding"      Value="20 16" />
+            <Setter Property="Padding"      Value="14 14" />
         </Style>
     </UserControl.Resources>
 
@@ -44,10 +46,10 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Дашборд" FontSize="22" FontWeight="Bold"
-                           Foreground="White" VerticalAlignment="Center" />
+                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
 
                 <TextBlock Grid.Column="1" Text="Загрузка…"
-                           Foreground="#6B7280" FontSize="13"
+                           Foreground="{DynamicResource TextMutedBrush}" FontSize="13"
                            VerticalAlignment="Center"
                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}" />
             </Grid>
@@ -61,7 +63,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsPeriodToday}" Value="True">
-                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                     <Setter Property="Foreground" Value="White" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -76,7 +78,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsPeriodWeek}" Value="True">
-                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                     <Setter Property="Foreground" Value="White" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -91,7 +93,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsPeriodMonth}" Value="True">
-                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                     <Setter Property="Foreground" Value="White" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -110,18 +112,25 @@
                         <TextBlock Text="{Binding TotalTime}"
                                    FontSize="26" FontWeight="Bold" Foreground="White" />
 
-                        <StackPanel Orientation="Horizontal" Margin="0 6 0 0"
-                                    Visibility="{Binding HasTrend, Converter={StaticResource BoolToVisibility}}">
-                            <Border Background="#252535" CornerRadius="4" Padding="6 2" Margin="0 0 8 0">
+                        <Grid Margin="0 6 0 0"
+                              Visibility="{Binding HasTrend, Converter={StaticResource BoolToVisibility}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="{DynamicResource ControlBgBrush}" CornerRadius="4" Padding="6 2" Margin="0 0 6 0">
                                 <TextBlock Text="{Binding TrendPercentageText}"
                                            FontSize="11" FontWeight="Bold" Foreground="{Binding TrendColorHex}" />
                             </Border>
-                            <TextBlock Text="{Binding TrendDiffText}"
-                                       FontSize="12" Foreground="#E5E7EB" VerticalAlignment="Center" />
-                        </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding TrendDiffText}"
+                                       FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                       ToolTip="{Binding TrendDiffText}" />
+                        </Grid>
 
                         <TextBlock Text="{Binding TrendPeriodLabel}"
-                                   FontSize="11" Foreground="#6B7280" Margin="0 3 0 0"
+                                   FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 3 0 0"
+                                   TextTrimming="CharacterEllipsis"
                                    Visibility="{Binding HasTrend, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
                 </Border>
@@ -196,7 +205,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Background="#1E1E2E" CornerRadius="10" Padding="8">
+                <Border Grid.Column="0" Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="8">
                     <lvc:PieChart Series="{Binding PieSeries}"
                                   InitialRotation="-90"
                                   IsClockwise="True"
@@ -205,7 +214,7 @@
                                   Background="Transparent" />
                 </Border>
 
-                <Border Grid.Column="1" Background="#1E1E2E" CornerRadius="10"
+                <Border Grid.Column="1" Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10"
                         Padding="12 8" Margin="12 0 0 0">
                     <lvc:CartesianChart Series="{Binding BarSeries}"
                                         XAxes="{Binding XAxes}"
@@ -216,7 +225,7 @@
             </Grid>
 
             <!-- Календарь активности (Heatmap) -->
-            <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16" Margin="0 0 0 20">
+            <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="20 16" Margin="0 0 0 20">
                 <StackPanel>
                     <Grid Margin="0 0 0 14">
                         <Grid.ColumnDefinitions>
@@ -225,12 +234,12 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="📅  Календарь активности" FontSize="15" FontWeight="SemiBold" Foreground="White" />
-                            <TextBlock Text=" (последние 20 недель)" FontSize="12" Foreground="#6B7280" Margin="6 2 0 0" />
+                            <TextBlock Text="📅  Календарь активности" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text=" (последние 20 недель)" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="6 2 0 0" />
                         </StackPanel>
 
-                        <Border Grid.Column="1" Background="#252535" CornerRadius="6" Padding="10 4">
-                            <TextBlock Text="{Binding HeatmapStatsText}" FontSize="12" FontWeight="Medium" Foreground="#A5B4FC" />
+                        <Border Grid.Column="1" Background="{DynamicResource ControlBgBrush}" CornerRadius="6" Padding="10 4">
+                            <TextBlock Text="{Binding HeatmapStatsText}" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" />
                         </Border>
                     </Grid>
 
@@ -359,7 +368,7 @@
             </Border>
 
             <!-- Анализ режима дня и сна -->
-            <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16" Margin="0 0 0 20">
+            <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="20 16" Margin="0 0 0 20">
                 <StackPanel>
                     <Grid Margin="0 0 0 14">
                         <Grid.ColumnDefinitions>
@@ -368,50 +377,50 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="🌙  Режим дня и сон" FontSize="15" FontWeight="SemiBold" Foreground="White" />
-                            <TextBlock Text=" (по времени активности ПК)" FontSize="12" Foreground="#6B7280" Margin="6 2 0 0" />
+                            <TextBlock Text="🌙  Режим дня и сон" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text=" (по времени активности ПК)" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="6 2 0 0" />
                         </StackPanel>
 
-                        <Border Grid.Column="1" Background="#252535" CornerRadius="6" Padding="10 4">
-                            <TextBlock Text="{Binding RhythmNoteText}" FontSize="12" FontWeight="Medium" Foreground="#A5B4FC" />
+                        <Border Grid.Column="1" Background="{DynamicResource ControlBgBrush}" CornerRadius="6" Padding="10 4">
+                            <TextBlock Text="{Binding RhythmNoteText}" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" />
                         </Border>
                     </Grid>
 
                     <UniformGrid Columns="3" Margin="0 4 0 0">
                         <!-- Включение / Подъём -->
-                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="0 0 8 0">
+                        <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="8" Padding="16 12" Margin="0 0 8 0">
                             <StackPanel>
-                                <TextBlock Text="🌅  Первое включение (подъём)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="🌅  Первое включение (подъём)" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
                                 <TextBlock Text="{Binding RhythmWakeUpText}" FontSize="20" FontWeight="Bold" Foreground="#F59E0B" />
-                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                             </StackPanel>
                         </Border>
 
                         <!-- Выключение / Отбой -->
-                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="4 0 4 0">
+                        <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="8" Padding="16 12" Margin="4 0 4 0">
                             <StackPanel>
-                                <TextBlock Text="🌃  Последнее выключение (отбой)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
-                                <TextBlock Text="{Binding RhythmSleepText}" FontSize="20" FontWeight="Bold" Foreground="#818CF8" />
-                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                                <TextBlock Text="🌃  Последнее выключение (отбой)" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                                <TextBlock Text="{Binding RhythmSleepText}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+                                <TextBlock Text="в среднем за месяц" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                             </StackPanel>
                         </Border>
 
                         <!-- Ночной перерыв -->
-                        <Border Background="#181825" CornerRadius="8" Padding="16 12" Margin="8 0 0 0">
+                        <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="8" Padding="16 12" Margin="8 0 0 0">
                             <StackPanel>
-                                <TextBlock Text="💤  Ночной перерыв (сон/отдых)" FontSize="11" Foreground="#6B7280" Margin="0 0 0 4" />
+                                <TextBlock Text="💤  Ночной перерыв (сон/отдых)" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
                                 <TextBlock Text="{Binding RhythmRestDurationText}" FontSize="20" FontWeight="Bold" Foreground="#10B981" />
-                                <TextBlock Text="интервал выключенного ПК" FontSize="10" Foreground="#4B5563" Margin="0 2 0 0" />
+                                <TextBlock Text="интервал выключенного ПК" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                             </StackPanel>
                         </Border>
                     </UniformGrid>
                 </StackPanel>
             </Border>
 
-            <Border Background="#1E1E2E" CornerRadius="10" Padding="20 16">
+            <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="20 16">
                 <StackPanel>
                     <TextBlock Text="Приложения" FontSize="15" FontWeight="SemiBold"
-                               Foreground="White" Margin="0 0 0 14" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 14" />
 
                     <ItemsControl ItemsSource="{Binding TopApps}">
                         <ItemsControl.ItemTemplate>

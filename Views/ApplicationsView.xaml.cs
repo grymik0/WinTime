@@ -13,7 +13,7 @@ public partial class ApplicationsView : UserControl
     }
 
     /// <summary>
-    /// Сохраняем строку при завершении редактирования (Commit).
+    /// Saves row edits when user commits changes.
     /// </summary>
     private void AppsGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
     {
@@ -28,8 +28,7 @@ public partial class ApplicationsView : UserControl
     }
 
     /// <summary>
-    /// Чекбокс «Не отслеживать» — сохраняем сразу при клике,
-    /// не дожидаясь выхода строки из режима редактирования.
+    /// Saves blacklist toggle immediately without waiting for row commit.
     /// </summary>
     private void BlacklistCheckBox_Click(object sender, RoutedEventArgs e)
     {

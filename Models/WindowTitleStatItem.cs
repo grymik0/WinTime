@@ -3,7 +3,7 @@ using WinTime.ViewModels;
 namespace WinTime.Models;
 
 /// <summary>
-/// DTO для отдельной вкладки, документа или заголовка окна приложения.
+/// Display model for an application window or browser tab title item.
 /// </summary>
 public sealed class WindowTitleStatItem : BaseViewModel
 {

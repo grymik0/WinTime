@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.IO;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -6,17 +6,15 @@ using Microsoft.Data.Sqlite;
 namespace WinTime.Data;
 
 /// <summary>
-/// Инициализирует SQLite-соединение и создаёт схему БД при первом запуске.
-/// Держит единственное открытое соединение на весь жизненный цикл приложения.
+/// Initializes SQLite database connection and schema.
+/// Maintains a single open connection for the application lifecycle.
 /// </summary>
 public sealed class DatabaseService : IDisposable
 {
     private SqliteConnection? _connection;
 
     public SqliteConnection Connection =>
-        _connection ?? throw new InvalidOperationException("DatabaseService не инициализирован.");
-
-    // Initialization
+        _connection ?? throw new InvalidOperationException("DatabaseService is not initialized.");
 
     public void Initialize(string dbPath)
     {
@@ -27,13 +25,8 @@ public sealed class DatabaseService : IDisposable
         _connection = new SqliteConnection($"Data Source={dbPath}");
         _connection.Open();
 
-        // Настраиваем SQLite для надёжной и быстрой работы
         ApplyPragmas();
-
-        // Регистрируем TypeHandler для bool ↔ INTEGER
         SqlMapper.AddTypeHandler(new BoolTypeHandler());
-
-        // Создаём таблицы если их нет
         CreateSchema();
     }
 
@@ -100,8 +93,6 @@ public sealed class DatabaseService : IDisposable
         _connection = null;
     }
 
-    // Dapper TypeHandler: INTEGER ↔ bool
-
     private sealed class BoolTypeHandler : SqlMapper.TypeHandler<bool>
     {
         public override bool Parse(object value) => Convert.ToBoolean(value);
@@ -110,3 +101,4 @@ public sealed class DatabaseService : IDisposable
             => parameter.Value = value ? 1 : 0;
     }
 }
+

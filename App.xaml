@@ -6,6 +6,20 @@
         <ResourceDictionary>
             <!-- Стандартный конвертер bool → Visibility, доступен везде в приложении -->
             <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+
+            <!-- Базовые динамические кисти темы оформления (переопределяются через ThemeService) -->
+            <SolidColorBrush x:Key="AppBgBrush" Color="#16161E" />
+            <SolidColorBrush x:Key="SidebarBgBrush" Color="#1C1C28" />
+            <SolidColorBrush x:Key="CardBgBrush" Color="#1E1E2E" />
+            <SolidColorBrush x:Key="CardSubBgBrush" Color="#181825" />
+            <SolidColorBrush x:Key="ControlBgBrush" Color="#252535" />
+            <SolidColorBrush x:Key="ControlHoverBgBrush" Color="#313147" />
+            <SolidColorBrush x:Key="BorderBrushColor" Color="#252535" />
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9CA3AF" />
+            <SolidColorBrush x:Key="TextMutedBrush" Color="#6B7280" />
+            <SolidColorBrush x:Key="AccentBrush" Color="#6366F1" />
+            <SolidColorBrush x:Key="AccentHoverBrush" Color="#4F46E5" />
         </ResourceDictionary>
     </Application.Resources>
 

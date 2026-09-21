@@ -254,7 +254,7 @@ public sealed class ProcessesViewModel : BaseViewModel
                 item.IsCurrentlyRunning = runningIds.Contains(item.AppId);
             }
 
-            // Сохраняем состояние раскрытия
+            // Preserve expansion state
             var expandedAppIds = _allItems.Where(i => i.IsExpanded).Select(i => i.AppId).ToHashSet();
             foreach (var item in list)
             {

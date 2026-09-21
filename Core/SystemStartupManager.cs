@@ -3,8 +3,7 @@ using Microsoft.Win32;
 namespace WinTime.Core;
 
 /// <summary>
-/// Управляет автозапуском приложения через реестр Windows.
-/// Ключ: HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+/// Manages Windows startup registration via CurrentUser Run registry key.
 /// </summary>
 public static class SystemStartupManager
 {
@@ -42,8 +41,7 @@ public static class SystemStartupManager
     }
 
     /// <summary>
-    /// Автоматически обновляет путь в автозапуске на текущий запущенный EXE-файл,
-    /// если автозапуск был включен или если в реестре остался путь от старой версии.
+    /// Synchronizes startup registry entry with the current executable path.
     /// </summary>
     public static void SyncCurrentExePath(bool forceEnableIfConfigured = false)
     {

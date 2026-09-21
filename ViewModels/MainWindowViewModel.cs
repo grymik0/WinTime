@@ -1,20 +1,21 @@
 using System.Windows.Input;
+using WinTime.Services;
 
 namespace WinTime.ViewModels;
 
 /// <summary>
-/// ViewModel главного окна:
-/// — управляет навигацией (CurrentView → DataTemplate → нужный UserControl)
-/// — отражает статус трекера (пауза / активен)
+/// Main window ViewModel managing primary navigation and tracker status.
 /// </summary>
 public sealed class MainWindowViewModel : BaseViewModel
 {
-    private readonly DashboardViewModel     _dashboard;
-    private readonly ProcessesViewModel     _processes;
-    private readonly ApplicationsViewModel  _applications;
-    private readonly ProfileViewModel      _profile;
-    private readonly DesktopWidgetViewModel _widget;
-    private readonly SettingsViewModel      _settings;
+    private readonly DashboardViewModel          _dashboard;
+    private readonly ProcessesViewModel          _processes;
+    private readonly ApplicationsViewModel       _applications;
+    private readonly ProfileViewModel            _profile;
+    private readonly DesktopWidgetViewModel      _widget;
+    private readonly ThemeCustomizationViewModel _theme;
+    private readonly SettingsViewModel           _settings;
+    private readonly LocalizationService         _localization;
 
     private object? _currentView;
     private bool    _isTracking = true;
@@ -31,35 +32,39 @@ public sealed class MainWindowViewModel : BaseViewModel
         private set { SetProperty(ref _isTracking, value); OnPropertyChanged(nameof(TrackingLabel)); }
     }
 
-    /// <summary>Текст кнопки «Пауза / Возобновить» в боковой панели.</summary>
-    public string TrackingLabel => _isTracking ? "⏸  Приостановить" : "▶  Возобновить";
-
-    // Commands
+    public string TrackingLabel => _isTracking 
+        ? _localization.GetString("Nav_PauseTracking") 
+        : _localization.GetString("Nav_ResumeTracking");
 
     public ICommand NavigateDashboardCommand    { get; }
     public ICommand NavigateProcessesCommand    { get; }
     public ICommand NavigateApplicationsCommand { get; }
     public ICommand NavigateProfileCommand      { get; }
     public ICommand NavigateWidgetCommand       { get; }
+    public ICommand NavigateThemeCommand        { get; }
     public ICommand NavigateSettingsCommand     { get; }
     public ICommand ToggleTrackingCommand       { get; }
 
-    // Constructor
-
     public MainWindowViewModel(
-        DashboardViewModel     dashboard,
-        ProcessesViewModel     processes,
-        ApplicationsViewModel  applications,
-        ProfileViewModel       profile,
-        DesktopWidgetViewModel widget,
-        SettingsViewModel      settings)
+        DashboardViewModel          dashboard,
+        ProcessesViewModel          processes,
+        ApplicationsViewModel       applications,
+        ProfileViewModel            profile,
+        DesktopWidgetViewModel      widget,
+        ThemeCustomizationViewModel theme,
+        SettingsViewModel           settings,
+        LocalizationService         localization)
     {
         _dashboard    = dashboard;
         _processes    = processes;
         _applications = applications;
         _profile      = profile;
         _widget       = widget;
+        _theme        = theme;
         _settings     = settings;
+        _localization = localization;
+
+        _localization.LanguageChanged += (_, _) => OnPropertyChanged(nameof(TrackingLabel));
 
         NavigateDashboardCommand = new RelayCommand(() =>
         {
@@ -90,6 +95,11 @@ public sealed class MainWindowViewModel : BaseViewModel
             CurrentView = _widget;
         });
 
+        NavigateThemeCommand = new RelayCommand(() =>
+        {
+            CurrentView = _theme;
+        });
+
         NavigateSettingsCommand = new RelayCommand(() =>
         {
             CurrentView = _settings;
@@ -101,7 +111,7 @@ public sealed class MainWindowViewModel : BaseViewModel
             AppServices.Tracker.IsPaused = !IsTracking;
         });
 
-        // Открываем дашборд при старте
+        // Open dashboard on startup
         CurrentView = _dashboard;
         _ = _dashboard.LoadDataAsync();
     }

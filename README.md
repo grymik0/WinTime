@@ -26,9 +26,10 @@ No cloud sync, no telemetry, and no account required — **100% of your data sta
 
 | Feature | Details |
 |---|---|
+| 🎨 **Theme & Accent Customization** | Complete UI theming support: Light, Dark, and Midnight (OLED) themes with live interactive preview. Choose between 6 vibrant accent colors (Indigo, Emerald, Sky, Rose, Amber, Purple) dynamically applied across the entire app. |
 | 📌 **Customizable Desktop Mini-Widget** | Floating, draggable desktop overlay with live screen time, active app, continuous session timer, profile XP, and mouse metrics. Features click-through mode, topmost toggle, opacity slider, and one-click compact collapse. |
 | 🏆 **Gamification, Levels & Achievements** | Earn XP for active time (10 XP/min), unlock levels from Novice to Grandmaster, and earn 12 tiered badges for milestones, consistency, records, and mouse activity. |
-| 🌙 **Sleep & Daily Rhythm Analysis** | Automatic tracking of your daily first PC turn-on (wake up) and last shutdown (bedtime) times, average night rest durations, and routine regularity assessments. |
+| 🌙 **Sleep & Daily Rhythm Analysis** | Synchronized with Windows Event Log system power events (boot, sleep, hibernate, wake) and circular average calculations for exact first wake up, bedtime, and night rest duration. |
 | 🖱 **Mouse Activity (Clicks & Distance)** | High-frequency background tracking of mouse clicks and cursor distance traveled in meters/kilometers with jump rejection and formatted counters. |
 | 🎮 **Gaming Mode & Detection** | Automatic recognition of games and launchers (Steam, Epic Games, Riot, etc.) with dedicated process filtering. |
 | 🔍 **Browser Tabs & Window Titles** | Deep tracking for active browser tabs (Chrome, Edge, Opera, etc.) and editor projects (VS Code, Visual Studio, JetBrains, etc.). Expand any app to see exact per-tab time spent. |

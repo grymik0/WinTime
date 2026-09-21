@@ -9,12 +9,7 @@ using WinTime.Services;
 namespace WinTime.ViewModels;
 
 /// <summary>
-/// ViewModel экрана «Настройки»:
-/// — AFK-порог (слайдер)
-/// — Автозапуск Windows (реестр)
-/// — Путь к БД (выбор файла)
-/// — Экспорт данных
-/// — Очистка истории
+/// Settings ViewModel for AFK threshold, autostart, database location, and export operations.
 /// </summary>
 public sealed class SettingsViewModel : BaseViewModel
 {
@@ -26,8 +21,6 @@ public sealed class SettingsViewModel : BaseViewModel
     private bool   _launchOnStartup;
     private string _databasePath = string.Empty;
     private string _dbChangeNote = string.Empty;
-
-    // Properties
 
     public int AfkThresholdMinutes
     {
@@ -60,14 +53,12 @@ public sealed class SettingsViewModel : BaseViewModel
         private set => SetProperty(ref _databasePath, value);
     }
 
-    /// <summary>Подсказка пользователю, что смена пути вступит в силу после перезапуска.</summary>
+    /// <summary>Note alerting user that path change requires app restart.</summary>
     public string DbChangeNote
     {
         get => _dbChangeNote;
         private set => SetProperty(ref _dbChangeNote, value);
     }
-
-    // Commands
 
     public ICommand ChooseDbPathCommand  { get; }
     public ICommand ExportCsvCommand     { get; }

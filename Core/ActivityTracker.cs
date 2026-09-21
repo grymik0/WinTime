@@ -7,9 +7,7 @@ using WinTime.Services;
 namespace WinTime.Core;
 
 /// <summary>
-/// Фоновый поток опроса активного окна (1 раз в секунду).
-/// Детектирует AFK через GetLastInputInfo, фильтрует системные окна,
-/// обновляет InMemoryBuffer и периодически сбрасывает данные в SQLite.
+/// Background worker tracking the active foreground window, mouse metrics, and idle/AFK states.
 /// </summary>
 public sealed class ActivityTracker : IAsyncDisposable
 {
@@ -163,7 +161,7 @@ public sealed class ActivityTracker : IAsyncDisposable
                         if (dx != 0 || dy != 0)
                         {
                             double distPx = Math.Sqrt(dx * dx + dy * dy);
-                            // Игнорируем скачки курсора между мониторами / после выхода из сна (> 500 px за 25мс = 20,000 px/сек)
+                            // Ignore unnatural cursor teleports across monitors or sleep wakeups (> 500 px in 25ms)
                             if (distPx > 0 && distPx < 500)
                             {
                                 lock (_mouseLock)
@@ -441,7 +439,7 @@ public sealed class ActivityTracker : IAsyncDisposable
     }
 }
 
-/// <summary>Аргументы события TrackerStateChanged.</summary>
+/// <summary>Arguments for TrackerStateChanged events.</summary>
 public sealed class TrackerStateEventArgs(int appId, string appName, string windowTitle, bool isIdle) : EventArgs
 {
     public int    AppId       { get; } = appId;
