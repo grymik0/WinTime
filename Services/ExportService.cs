@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -9,7 +9,7 @@ using WinTime.Models;
 namespace WinTime.Services;
 
 /// <summary>
-/// Экспортирует статистику активности в CSV и JSON.
+/// Exports activity metrics to CSV and JSON formats.
 /// </summary>
 public sealed class ExportService
 {
@@ -22,22 +22,18 @@ public sealed class ExportService
         _appRepo      = appRepo;
     }
 
-    // CSV
-
     public async Task ExportToCsvAsync(string filePath)
     {
-        // Экспортируем всю статистику за всё время
         var stats = await _activityRepo.GetTopAppsAsync(DateTime.MinValue, DateTime.MaxValue);
 
         await using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
         await using var csv    = new CsvWriter(writer, CultureInfo.InvariantCulture);
 
-        // Заголовки
-        csv.WriteField("Приложение");
-        csv.WriteField("Процесс");
-        csv.WriteField("Часов");
-        csv.WriteField("Минут");
-        csv.WriteField("Время (форм.)");
+        csv.WriteField("Application");
+        csv.WriteField("Process");
+        csv.WriteField("Hours");
+        csv.WriteField("Minutes");
+        csv.WriteField("FormattedTime");
         await csv.NextRecordAsync();
 
         foreach (var s in stats)
@@ -51,8 +47,6 @@ public sealed class ExportService
             await csv.NextRecordAsync();
         }
     }
-
-    // JSON
 
     public async Task ExportToJsonAsync(string filePath)
     {

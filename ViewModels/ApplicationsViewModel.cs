@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using WinTime.Data;
 using WinTime.Models;
@@ -6,10 +6,7 @@ using WinTime.Models;
 namespace WinTime.ViewModels;
 
 /// <summary>
-/// ViewModel экрана «Список приложений»:
-/// — отображение всех приложений с поиском
-/// — редактирование DisplayName и Category прямо в таблице
-/// — включение/выключение чёрного списка
+/// ViewModel for applications management (categories, friendly names, and blacklisting).
 /// </summary>
 public sealed class ApplicationsViewModel : BaseViewModel
 {
@@ -39,19 +36,13 @@ public sealed class ApplicationsViewModel : BaseViewModel
         private set => SetProperty(ref _isLoading, value);
     }
 
-    // Категории (static, доступны из XAML)
-
     public static string[] Categories { get; } =
     [
         "Без категории", "Работа", "Отдых", "Учёба", "Игры", "Браузеры", "Разработка", "Связь"
     ];
 
-    // Commands
-
     public ICommand SaveRowCommand     { get; }
     public ICommand RefreshCommand     { get; }
-
-    // Constructor
 
     public ApplicationsViewModel(ApplicationRepository appRepo, ActivityRepository activityRepo)
     {
@@ -61,8 +52,6 @@ public sealed class ApplicationsViewModel : BaseViewModel
         SaveRowCommand  = new RelayCommand<AppModel>(async app => await SaveAppAsync(app));
         RefreshCommand  = new RelayCommand(async () => await LoadAsync());
     }
-
-    // Load
 
     public async Task LoadAsync()
     {
@@ -75,8 +64,6 @@ public sealed class ApplicationsViewModel : BaseViewModel
         finally { IsLoading = false; }
     }
 
-    // Save
-
     private async Task SaveAppAsync(AppModel app)
     {
         try
@@ -85,10 +72,8 @@ public sealed class ApplicationsViewModel : BaseViewModel
             await _appRepo.UpdateCategoryAsync(app.Id, app.Category);
             await _appRepo.SetBlacklistAsync(app.Id, app.IsBlacklisted);
         }
-        catch { /* тихо */ }
+        catch { /* ignored */ }
     }
-
-    // Filter
 
     private void ApplyFilter()
     {

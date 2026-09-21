@@ -1,11 +1,9 @@
-﻿using WinTime.Models;
+using WinTime.Models;
 
 namespace WinTime.Core;
 
 /// <summary>
-/// Накапливает текущую активную сессию в памяти (RAM).
-/// Метод Flush() сбрасывает завершённые сессии для записи в SQLite.
-/// Потокобезопасен через lock.
+/// Thread-safe in-memory buffer accumulating the active window duration before SQLite batched flush.
 /// </summary>
 public sealed class InMemoryBuffer
 {
@@ -13,12 +11,8 @@ public sealed class InMemoryBuffer
     private ActiveEntry? _current;
     private readonly List<ActivitySession> _completed = [];
 
-    // Public API
-
     /// <summary>
-    /// Вызывается каждую секунду из ActivityTracker.
-    /// Если контекст (appId, заголовок, isIdle) совпадает — увеличивает счётчик.
-    /// Если изменился — завершает старую сессию и открывает новую.
+    /// Updates current session duration or rolls over if context changed.
     /// </summary>
     public void Update(int appId, string windowTitle, bool isIdle, DateTime now)
     {
@@ -36,7 +30,6 @@ public sealed class InMemoryBuffer
                     return;
                 }
 
-                // контекст изменился — завершаем старую сессию
                 if (_current.DurationSeconds > 0)
                     _completed.Add(_current.ToSession());
             }
@@ -46,7 +39,7 @@ public sealed class InMemoryBuffer
     }
 
     /// <summary>
-    /// Принудительно завершает текущую сессию (при смене окна или выходе).
+    /// Forces completion of the active session on window switch or tracker pause.
     /// </summary>
     public void EndCurrentSession()
     {
@@ -61,18 +54,15 @@ public sealed class InMemoryBuffer
     }
 
     /// <summary>
-    /// Возвращает все накопленные завершённые сессии и очищает буфер.
-    /// Текущая незавершённая сессия переоткрывается с тем же контекстом.
+    /// Returns accumulated sessions and resets buffer counters.
     /// </summary>
     public List<ActivitySession> Flush()
     {
         lock (_lock)
         {
-            // Снапшот текущей сессии — добавляем в список, но сразу переоткрываем
             if (_current is { DurationSeconds: > 0 })
             {
                 _completed.Add(_current.ToSession());
-                // Сбрасываем счётчик, чтобы не считать повторно
                 _current = new ActiveEntry(
                     _current.AppId, _current.WindowTitle, _current.IsIdle, DateTime.Now);
             }
@@ -82,8 +72,6 @@ public sealed class InMemoryBuffer
             return result;
         }
     }
-
-    // Private
 
     private sealed class ActiveEntry(int appId, string windowTitle, bool isIdle, DateTime startTime)
     {
@@ -103,3 +91,4 @@ public sealed class InMemoryBuffer
         };
     }
 }
+

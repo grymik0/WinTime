@@ -4,8 +4,7 @@ using WinTime.ViewModels;
 namespace WinTime.Models;
 
 /// <summary>
-/// Статистика приложения для вкладки «Процессы»: общее время работы процесса против активного времени в фокусе.
-/// Поддерживает автоматическое обновление в UI в реальном времени.
+/// Display model for process uptime and focused duration in the Processes view.
 /// </summary>
 public sealed class ProcessUptimeItem : BaseViewModel
 {
@@ -66,7 +65,6 @@ public sealed class ProcessUptimeItem : BaseViewModel
         }
     }
 
-    /// <summary>Время активного фокуса (секунды)</summary>
     public int ActiveSeconds
     {
         get => _activeSeconds;
@@ -81,7 +79,6 @@ public sealed class ProcessUptimeItem : BaseViewModel
         }
     }
 
-    /// <summary>Запущен ли процесс прямо сейчас</summary>
     public bool IsCurrentlyRunning
     {
         get => _isCurrentlyRunning;
@@ -100,7 +97,6 @@ public sealed class ProcessUptimeItem : BaseViewModel
     public string FormattedUptime => FormatDuration(UptimeSeconds);
     public string FormattedActiveTime => FormatDuration(ActiveSeconds);
 
-    /// <summary>Процент активного времени от общего времени работы (0..100)</summary>
     public double ActiveRatioPercent =>
         UptimeSeconds > 0
             ? Math.Min(100.0, Math.Round((double)ActiveSeconds / UptimeSeconds * 100.0, 1))
@@ -132,3 +128,4 @@ public sealed class ProcessUptimeItem : BaseViewModel
         return $"{s}с";
     }
 }
+

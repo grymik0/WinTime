@@ -4,15 +4,14 @@ using System.Xml.Linq;
 namespace WinTime.Services;
 
 /// <summary>
-/// Сервис для получения реальной истории включений/пробуждений и выключений/уходов в сон Windows из системного журнала событий (Event Log).
+/// Retrieves PC wake, boot, and sleep timestamps from Windows Event Log to calibrate sleep schedule analytics.
 /// </summary>
 public static class SystemPowerHistoryService
 {
     private static readonly XNamespace Ns = "http://schemas.microsoft.com/win/2004/08/events/event";
 
     /// <summary>
-    /// Возвращает словарь по дням: Date (DateTime.Date) -> (EarliestWakeTime, LatestSleepTime)
-    /// за последние <paramref name="days"/> дней.
+    /// Returns daily wake and sleep intervals for the requested historical day window.
     /// </summary>
     public static Dictionary<DateTime, (TimeSpan FirstWake, TimeSpan LastSleep)> GetPowerHistory(int days = 30)
     {
@@ -92,14 +91,12 @@ public static class SystemPowerHistoryService
                     }
                     catch
                     {
-                      
                     }
                 }
             }
         }
         catch
         {
-           
         }
 
         try

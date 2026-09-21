@@ -4,7 +4,7 @@ using WinTime.Models;
 namespace WinTime.Data;
 
 /// <summary>
-/// CRUD и аналитические запросы для таблицы ActivitySessions.
+/// Repository for ActivitySessions persistence and analytics queries.
 /// </summary>
 public sealed class ActivityRepository
 {
@@ -12,11 +12,8 @@ public sealed class ActivityRepository
 
     public ActivityRepository(DatabaseService db) => _db = db;
 
-    // Write
-
     /// <summary>
-    /// Вставляет список сессий одной транзакцией (30-секундный flush).
-    /// Сессии с DurationSeconds == 0 игнорируются.
+    /// Inserts a batch of activity sessions in a single transaction.
     /// </summary>
     public async Task InsertBatchAsync(IReadOnlyList<ActivitySession> sessions)
     {
@@ -47,9 +44,7 @@ public sealed class ActivityRepository
         }
     }
 
-    // Analytics
-
-    /// <summary>Суммарное активное и idle время за период.</summary>
+    /// <summary>Total active and idle seconds for the given period.</summary>
     public async Task<(long Active, long Idle)> GetTotalsAsync(DateTime from, DateTime to)
     {
         var row = await _db.Connection.QueryFirstOrDefaultAsync<dynamic>(@"
@@ -66,7 +61,7 @@ public sealed class ActivityRepository
         return ((long)(row.Active ?? 0L), (long)(row.Idle ?? 0L));
     }
 
-    /// <summary>Топ приложений по суммарному активному времени за период.</summary>
+    /// <summary>Top applications by total active seconds for the given period.</summary>
     public async Task<List<AppStatItem>> GetTopAppsAsync(DateTime from, DateTime to)
     {
         var rows = await _db.Connection.QueryAsync<dynamic>(@"
@@ -93,7 +88,7 @@ public sealed class ActivityRepository
         }).ToList();
     }
 
-    /// <summary>Получает статистику активности по играм за период.</summary>
+    /// <summary>Top games by total active seconds for the given period.</summary>
     public async Task<List<AppStatItem>> GetGamesActivityAsync(DateTime from, DateTime to)
     {
         var rows = await _db.Connection.QueryAsync<dynamic>(@"
@@ -121,7 +116,7 @@ public sealed class ActivityRepository
         }).ToList();
     }
 
-    /// <summary>Топ заголовков окон/вкладок для конкретного приложения за период.</summary>
+    /// <summary>Top window titles for a given application.</summary>
     public async Task<List<(string Title, long Seconds)>> GetWindowTitlesForAppAsync(int appId, DateTime from, DateTime to, int limit = 50)
     {
         var rows = await _db.Connection.QueryAsync<dynamic>(@"
@@ -141,7 +136,7 @@ public sealed class ActivityRepository
         return rows.Select(r => ((string)r.WindowTitle, (long)r.TotalSeconds)).ToList();
     }
 
-    /// <summary>Почасовая разбивка за день (массив 24 значений, секунды).</summary>
+    /// <summary>Hourly breakdown for a single day (24 values in seconds).</summary>
     public async Task<long[]> GetHourlyBreakdownAsync(DateTime date)
     {
         var from = date.Date;
@@ -163,7 +158,7 @@ public sealed class ActivityRepository
         return result;
     }
 
-    /// <summary>Дневная разбивка за 7 дней недели (массив 7 значений, секунды).</summary>
+    /// <summary>Daily breakdown for 7 days of the week (7 values in seconds).</summary>
     public async Task<long[]> GetWeeklyBreakdownAsync(DateTime weekStart)
     {
         var from = weekStart.Date;
@@ -188,7 +183,7 @@ public sealed class ActivityRepository
         return result;
     }
 
-    /// <summary>Дневная разбивка за месяц (массив N значений, секунды).</summary>
+    /// <summary>Daily breakdown for a given month (N values in seconds).</summary>
     public async Task<long[]> GetMonthlyBreakdownAsync(int year, int month)
     {
         var from = new DateTime(year, month, 1);
@@ -219,7 +214,7 @@ public sealed class ActivityRepository
         await _db.Connection.ExecuteAsync("DELETE FROM ActivitySessions");
     }
 
-    /// <summary>Суммарное активное время по дням начиная с fromDate (словарь yyyy-MM-dd -> секунды).</summary>
+    /// <summary>Daily active seconds starting from fromDate (yyyy-MM-dd -> seconds).</summary>
     public async Task<Dictionary<string, long>> GetDailyActivityHistoryAsync(DateTime fromDate)
     {
         var rows = await _db.Connection.QueryAsync<dynamic>(@"
@@ -303,9 +298,8 @@ public sealed class ActivityRepository
     }
 
     /// <summary>
-    /// Анализ режима дня и ночного перерыва:
-    /// возвращает время первого и последнего активного действия / включения ПК за каждый день за последние N дней (по умолчанию 30).
-    /// Синхронизируется с реальными событиями включения и выключения Windows Event Log.
+    /// Analyzes sleep and wake rhythms by determining first and last active timestamps per day,
+    /// merged with Windows Event Log system power transitions.
     /// </summary>
     public async Task<List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>> GetDailyRhythmsAsync(int days = 30)
     {
@@ -338,7 +332,7 @@ public sealed class ActivityRepository
             }
         }
 
-        // Подмешиваем данные из Windows Event Log (пробуждения / включения и уход в сон)
+        // Merge hardware power logs from Windows Event Log
         try
         {
             var powerLog = Services.SystemPowerHistoryService.GetPowerHistory(days);

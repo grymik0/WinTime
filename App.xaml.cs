@@ -9,13 +9,7 @@ using WinTime.Views;
 namespace WinTime;
 
 /// <summary>
-/// Точка входа приложения.
-/// 1. Проверяем единственный экземпляр (Mutex)
-/// 2. Загружаем настройки
-/// 3. Первый запуск → диалог выбора пути к БД
-/// 4. Инициализируем AppServices (DB, трекер, ViewModel'ы)
-/// 5. Запускаем ActivityTracker
-/// 6. Создаём иконку в системном трее
+/// Application entry point and lifecycle manager.
 /// </summary>
 public partial class App : Application
 {
@@ -27,8 +21,6 @@ public partial class App : Application
 
     public bool IsExiting => _isExiting;
 
-    // Startup
-
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -37,7 +29,7 @@ public partial class App : Application
         if (!createdNew)
         {
             MessageBox.Show(
-                "WinTime уже запущен.\nНайдите иконку в системном трее (правый нижний угол экрана).",
+                "WinTime is already running.\nCheck your system tray icon.",
                 "WinTime", MessageBoxButton.OK, MessageBoxImage.Information);
             Shutdown();
             return;
@@ -47,16 +39,22 @@ public partial class App : Application
         {
             ex.Handled = true;
             MessageBox.Show(
-                $"Произошла непредвиденная ошибка:\n\n{ex.Exception.Message}",
-                "WinTime — Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                $"An unexpected error occurred:\n\n{ex.Exception.Message}",
+                "WinTime Error", MessageBoxButton.OK, MessageBoxImage.Error);
         };
 
         var settings = new SettingsService();
         settings.Load();
 
+        var localization = new LocalizationService(settings);
+        localization.Initialize();
+
+        var theme = new ThemeService(settings);
+        theme.Initialize();
+
         if (!settings.IsDatabaseConfigured)
         {
-            var dlg = new FirstRunDialog();
+            var dlg = new FirstRunDialog(settings, localization);
             if (dlg.ShowDialog() != true)
             {
                 Shutdown();
@@ -72,8 +70,8 @@ public partial class App : Application
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"Не удалось открыть базу данных:\n{settings.DatabasePath}\n\n{ex.Message}",
-                "WinTime — Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                $"Failed to initialize database:\n{settings.DatabasePath}\n\n{ex.Message}",
+                "WinTime Error", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
             return;
         }
@@ -134,8 +132,6 @@ public partial class App : Application
         };
     }
 
-    // Exit
-
     protected override async void OnExit(ExitEventArgs e)
     {
         _isExiting = true;
@@ -150,13 +146,11 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    // Tray
-
     private void SetupTrayIcon()
     {
         _trayIcon = new TaskbarIcon
         {
-            ToolTipText = "WinTime — Учёт экранного времени",
+            ToolTipText = "WinTime",
             Icon        = CreateTrayIcon()
         };
 
@@ -164,35 +158,35 @@ public partial class App : Application
 
         var menu = new System.Windows.Controls.ContextMenu();
 
-        var itemOpen = new System.Windows.Controls.MenuItem { Header = "📊  Открыть статистику" };
+        var itemOpen = new System.Windows.Controls.MenuItem { Header = "📊  WinTime" };
         itemOpen.Click += (_, _) => ShowMainWindow();
 
-        var itemWidget = new System.Windows.Controls.MenuItem { Header = "📌  Виджет на рабочем столе" };
+        var itemWidget = new System.Windows.Controls.MenuItem { Header = "📌  Desktop Widget" };
         itemWidget.Click += (_, _) =>
         {
             AppServices.DesktopWidgetVm.IsWidgetEnabled = !AppServices.DesktopWidgetVm.IsWidgetEnabled;
         };
 
-        var itemPause = new System.Windows.Controls.MenuItem { Header = "⏸  Приостановить учёт" };
+        var itemPause = new System.Windows.Controls.MenuItem { Header = "⏸  Pause Tracking" };
         itemPause.Click += (_, _) =>
         {
             AppServices.Tracker.IsPaused = !AppServices.Tracker.IsPaused;
             itemPause.Header = AppServices.Tracker.IsPaused
-                ? "▶  Возобновить учёт"
-                : "⏸  Приостановить учёт";
+                ? "▶  Resume Tracking"
+                : "⏸  Pause Tracking";
             _trayIcon.ToolTipText = AppServices.Tracker.IsPaused
-                ? "WinTime — Пауза"
-                : "WinTime — Учёт экранного времени";
+                ? "WinTime (Paused)"
+                : "WinTime";
         };
 
-        var itemSettings = new System.Windows.Controls.MenuItem { Header = "⚙  Настройки" };
+        var itemSettings = new System.Windows.Controls.MenuItem { Header = "⚙  Settings" };
         itemSettings.Click += (_, _) =>
         {
             ShowMainWindow();
             AppServices.MainWindowVm.NavigateSettingsCommand.Execute(null);
         };
 
-        var itemExit = new System.Windows.Controls.MenuItem { Header = "✕  Выход" };
+        var itemExit = new System.Windows.Controls.MenuItem { Header = "✕  Exit" };
         itemExit.Click += (_, _) => ExitApp();
 
         menu.Items.Add(itemOpen);
@@ -221,11 +215,8 @@ public partial class App : Application
         Shutdown();
     }
 
-    // Icon generation
-
     /// <summary>
-    /// Загружает иконку трея из встроенного ресурса Assets/icon.ico.
-    /// Если файл не найден — рисует запасной синий кружок.
+    /// Loads the tray icon from application resources, or generates a fallback icon.
     /// </summary>
     private static Icon CreateTrayIcon()
     {

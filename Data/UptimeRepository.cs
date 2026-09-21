@@ -4,7 +4,7 @@ using WinTime.Models;
 namespace WinTime.Data;
 
 /// <summary>
-/// Репозиторий для сохранения и выборки данных о времени работы приложений (Uptime).
+/// Repository for tracking and aggregating background application uptime.
 /// </summary>
 public sealed class UptimeRepository
 {
@@ -16,7 +16,7 @@ public sealed class UptimeRepository
     }
 
     /// <summary>
-    /// Атомарно прибавляет начисленные секунды работы процессам за указанную дату.
+    /// Atomically increments uptime seconds for processes on the specified date.
     /// </summary>
     public async Task AddUptimeBatchAsync(string date, IEnumerable<(int AppId, int Seconds)> updates)
     {
@@ -36,7 +36,7 @@ public sealed class UptimeRepository
     }
 
     /// <summary>
-    /// Возвращает статистику (Uptime + Focus ActiveSeconds) за диапазон дат.
+    /// Returns aggregated uptime and focused active metrics across a date range.
     /// </summary>
     public async Task<List<ProcessUptimeItem>> GetUptimeStatsAsync(DateTime from, DateTime to)
     {

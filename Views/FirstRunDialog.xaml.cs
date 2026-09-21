@@ -1,26 +1,58 @@
 using System.Windows;
+using System.Windows.Media;
 using Microsoft.Win32;
+using WinTime.Services;
 
 namespace WinTime.Views;
 
 /// <summary>
-/// Диалог первого запуска — пользователь выбирает путь к файлу БД.
+/// First-run configuration dialog for selecting database location and interface language.
 /// </summary>
 public partial class FirstRunDialog : Window
 {
-    /// <summary>Выбранный путь к файлу БД (заполняется при DialogResult = true).</summary>
+    private readonly SettingsService _settings;
+    private readonly LocalizationService _localization;
+
     public string? SelectedDbPath { get; private set; }
 
-    public FirstRunDialog()
+    public FirstRunDialog(SettingsService settings, LocalizationService localization)
     {
+        _settings = settings;
+        _localization = localization;
         InitializeComponent();
+        UpdateLanguageButtonStyles();
+    }
+
+    private void BtnLangRu_Click(object sender, RoutedEventArgs e)
+    {
+        _localization.ApplyLanguage(AppLanguage.Ru, saveSettings: true);
+        UpdateLanguageButtonStyles();
+    }
+
+    private void BtnLangEn_Click(object sender, RoutedEventArgs e)
+    {
+        _localization.ApplyLanguage(AppLanguage.En, saveSettings: true);
+        UpdateLanguageButtonStyles();
+    }
+
+    private void UpdateLanguageButtonStyles()
+    {
+        bool isRu = _localization.CurrentLanguage == AppLanguage.Ru;
+
+        BtnLangRu.Background = isRu ? (Brush)Application.Current.Resources["AccentBrush"] : new SolidColorBrush(Color.FromRgb(45, 45, 60));
+        BtnLangRu.Foreground = Brushes.White;
+        BtnLangRu.BorderBrush = isRu ? (Brush)Application.Current.Resources["AccentBrush"] : new SolidColorBrush(Color.FromRgb(75, 85, 99));
+
+        BtnLangEn.Background = !isRu ? (Brush)Application.Current.Resources["AccentBrush"] : new SolidColorBrush(Color.FromRgb(45, 45, 60));
+        BtnLangEn.Foreground = Brushes.White;
+        BtnLangEn.BorderBrush = !isRu ? (Brush)Application.Current.Resources["AccentBrush"] : new SolidColorBrush(Color.FromRgb(75, 85, 99));
     }
 
     private void BtnBrowse_Click(object sender, RoutedEventArgs e)
     {
         var dlg = new SaveFileDialog
         {
-            Title            = "Укажите файл базы данных WinTime",
+            Title            = _localization.GetString("Setup_Title"),
             Filter           = "SQLite Database (*.db)|*.db",
             FileName         = "wintime.db",
             InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -33,10 +65,13 @@ public partial class FirstRunDialog : Window
 
     private void BtnStart_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(TxtPath.Text))
+        var emptyPathText = _localization.GetString("Setup_PathEmpty");
+        if (string.IsNullOrWhiteSpace(TxtPath.Text) || TxtPath.Text == emptyPathText)
         {
-            MessageBox.Show("Пожалуйста, выберите путь к файлу базы данных.",
-                "WinTime", MessageBoxButton.OK, MessageBoxImage.Warning);
+            var warningMsg = _localization.CurrentLanguage == AppLanguage.Ru
+                ? "Пожалуйста, выберите путь к файлу базы данных."
+                : "Please select a database file path.";
+            MessageBox.Show(warningMsg, "WinTime", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 

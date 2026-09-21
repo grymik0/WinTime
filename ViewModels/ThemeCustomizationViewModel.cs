@@ -27,24 +27,36 @@ public sealed class AccentItem
 public sealed class ThemeCustomizationViewModel : BaseViewModel
 {
     private readonly ThemeService _themeService;
+    private readonly LocalizationService _localization;
 
     public ObservableCollection<ThemeItem> Themes { get; } = new();
     public ObservableCollection<AccentItem> Accents { get; } = new();
 
     public AppThemeMode CurrentTheme => _themeService.CurrentTheme;
     public AccentColorOption CurrentAccent => _themeService.CurrentAccent;
+    public AppLanguage CurrentLanguage => _localization.CurrentLanguage;
 
-    // Helper bools for UI Radio/Selection binding
+    public bool IsRussian => CurrentLanguage == AppLanguage.Ru;
+    public bool IsEnglish => CurrentLanguage == AppLanguage.En;
+
     public bool IsDarkTheme => CurrentTheme == AppThemeMode.Dark;
     public bool IsLightTheme => CurrentTheme == AppThemeMode.Light;
     public bool IsMidnightTheme => CurrentTheme == AppThemeMode.Midnight;
 
     public ICommand SelectThemeCommand { get; }
     public ICommand SelectAccentCommand { get; }
+    public ICommand SelectLanguageCommand { get; }
 
-    public ThemeCustomizationViewModel(ThemeService themeService)
+    public ThemeCustomizationViewModel(ThemeService themeService, LocalizationService localization)
     {
         _themeService = themeService;
+        _localization = localization;
+
+        SelectLanguageCommand = new RelayCommand<AppLanguage>(lang =>
+        {
+            _localization.ApplyLanguage(lang);
+            NotifyState();
+        });
 
         SelectThemeCommand = new RelayCommand<AppThemeMode>(theme =>
         {
@@ -65,6 +77,9 @@ public sealed class ThemeCustomizationViewModel : BaseViewModel
     {
         OnPropertyChanged(nameof(CurrentTheme));
         OnPropertyChanged(nameof(CurrentAccent));
+        OnPropertyChanged(nameof(CurrentLanguage));
+        OnPropertyChanged(nameof(IsRussian));
+        OnPropertyChanged(nameof(IsEnglish));
         OnPropertyChanged(nameof(IsDarkTheme));
         OnPropertyChanged(nameof(IsLightTheme));
         OnPropertyChanged(nameof(IsMidnightTheme));

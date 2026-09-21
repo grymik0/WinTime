@@ -1,28 +1,21 @@
-﻿using System.IO;
+using System.IO;
 using Dapper;
 using WinTime.Models;
 
 namespace WinTime.Data;
 
 /// <summary>
-/// CRUD-операции для таблицы Applications.
-/// Содержит кэш в памяти для часто запрашиваемых приложений.
+/// Repository for managing application entity records and in-memory hot cache.
 /// </summary>
 public sealed class ApplicationRepository
 {
     private readonly DatabaseService _db;
-
-    // in-memory кэш: ProcessName → AppModel (для горячего пути трекера)
-    private readonly Dictionary<string, AppModel> _cache =
-        new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, AppModel> _cache = new(StringComparer.OrdinalIgnoreCase);
 
     public ApplicationRepository(DatabaseService db) => _db = db;
 
-    // Get or Create
-
     /// <summary>
-    /// Ищет приложение по ProcessName в кэше и БД.
-    /// Создаёт новую запись, если приложение встречается впервые.
+    /// Finds application by process name in cache or database, or registers it if seen for the first time.
     /// </summary>
     public async Task<AppModel> GetOrCreateAsync(string processName, string processPath)
     {
@@ -39,7 +32,6 @@ public sealed class ApplicationRepository
             return existing;
         }
 
-        // Первый раз — создаём запись, DisplayName = имя без расширения
         var displayName = Path.GetFileNameWithoutExtension(processName);
         var category = IsKnownGame(processName) ? "Игры" : "Без категории";
         var id = await _db.Connection.ExecuteScalarAsync<int>(@"
@@ -77,16 +69,12 @@ public sealed class ApplicationRepository
         return KnownGameProcesses.Contains(exe);
     }
 
-    // Read
-
     public async Task<List<AppModel>> GetAllAsync()
     {
         var rows = await _db.Connection.QueryAsync<AppModel>(
             "SELECT * FROM Applications ORDER BY COALESCE(DisplayName, ProcessName)");
         return rows.AsList();
     }
-
-    // Update
 
     public async Task UpdateDisplayNameAsync(int id, string displayName)
     {
@@ -112,8 +100,6 @@ public sealed class ApplicationRepository
         InvalidateCacheById(id);
     }
 
-    // Helpers
-
     private void InvalidateCacheById(int id)
     {
         var key = _cache.FirstOrDefault(kv => kv.Value.Id == id).Key;
@@ -121,3 +107,4 @@ public sealed class ApplicationRepository
             _cache.Remove(key);
     }
 }
+

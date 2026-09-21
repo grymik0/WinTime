@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace WinTime.ViewModels;
 
 /// <summary>
-/// Базовый класс всех ViewModel. Реализует INotifyPropertyChanged.
+/// Base ViewModel providing property change notification.
 /// </summary>
 public abstract class BaseViewModel : INotifyPropertyChanged
 {
@@ -14,8 +14,7 @@ public abstract class BaseViewModel : INotifyPropertyChanged
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     /// <summary>
-    /// Устанавливает поле и вызывает OnPropertyChanged, если значение изменилось.
-    /// Возвращает true если значение изменилось.
+    /// Updates field value and raises OnPropertyChanged if changed.
     /// </summary>
     protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? name = null)
     {

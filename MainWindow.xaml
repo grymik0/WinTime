@@ -80,7 +80,7 @@
                     <StackPanel>
                         <TextBlock Text="⏱  WinTime"
                                    FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Учёт экранного времени"
+                        <TextBlock Text="{DynamicResource App_Subtitle}"
                                    FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 3 0 0" />
                     </StackPanel>
                 </Border>
@@ -100,31 +100,31 @@
                 <Border DockPanel.Dock="Bottom" Height="1" Background="{DynamicResource BorderBrushColor}" Margin="16 0" />
 
                 <StackPanel DockPanel.Dock="Top" Margin="10 16">
-                    <Button Content="📊   Дашборд"
+                    <Button Content="{DynamicResource Nav_Dashboard}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateDashboardCommand}"
                             Margin="0 2" />
-                    <Button Content="💻   Процессы"
+                    <Button Content="{DynamicResource Nav_Processes}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateProcessesCommand}"
                             Margin="0 2" />
-                    <Button Content="🗂   Приложения"
+                    <Button Content="{DynamicResource Nav_Applications}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateApplicationsCommand}"
                             Margin="0 2" />
-                    <Button Content="🏆   Профиль"
+                    <Button Content="{DynamicResource Nav_Profile}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateProfileCommand}"
                             Margin="0 2" />
-                    <Button Content="📌   Виджет"
+                    <Button Content="{DynamicResource Nav_Widget}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateWidgetCommand}"
                             Margin="0 2" />
-                    <Button Content="🎨   Оформление"
+                    <Button Content="{DynamicResource Nav_Theme}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateThemeCommand}"
                             Margin="0 2" />
-                    <Button Content="⚙   Настройки"
+                    <Button Content="{DynamicResource Nav_Settings}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateSettingsCommand}"
                             Margin="0 2" />

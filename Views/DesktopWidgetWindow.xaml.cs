@@ -24,7 +24,7 @@ public partial class DesktopWidgetWindow : Window
         Topmost = _settings.WidgetTopmost;
         UpdateClickThrough(_settings.WidgetClickThrough);
 
-        // Восстанавливаем позицию если сохранена, иначе в правый верхний угол
+        // Restore position if saved, otherwise default to top right
         if (_settings.WidgetLeft >= 0 && _settings.WidgetTop >= 0)
         {
             Left = _settings.WidgetLeft;

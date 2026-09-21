@@ -3,7 +3,7 @@ using System.Windows.Input;
 namespace WinTime.ViewModels;
 
 /// <summary>
-/// Реализация ICommand без параметра. Поддерживает async через fire-and-forget.
+/// Parameterless ICommand implementation.
 /// </summary>
 public sealed class RelayCommand : ICommand
 {
@@ -30,7 +30,7 @@ public sealed class RelayCommand : ICommand
 }
 
 /// <summary>
-/// Реализация ICommand с типизированным параметром.
+/// Generic ICommand implementation with strongly typed parameter.
 /// </summary>
 public sealed class RelayCommand<T> : ICommand
 {

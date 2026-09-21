@@ -1,11 +1,10 @@
 using System.Windows.Input;
+using WinTime.Services;
 
 namespace WinTime.ViewModels;
 
 /// <summary>
-/// ViewModel главного окна:
-/// — управляет навигацией (CurrentView → DataTemplate → нужный UserControl)
-/// — отражает статус трекера (пауза / активен)
+/// Main window ViewModel managing primary navigation and tracker status.
 /// </summary>
 public sealed class MainWindowViewModel : BaseViewModel
 {
@@ -16,6 +15,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private readonly DesktopWidgetViewModel      _widget;
     private readonly ThemeCustomizationViewModel _theme;
     private readonly SettingsViewModel           _settings;
+    private readonly LocalizationService         _localization;
 
     private object? _currentView;
     private bool    _isTracking = true;
@@ -32,10 +32,9 @@ public sealed class MainWindowViewModel : BaseViewModel
         private set { SetProperty(ref _isTracking, value); OnPropertyChanged(nameof(TrackingLabel)); }
     }
 
-    /// <summary>Текст кнопки «Пауза / Возобновить» в боковой панели.</summary>
-    public string TrackingLabel => _isTracking ? "⏸  Приостановить" : "▶  Возобновить";
-
-    // Commands
+    public string TrackingLabel => _isTracking 
+        ? _localization.GetString("Nav_PauseTracking") 
+        : _localization.GetString("Nav_ResumeTracking");
 
     public ICommand NavigateDashboardCommand    { get; }
     public ICommand NavigateProcessesCommand    { get; }
@@ -46,8 +45,6 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateSettingsCommand     { get; }
     public ICommand ToggleTrackingCommand       { get; }
 
-    // Constructor
-
     public MainWindowViewModel(
         DashboardViewModel          dashboard,
         ProcessesViewModel          processes,
@@ -55,7 +52,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         ProfileViewModel            profile,
         DesktopWidgetViewModel      widget,
         ThemeCustomizationViewModel theme,
-        SettingsViewModel           settings)
+        SettingsViewModel           settings,
+        LocalizationService         localization)
     {
         _dashboard    = dashboard;
         _processes    = processes;
@@ -64,6 +62,9 @@ public sealed class MainWindowViewModel : BaseViewModel
         _widget       = widget;
         _theme        = theme;
         _settings     = settings;
+        _localization = localization;
+
+        _localization.LanguageChanged += (_, _) => OnPropertyChanged(nameof(TrackingLabel));
 
         NavigateDashboardCommand = new RelayCommand(() =>
         {
@@ -110,7 +111,7 @@ public sealed class MainWindowViewModel : BaseViewModel
             AppServices.Tracker.IsPaused = !IsTracking;
         });
 
-        // Открываем дашборд при старте
+        // Open dashboard on startup
         CurrentView = _dashboard;
         _ = _dashboard.LoadDataAsync();
     }

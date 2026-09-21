@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -34,7 +34,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// Плавный переход: fade-in + slide-up (12px → 0) при смене вкладки.
+    /// Smooth tab transition: fade-in and slide-up.
     /// </summary>
     private void PlayTransitionAnimation()
     {
@@ -44,7 +44,7 @@ public partial class MainWindow : Window
         transform.Y = 12;
 
         var ease     = new CubicEase { EasingMode = EasingMode.EaseOut };
-        var duration = new Duration(TimeSpan.FromMilliseconds(200));
+        Duration duration = new Duration(TimeSpan.FromMilliseconds(200));
 
         ContentArea.BeginAnimation(
             OpacityProperty,
@@ -55,11 +55,8 @@ public partial class MainWindow : Window
             new DoubleAnimation(12, 0, duration) { EasingFunction = ease });
     }
 
-    // Window closing
-
     /// <summary>
-    /// Закрытие окна прячет его в трей вместо завершения приложения.
-    /// Для реального выхода — пункт «Выход» в контекстном меню трея.
+    /// Closing the main window hides it to the system tray unless application exit was requested.
     /// </summary>
     private void Window_Closing(object sender, CancelEventArgs e)
     {

@@ -78,20 +78,20 @@ public sealed class ThemeService
         switch (theme)
         {
             case AppThemeMode.Light:
-                appBgColor          = (Color)ColorConverter.ConvertFromString("#F3F4F6"); // Серый мягкий фон
-                sidebarBgColor      = (Color)ColorConverter.ConvertFromString("#FFFFFF"); // Белый сайдбар
-                cardBgColor         = (Color)ColorConverter.ConvertFromString("#FFFFFF"); // Белые карточки
-                cardSubBgColor      = (Color)ColorConverter.ConvertFromString("#F9FAFB"); // Слегка серый под-фон
+                appBgColor          = (Color)ColorConverter.ConvertFromString("#F3F4F6");
+                sidebarBgColor      = (Color)ColorConverter.ConvertFromString("#FFFFFF");
+                cardBgColor         = (Color)ColorConverter.ConvertFromString("#FFFFFF");
+                cardSubBgColor      = (Color)ColorConverter.ConvertFromString("#F9FAFB");
                 controlBgColor      = (Color)ColorConverter.ConvertFromString("#E5E7EB");
                 controlHoverBgColor = (Color)ColorConverter.ConvertFromString("#D1D5DB");
                 borderColor         = (Color)ColorConverter.ConvertFromString("#E5E7EB");
-                textPrimaryColor    = (Color)ColorConverter.ConvertFromString("#111827"); // Почти черный
+                textPrimaryColor    = (Color)ColorConverter.ConvertFromString("#111827");
                 textSecondaryColor  = (Color)ColorConverter.ConvertFromString("#4B5563");
                 textMutedColor      = (Color)ColorConverter.ConvertFromString("#9CA3AF");
                 break;
 
             case AppThemeMode.Midnight:
-                appBgColor          = (Color)ColorConverter.ConvertFromString("#0B0B0F"); // Глубокий черный OLED
+                appBgColor          = (Color)ColorConverter.ConvertFromString("#0B0B0F");
                 sidebarBgColor      = (Color)ColorConverter.ConvertFromString("#101017");
                 cardBgColor         = (Color)ColorConverter.ConvertFromString("#14141E");
                 cardSubBgColor      = (Color)ColorConverter.ConvertFromString("#0D0D14");
@@ -105,7 +105,7 @@ public sealed class ThemeService
 
             case AppThemeMode.Dark:
             default:
-                appBgColor          = (Color)ColorConverter.ConvertFromString("#16161E"); // Фирменный темно-синий
+                appBgColor          = (Color)ColorConverter.ConvertFromString("#16161E");
                 sidebarBgColor      = (Color)ColorConverter.ConvertFromString("#1C1C28");
                 cardBgColor         = (Color)ColorConverter.ConvertFromString("#1E1E2E");
                 cardSubBgColor      = (Color)ColorConverter.ConvertFromString("#181825");
@@ -118,7 +118,7 @@ public sealed class ThemeService
                 break;
         }
 
-        // 2. Акцентный цвет
+        // 2. Accent color
         string accentHex;
         string accentHoverHex;
 
@@ -154,7 +154,7 @@ public sealed class ThemeService
         var accentColor = (Color)ColorConverter.ConvertFromString(accentHex);
         var accentHoverColor = (Color)ColorConverter.ConvertFromString(accentHoverHex);
 
-        // Обновляем DynamicResource словаря
+        // Update application dynamic resources
         res["AppBgBrush"]          = new SolidColorBrush(appBgColor);
         res["SidebarBgBrush"]      = new SolidColorBrush(sidebarBgColor);
         res["CardBgBrush"]         = new SolidColorBrush(cardBgColor);

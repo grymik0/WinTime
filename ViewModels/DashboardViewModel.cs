@@ -14,11 +14,7 @@ namespace WinTime.ViewModels;
 public enum TimePeriod { Today, Week, Month }
 
 /// <summary>
-/// ViewModel главного дашборда:
-/// — сводные карточки (экранное время / AFK / топ-приложение)
-/// — Donut-диаграмма топ-5 приложений
-/// — столбчатый график (часы/дни)
-/// — список топ-приложений с ProgressBar
+/// Dashboard ViewModel for summary metrics, top application charts, sleep schedule rhythm, and activity heatmap.
 /// </summary>
 public sealed class DashboardViewModel : BaseViewModel
 {
@@ -210,7 +206,7 @@ public sealed class DashboardViewModel : BaseViewModel
                 IdleTime = Fmt(_rawIdleSeconds);
             }
 
-            // Пересчитываем тренды и сравнение в реальном времени при каждом тике
+            // Recalculate trends and comparisons in real-time on each tick
             ComputeTrendsAndMetrics(_rawActiveSeconds, _rawIdleSeconds, _rawPrevActiveSeconds, _currentFrom);
 
             if (SelectedPeriod == TimePeriod.Today)
@@ -453,14 +449,14 @@ public sealed class DashboardViewModel : BaseViewModel
                 return;
             }
 
-            // Среднее время первого включения и отбоя через круговое среднее (учитывая возможное смещение через полночь)
+            // Average wake-up and bedtime using circular mean
             var avgFirst = CalculateCircularAverageTime(rhythms.Select(r => r.FirstActive));
             RhythmWakeUpText = $"~{avgFirst.Hours:D2}:{avgFirst.Minutes:D2}";
 
             var avgLast = CalculateCircularAverageTime(rhythms.Select(r => r.LastActive));
             RhythmSleepText = $"~{avgLast.Hours:D2}:{avgLast.Minutes:D2}";
 
-            // Средний ночной перерыв между соседними днями
+            // Average overnight rest duration between adjacent days
             var restDurations = new List<double>();
             for (int i = 0; i < rhythms.Count - 1; i++)
             {
@@ -468,7 +464,7 @@ public sealed class DashboardViewModel : BaseViewModel
                 var next = rhythms[i + 1];
                 if ((next.Date - cur.Date).TotalDays <= 2)
                 {
-                    // От cur.LastActive до next.FirstActive следующего дня
+                    // From cur.LastActive to next.FirstActive of the next day
                     var endCur = cur.Date.Add(cur.LastActive);
                     var startNext = next.Date.Add(next.FirstActive);
                     var restHours = (startNext - endCur).TotalHours;
@@ -495,7 +491,7 @@ public sealed class DashboardViewModel : BaseViewModel
             }
             else
             {
-                // Если только 1 день или нет непрерывных пар
+                // Single day or no continuous pairs
                 RhythmRestDurationText = "—";
                 RhythmNoteText = $"По данным за {rhythms.Count} {GetDaysWord(rhythms.Count)}";
             }

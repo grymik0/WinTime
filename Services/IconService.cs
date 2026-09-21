@@ -7,8 +7,7 @@ using System.Windows.Media.Imaging;
 namespace WinTime.Services;
 
 /// <summary>
-/// Извлекает иконки приложений по пути к EXE и кэширует в памяти.
-/// Все ошибки перехватываются тихо — возвращается null.
+/// Extracts and caches application process icons.
 /// </summary>
 public sealed class IconService
 {
@@ -16,7 +15,7 @@ public sealed class IconService
         new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Возвращает BitmapSource для WPF или null если не удалось извлечь.
+    /// Returns BitmapSource representation of the process executable icon or null if extraction fails.
     /// </summary>
     public BitmapSource? GetIcon(string? processPath)
     {
@@ -35,13 +34,14 @@ public sealed class IconService
                         icon.Handle,
                         Int32Rect.Empty,
                         BitmapSizeOptions.FromEmptyOptions());
-                    result.Freeze(); // делаем пригодным для использования из любого потока
+                    result.Freeze();
                 }
             }
         }
-        catch { /* Нет доступа или файл отсутствует */ }
+        catch { /* ignored */ }
 
         _cache[processPath] = result;
         return result;
     }
 }
+
