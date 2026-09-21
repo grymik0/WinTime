@@ -14,6 +14,8 @@
     <Version>2.1.0</Version>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
+    <!-- Embed native C++ WPF runtime DLLs directly inside single-file executable -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <!-- Suppress NU1701: transitive deps (OpenTK, SkiaSharp, WPF.UI) work via
          .NETFramework compatibility shim, not a true incompatibility -->
     <NoWarn>$(NoWarn);NU1701</NoWarn>
