@@ -9,8 +9,8 @@
         MinHeight="600" MinWidth="900"
         ShowInTaskbar="True"
         WindowStartupLocation="CenterScreen"
-        Background="#16161E"
-        Foreground="White"
+        Background="{DynamicResource AppBgBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
         Closing="Window_Closing">
 
     <!-- DataTemplate: ViewModel → View -->
@@ -30,13 +30,16 @@
         <DataTemplate DataType="{x:Type vm:DesktopWidgetViewModel}">
             <views:DesktopWidgetSettingsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ThemeCustomizationViewModel}">
+            <views:ThemeCustomizationView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
             <views:SettingsView />
         </DataTemplate>
 
         <Style x:Key="NavBtn" TargetType="Button">
             <Setter Property="Background"             Value="Transparent" />
-            <Setter Property="Foreground"             Value="#9CA3AF" />
+            <Setter Property="Foreground"             Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="BorderThickness"        Value="0" />
             <Setter Property="Padding"                Value="16 11" />
             <Setter Property="FontSize"               Value="14" />
@@ -54,8 +57,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#252535" />
-                                <Setter Property="Foreground" Value="White" />
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -64,26 +67,26 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
+    <Grid Background="{DynamicResource AppBgBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#1C1C28">
+        <Border Grid.Column="0" Background="{DynamicResource SidebarBgBrush}">
             <DockPanel>
 
                 <Border DockPanel.Dock="Top" Padding="20 24 20 20">
                     <StackPanel>
                         <TextBlock Text="⏱  WinTime"
-                                   FontSize="20" FontWeight="Bold" Foreground="White" />
+                                   FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock Text="Учёт экранного времени"
-                                   FontSize="11" Foreground="#6B7280" Margin="0 3 0 0" />
+                                   FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 3 0 0" />
                     </StackPanel>
                 </Border>
 
                 <!-- Разделитель -->
-                <Border DockPanel.Dock="Top" Height="1" Background="#252535" Margin="16 0" />
+                <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource BorderBrushColor}" Margin="16 0" />
 
                 <!-- Кнопка паузы внизу -->
                 <Border DockPanel.Dock="Bottom" Padding="12 16">
@@ -94,7 +97,7 @@
                             HorizontalAlignment="Stretch" />
                 </Border>
 
-                <Border DockPanel.Dock="Bottom" Height="1" Background="#252535" Margin="16 0" />
+                <Border DockPanel.Dock="Bottom" Height="1" Background="{DynamicResource BorderBrushColor}" Margin="16 0" />
 
                 <StackPanel DockPanel.Dock="Top" Margin="10 16">
                     <Button Content="📊   Дашборд"
@@ -116,6 +119,10 @@
                     <Button Content="📌   Виджет"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateWidgetCommand}"
+                            Margin="0 2" />
+                    <Button Content="🎨   Оформление"
+                            Style="{StaticResource NavBtn}"
+                            Command="{Binding NavigateThemeCommand}"
                             Margin="0 2" />
                     <Button Content="⚙   Настройки"
                             Style="{StaticResource NavBtn}"

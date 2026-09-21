@@ -304,7 +304,8 @@ public sealed class ActivityRepository
 
     /// <summary>
     /// Анализ режима дня и ночного перерыва:
-    /// возвращает время первого и последнего активного действия за каждый день за последние N дней (по умолчанию 30).
+    /// возвращает время первого и последнего активного действия / включения ПК за каждый день за последние N дней (по умолчанию 30).
+    /// Синхронизируется с реальными событиями включения и выключения Windows Event Log.
     /// </summary>
     public async Task<List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>> GetDailyRhythmsAsync(int days = 30)
     {
@@ -323,7 +324,8 @@ public sealed class ActivityRepository
             ORDER BY DayDate ASC",
             new { FromDate = Fmt(fromDate) });
 
-        var result = new List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>();
+        var byDate = new Dictionary<DateTime, (TimeSpan FirstActive, TimeSpan LastActive)>();
+
         foreach (var r in rows)
         {
             if (r.DayDate is not null && DateTime.TryParse((string)r.DayDate, out DateTime d))
@@ -331,11 +333,32 @@ public sealed class ActivityRepository
                 if (TimeSpan.TryParse((string)r.MinTime, out TimeSpan minT) &&
                     TimeSpan.TryParse((string)r.MaxTime, out TimeSpan maxT))
                 {
-                    result.Add((d, minT, maxT));
+                    byDate[d.Date] = (minT, maxT);
                 }
             }
         }
-        return result;
+
+        // Подмешиваем данные из Windows Event Log (пробуждения / включения и уход в сон)
+        try
+        {
+            var powerLog = Services.SystemPowerHistoryService.GetPowerHistory(days);
+            foreach (var (pDate, (pWake, pSleep)) in powerLog)
+            {
+                if (byDate.TryGetValue(pDate, out var existing))
+                {
+                    var earliest = pWake < existing.FirstActive ? pWake : existing.FirstActive;
+                    var latest = pSleep > existing.LastActive ? pSleep : existing.LastActive;
+                    byDate[pDate] = (earliest, latest);
+                }
+                else
+                {
+                    byDate[pDate] = (pWake, pSleep);
+                }
+            }
+        }
+        catch { }
+
+        return byDate.OrderBy(kv => kv.Key).Select(kv => (kv.Key, kv.Value.FirstActive, kv.Value.LastActive)).ToList();
     }
 
     // Helpers

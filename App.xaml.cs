@@ -80,12 +80,10 @@ public partial class App : Application
 
         AppServices.Tracker.Start();
 
-        // Автоматически обновляем путь в реестре Windows на текущий запущенный EXE-файл
         SystemStartupManager.SyncCurrentExePath(settings.LaunchOnStartup);
 
         SetupTrayIcon();
 
-        // Инициализация виджета
         InitDesktopWidget(settings);
 
         _mainWindow = new MainWindow();

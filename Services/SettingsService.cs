@@ -118,6 +118,18 @@ public sealed class SettingsService
         set { _s.WidgetCompactMode = value; Save(); }
     }
 
+    public string ThemeMode
+    {
+        get => _s.ThemeMode;
+        set { _s.ThemeMode = value; Save(); }
+    }
+
+    public string AccentColor
+    {
+        get => _s.AccentColor;
+        set { _s.AccentColor = value; Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -165,6 +177,8 @@ public sealed class SettingsService
         public bool WidgetTopmost { get; set; } = true;
         public bool WidgetShowSession { get; set; } = true;
         public bool WidgetCompactMode { get; set; } = false;
+        public string ThemeMode { get; set; } = "Dark";
+        public string AccentColor { get; set; } = "Indigo";
     }
 }
 

@@ -148,6 +148,7 @@ public sealed class DashboardViewModel : BaseViewModel
     private readonly ActivityTracker    _tracker;
 
     private long _rawActiveSeconds;
+    private long _todayActiveSeconds;
     private long _rawIdleSeconds;
     private long _rawPrevActiveSeconds;
     private DateTime _currentFrom = DateTime.Today;
@@ -180,6 +181,7 @@ public sealed class DashboardViewModel : BaseViewModel
             if (!e.IsIdle)
             {
                 _rawActiveSeconds++;
+                _todayActiveSeconds++;
                 TotalTime = Fmt(_rawActiveSeconds);
 
                 var app = TopApps.FirstOrDefault(a => a.AppId == e.AppId);
@@ -257,6 +259,16 @@ public sealed class DashboardViewModel : BaseViewModel
             TotalTime = Fmt(active);
             IdleTime  = Fmt(idle);
 
+            if (SelectedPeriod == TimePeriod.Today)
+            {
+                _todayActiveSeconds = active;
+            }
+            else
+            {
+                var (tActive, _) = await _activityRepo.GetTotalsAsync(DateTime.Today, DateTime.Today.AddDays(1));
+                _todayActiveSeconds = tActive;
+            }
+
             var (prevFrom, prevTo) = GetPreviousPeriodRange(from, to);
             var (prevActive, _)    = await _activityRepo.GetTotalsAsync(prevFrom, prevTo);
             _rawPrevActiveSeconds  = prevActive;
@@ -309,7 +321,7 @@ public sealed class DashboardViewModel : BaseViewModel
 
             var dailyMap = await _activityRepo.GetDailyActivityHistoryAsync(startMonday);
             var todayKey = today.ToString("yyyy-MM-dd");
-            dailyMap[todayKey] = Math.Max(dailyMap.GetValueOrDefault(todayKey, 0L), _rawActiveSeconds);
+            dailyMap[todayKey] = Math.Max(dailyMap.GetValueOrDefault(todayKey, 0L), _todayActiveSeconds);
 
             var weeks = new List<HeatmapWeekItem>();
             int previousMonth = -1;
@@ -441,14 +453,11 @@ public sealed class DashboardViewModel : BaseViewModel
                 return;
             }
 
-            // Среднее время первого включения (пробуждения / начала работы)
-            double avgFirstMinutes = rhythms.Average(r => r.FirstActive.TotalMinutes);
-            var avgFirst = TimeSpan.FromMinutes(avgFirstMinutes);
+            // Среднее время первого включения и отбоя через круговое среднее (учитывая возможное смещение через полночь)
+            var avgFirst = CalculateCircularAverageTime(rhythms.Select(r => r.FirstActive));
             RhythmWakeUpText = $"~{avgFirst.Hours:D2}:{avgFirst.Minutes:D2}";
 
-            // Среднее время последнего выключения (завершения работы / отхода ко сну)
-            double avgLastMinutes = rhythms.Average(r => r.LastActive.TotalMinutes);
-            var avgLast = TimeSpan.FromMinutes(avgLastMinutes);
+            var avgLast = CalculateCircularAverageTime(rhythms.Select(r => r.LastActive));
             RhythmSleepText = $"~{avgLast.Hours:D2}:{avgLast.Minutes:D2}";
 
             // Средний ночной перерыв между соседними днями
@@ -492,6 +501,30 @@ public sealed class DashboardViewModel : BaseViewModel
             }
         }
         catch { }
+    }
+
+    private static TimeSpan CalculateCircularAverageTime(IEnumerable<TimeSpan> times)
+    {
+        double sumSin = 0;
+        double sumCos = 0;
+        int count = 0;
+
+        foreach (var t in times)
+        {
+            double fraction = t.TotalSeconds / 86400.0;
+            double angle = fraction * 2.0 * Math.PI;
+            sumSin += Math.Sin(angle);
+            sumCos += Math.Cos(angle);
+            count++;
+        }
+
+        if (count == 0) return TimeSpan.Zero;
+
+        double avgAngle = Math.Atan2(sumSin / count, sumCos / count);
+        if (avgAngle < 0) avgAngle += 2.0 * Math.PI;
+
+        double avgSeconds = (avgAngle / (2.0 * Math.PI)) * 86400.0;
+        return TimeSpan.FromSeconds(Math.Round(avgSeconds));
     }
 
     private static string GetDaysWord(int count)
@@ -543,7 +576,7 @@ public sealed class DashboardViewModel : BaseViewModel
         else if (prevActive == 0)
         {
             TrendPercentageText = "+100%";
-            TrendDiffText = $"на {Fmt(active)} больше";
+            TrendDiffText = $"+{Fmt(active)}";
             TrendColorHex = "#818CF8";
             HasTrend = true;
         }
@@ -555,9 +588,9 @@ public sealed class DashboardViewModel : BaseViewModel
             TrendPercentageText = $"{sign}{pct:F0}%";
 
             if (diff < 0)
-                TrendDiffText = $"на {Fmt(Math.Abs(diff))} меньше";
+                TrendDiffText = $"-{Fmt(Math.Abs(diff))}";
             else if (diff > 0)
-                TrendDiffText = $"на {Fmt(diff)} больше";
+                TrendDiffText = $"+{Fmt(diff)}";
             else
                 TrendDiffText = "столько же";
 

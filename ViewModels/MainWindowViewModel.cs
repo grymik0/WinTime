@@ -9,12 +9,13 @@ namespace WinTime.ViewModels;
 /// </summary>
 public sealed class MainWindowViewModel : BaseViewModel
 {
-    private readonly DashboardViewModel     _dashboard;
-    private readonly ProcessesViewModel     _processes;
-    private readonly ApplicationsViewModel  _applications;
-    private readonly ProfileViewModel      _profile;
-    private readonly DesktopWidgetViewModel _widget;
-    private readonly SettingsViewModel      _settings;
+    private readonly DashboardViewModel          _dashboard;
+    private readonly ProcessesViewModel          _processes;
+    private readonly ApplicationsViewModel       _applications;
+    private readonly ProfileViewModel            _profile;
+    private readonly DesktopWidgetViewModel      _widget;
+    private readonly ThemeCustomizationViewModel _theme;
+    private readonly SettingsViewModel           _settings;
 
     private object? _currentView;
     private bool    _isTracking = true;
@@ -41,24 +42,27 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateApplicationsCommand { get; }
     public ICommand NavigateProfileCommand      { get; }
     public ICommand NavigateWidgetCommand       { get; }
+    public ICommand NavigateThemeCommand        { get; }
     public ICommand NavigateSettingsCommand     { get; }
     public ICommand ToggleTrackingCommand       { get; }
 
     // Constructor
 
     public MainWindowViewModel(
-        DashboardViewModel     dashboard,
-        ProcessesViewModel     processes,
-        ApplicationsViewModel  applications,
-        ProfileViewModel       profile,
-        DesktopWidgetViewModel widget,
-        SettingsViewModel      settings)
+        DashboardViewModel          dashboard,
+        ProcessesViewModel          processes,
+        ApplicationsViewModel       applications,
+        ProfileViewModel            profile,
+        DesktopWidgetViewModel      widget,
+        ThemeCustomizationViewModel theme,
+        SettingsViewModel           settings)
     {
         _dashboard    = dashboard;
         _processes    = processes;
         _applications = applications;
         _profile      = profile;
         _widget       = widget;
+        _theme        = theme;
         _settings     = settings;
 
         NavigateDashboardCommand = new RelayCommand(() =>
@@ -88,6 +92,11 @@ public sealed class MainWindowViewModel : BaseViewModel
         NavigateWidgetCommand = new RelayCommand(() =>
         {
             CurrentView = _widget;
+        });
+
+        NavigateThemeCommand = new RelayCommand(() =>
+        {
+            CurrentView = _theme;
         });
 
         NavigateSettingsCommand = new RelayCommand(() =>
