@@ -116,16 +116,13 @@ public sealed class ProcessUptimeItem : BaseViewModel
         ActiveSeconds++;
     }
 
-    private static string FormatDuration(int totalSec)
+    public void RefreshFormattedStrings()
     {
-        if (totalSec <= 0) return "0м";
-        var h = totalSec / 3600;
-        var m = (totalSec % 3600) / 60;
-        var s = totalSec % 60;
-
-        if (h > 0) return $"{h}ч {m}м";
-        if (m > 0) return $"{m}м {s}с";
-        return $"{s}с";
+        OnPropertyChanged(nameof(FormattedUptime));
+        OnPropertyChanged(nameof(FormattedActiveTime));
     }
+
+    private static string FormatDuration(int totalSec) =>
+        WinTime.Services.LocalizationService.FormatDuration(totalSec);
 }
 

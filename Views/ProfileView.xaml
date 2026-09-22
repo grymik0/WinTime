@@ -22,13 +22,13 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Профиль и Достижения" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="Ваш прогресс активности, уровни опыта и разблокированные награды"
+                    <TextBlock Text="{DynamicResource Profile_Title}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{DynamicResource Profile_Subtitle}"
                                FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
                 </StackPanel>
 
                 <Button Grid.Column="1"
-                        Content="🔄  Обновить"
+                        Content="{DynamicResource Common_Refresh}"
                         Command="{Binding RefreshCommand}"
                         Padding="14 7"
                         FontSize="13"
@@ -55,37 +55,37 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Аватарка / Значок уровня -->
-                        <Border Grid.Column="0" Width="52" Height="52" CornerRadius="26" Background="#312E81"
-                                BorderBrush="#6366F1" BorderThickness="2" HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding UserLevel, StringFormat={}Ур.{0}}"
-                                       FontSize="14" FontWeight="Bold" Foreground="#C7D2FE"
+                        <Border Grid.Column="0" Width="52" Height="52" CornerRadius="26" Background="{DynamicResource ControlBgBrush}"
+                                BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding UserLevel, StringFormat={}Lvl {0}}"
+                                       FontSize="13" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12 0 0 0">
-                            <TextBlock Text="{Binding RankTitle}" FontSize="18" FontWeight="Bold" Foreground="White" />
-                            <TextBlock Text="Зарабатывайте XP, проводя время за полезной работой" FontSize="12" Foreground="#9CA3AF" Margin="0 2 0 0" />
+                            <TextBlock Text="{Binding RankTitle}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="{DynamicResource Profile_XpHint}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                         </StackPanel>
 
                         <!-- Статистические мини-бейджы справа -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Border Background="#252535" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
+                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="Время за всё время" FontSize="11" Foreground="#9CA3AF" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding TotalTimeFormatted}" FontSize="14" FontWeight="Bold" Foreground="White" Margin="0 2 0 0" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{DynamicResource Profile_AllTime}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding TotalTimeFormatted}" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 2 0 0" HorizontalAlignment="Center" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#252535" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
+                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="Активных дней" FontSize="11" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{DynamicResource Profile_ActiveDays}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
                                     <TextBlock Text="{Binding ActiveDaysFormatted}" FontSize="14" FontWeight="Bold" Foreground="#10B981" Margin="0 2 0 0" HorizontalAlignment="Center" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#252535" CornerRadius="8" Padding="14 8">
+                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="Достижения" FontSize="11" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{DynamicResource Profile_Achievements}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
                                     <TextBlock Text="{Binding UnlockedAchievementsCountText}" FontSize="14" FontWeight="Bold" Foreground="#F59E0B" Margin="0 2 0 0" HorizontalAlignment="Center" />
                                 </StackPanel>
                             </Border>
@@ -95,12 +95,12 @@
                     <!-- Прогресс-бар опыта (XP) -->
                     <StackPanel Grid.Row="2">
                         <Grid Margin="0 0 0 8">
-                            <TextBlock Text="Прогресс уровня" FontSize="12" FontWeight="SemiBold" Foreground="#D1D5DB" />
-                            <TextBlock Text="{Binding LevelProgressText}" FontSize="12" Foreground="#9CA3AF" HorizontalAlignment="Right" />
+                            <TextBlock Text="{DynamicResource Profile_Progress}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="{Binding LevelProgressText}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Right" />
                         </Grid>
 
                         <ProgressBar Height="10" Value="{Binding LevelProgress, Mode=OneWay}" Maximum="100"
-                                     Background="#16161E" Foreground="#6366F1" BorderThickness="0">
+                                     Background="{DynamicResource ControlBgBrush}" Foreground="{DynamicResource AccentBrush}" BorderThickness="0">
                             <ProgressBar.Clip>
                                 <RectangleGeometry Rect="0,0,10000,10" RadiusX="5" RadiusY="5" />
                             </ProgressBar.Clip>
@@ -111,7 +111,7 @@
 
             <!-- Секция достижений -->
             <StackPanel Grid.Row="4">
-                <TextBlock Text="🏆  Все достижения" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0 0 0 14" />
+                <TextBlock Text="{DynamicResource Profile_AllAchList}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 14" />
 
                 <ItemsControl ItemsSource="{Binding Achievements}">
                     <ItemsControl.ItemsPanel>
@@ -135,7 +135,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Иконка достижения -->
-                                    <Border Grid.Column="0" Width="38" Height="38" CornerRadius="8" Background="#252535"
+                                    <Border Grid.Column="0" Width="38" Height="38" CornerRadius="8" Background="{DynamicResource ControlBgBrush}"
                                             Opacity="{Binding IconOpacity}" HorizontalAlignment="Left" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Icon}" FontSize="20"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -145,15 +145,15 @@
                                     <StackPanel Grid.Column="1" Margin="8 0 12 0" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="Bold"
                                                    Foreground="{Binding TitleForeground}" />
-                                        <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#9CA3AF"
+                                        <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                                                    Margin="0 3 0 6" TextWrapping="Wrap" />
 
                                         <!-- Прогресс достижения -->
                                         <Grid Margin="0 2 0 0">
                                             <ProgressBar Height="5" Value="{Binding Progress, Mode=OneWay}" Maximum="100"
-                                                         Background="#16161E" Foreground="#10B981" BorderThickness="0" />
+                                                         Background="{DynamicResource ControlBgBrush}" Foreground="#10B981" BorderThickness="0" />
                                         </Grid>
-                                        <TextBlock Text="{Binding ProgressText}" FontSize="10" Foreground="#6B7280" Margin="0 4 0 0" />
+                                        <TextBlock Text="{Binding ProgressText}" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
                                     </StackPanel>
 
                                     <!-- Бейдж статуса -->
@@ -171,3 +171,4 @@
         </Grid>
     </ScrollViewer>
 </UserControl>
+

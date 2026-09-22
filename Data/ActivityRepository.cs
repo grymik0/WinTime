@@ -298,59 +298,42 @@ public sealed class ActivityRepository
     }
 
     /// <summary>
-    /// Analyzes sleep and wake rhythms by determining first and last active timestamps per day,
-    /// merged with Windows Event Log system power transitions.
+    /// Analyzes sleep and wake rhythms.
+    /// A "sleep-cycle day" starts at 05:00 AM and ends at 05:00 AM the next calendar day.
+    /// This ensures activity past midnight (00:00 - 05:00) is correctly attributed to the previous evening's bedtime,
+    /// and wake-up reflects the true morning start time.
     /// </summary>
     public async Task<List<(DateTime Date, TimeSpan FirstActive, TimeSpan LastActive)>> GetDailyRhythmsAsync(int days = 30)
     {
-        var fromDate = DateTime.Today.AddDays(-days);
+        var fromDate = DateTime.Today.AddDays(-days).AddHours(5);
+        // Date of the sleep cycle: subtracting 5 hours aligns 00:00-04:59 with the previous calendar day
         var rows = await _db.Connection.QueryAsync<dynamic>(@"
             SELECT 
-                date(s.StartTime) AS DayDate,
-                MIN(time(s.StartTime)) AS MinTime,
-                MAX(time(datetime(s.StartTime, '+' || s.DurationSeconds || ' seconds'))) AS MaxTime
+                date(datetime(s.StartTime, '-5 hours')) AS CycleDate,
+                MIN(s.StartTime) AS MinStart,
+                MAX(datetime(s.StartTime, '+' || s.DurationSeconds || ' seconds')) AS MaxEnd
             FROM ActivitySessions s
             JOIN Applications a ON a.Id = s.AppId
             WHERE s.StartTime >= @FromDate
               AND s.IsIdle = 0
               AND a.IsBlacklisted = 0
-            GROUP BY DayDate
-            ORDER BY DayDate ASC",
+            GROUP BY CycleDate
+            ORDER BY CycleDate ASC",
             new { FromDate = Fmt(fromDate) });
 
         var byDate = new Dictionary<DateTime, (TimeSpan FirstActive, TimeSpan LastActive)>();
 
         foreach (var r in rows)
         {
-            if (r.DayDate is not null && DateTime.TryParse((string)r.DayDate, out DateTime d))
+            if (r.CycleDate is not null && DateTime.TryParse((string)r.CycleDate, out DateTime cycleD))
             {
-                if (TimeSpan.TryParse((string)r.MinTime, out TimeSpan minT) &&
-                    TimeSpan.TryParse((string)r.MaxTime, out TimeSpan maxT))
+                if (DateTime.TryParse((string)r.MinStart, out DateTime minStartDt) &&
+                    DateTime.TryParse((string)r.MaxEnd, out DateTime maxEndDt))
                 {
-                    byDate[d.Date] = (minT, maxT);
+                    byDate[cycleD.Date] = (minStartDt.TimeOfDay, maxEndDt.TimeOfDay);
                 }
             }
         }
-
-        // Merge hardware power logs from Windows Event Log
-        try
-        {
-            var powerLog = Services.SystemPowerHistoryService.GetPowerHistory(days);
-            foreach (var (pDate, (pWake, pSleep)) in powerLog)
-            {
-                if (byDate.TryGetValue(pDate, out var existing))
-                {
-                    var earliest = pWake < existing.FirstActive ? pWake : existing.FirstActive;
-                    var latest = pSleep > existing.LastActive ? pSleep : existing.LastActive;
-                    byDate[pDate] = (earliest, latest);
-                }
-                else
-                {
-                    byDate[pDate] = (pWake, pSleep);
-                }
-            }
-        }
-        catch { }
 
         return byDate.OrderBy(kv => kv.Key).Select(kv => (kv.Key, kv.Value.FirstActive, kv.Value.LastActive)).ToList();
     }

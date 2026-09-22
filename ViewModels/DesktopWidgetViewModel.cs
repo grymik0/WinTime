@@ -153,7 +153,9 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
         }
     }
 
-    public string WidgetToggleLabel => IsWidgetEnabled ? "Скрыть виджет с экрана" : "Включить виджет на рабочем столе";
+    public string WidgetToggleLabel => IsWidgetEnabled 
+        ? (System.Windows.Application.Current?.TryFindResource("Widget_BtnDisable") as string ?? "Выключить виджет") 
+        : (System.Windows.Application.Current?.TryFindResource("Widget_BtnEnable") as string ?? "Включить виджет");
 
     public double WidgetOpacity
     {
@@ -237,17 +239,20 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
                 _continuousSessionSeconds++;
                 TodayTimeText = Fmt(_todayActiveSeconds);
                 SessionTimeText = Fmt(_continuousSessionSeconds);
-                CurrentAppName = string.IsNullOrWhiteSpace(e.AppName) ? "Активность" : e.AppName;
+                CurrentAppName = string.IsNullOrWhiteSpace(e.AppName) 
+                    ? (LocalizationService.IsRussian ? "Активность" : "Activity") 
+                    : e.AppName;
             }
             else
             {
                 _continuousSessionSeconds = 0;
-                SessionTimeText = "0с";
-                CurrentAppName = "💤 AFK / Бездействие";
+                SessionTimeText = LocalizationService.FormatDuration(0);
+                CurrentAppName = LocalizationService.IsRussian ? "💤 AFK / Бездействие" : "💤 AFK / Idle";
             }
 
             var (clicks, dist) = _tracker.GetTodayMouseMetrics();
-            MouseSummaryText = $"{DashboardViewModel.FormatClicks(clicks)} кл · {DashboardViewModel.FormatDistance(dist)}";
+            string clicksUnit = LocalizationService.IsRussian ? "кл" : "clicks";
+            MouseSummaryText = $"{DashboardViewModel.FormatClicks(clicks)} {clicksUnit} · {DashboardViewModel.FormatDistance(dist)}";
 
             if (++_dbRefreshCounter >= 60)
             {
@@ -267,18 +272,13 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
             int level = (int)(totalXp / xpPerLevel) + 1;
             long curLvlXp = totalXp % xpPerLevel;
 
-            UserLevelText = $"Ур. {level}";
+            UserLevelText = LocalizationService.IsRussian ? $"Ур. {level}" : $"Lvl {level}";
             XpProgressText = $"{curLvlXp} / {xpPerLevel} XP";
             XpProgress = Math.Clamp((double)curLvlXp / xpPerLevel * 100.0, 0, 100);
         }
         catch { }
     }
 
-    private static string Fmt(long s)
-    {
-        var ts = TimeSpan.FromSeconds(s);
-        if (ts.TotalHours >= 1) return $"{(int)ts.TotalHours}ч {ts.Minutes:D2}м";
-        if (ts.TotalMinutes >= 1) return $"{ts.Minutes}м {ts.Seconds:D2}с";
-        return $"{ts.Seconds}с";
-    }
+    private static string Fmt(long s) =>
+        LocalizationService.FormatDurationFull(s);
 }
