@@ -142,6 +142,7 @@ public sealed class DashboardViewModel : BaseViewModel
     ];
 
     private readonly ActivityTracker    _tracker;
+    private readonly LocalizationService _localization;
 
     private long _rawActiveSeconds;
     private long _todayActiveSeconds;
@@ -152,11 +153,18 @@ public sealed class DashboardViewModel : BaseViewModel
 
     // Constructor
 
-    public DashboardViewModel(ActivityRepository activityRepo, IconService iconService, ActivityTracker tracker)
+    public DashboardViewModel(ActivityRepository activityRepo, IconService iconService, ActivityTracker tracker, LocalizationService localization)
     {
         _activityRepo = activityRepo;
         _iconService  = iconService;
         _tracker      = tracker;
+        _localization = localization;
+
+        _localization.LanguageChanged += (_, _) =>
+        {
+            ComputeTrendsAndMetrics(_rawActiveSeconds, _rawIdleSeconds, _rawPrevActiveSeconds, _currentFrom);
+            _ = LoadDataAsync();
+        };
 
         _tracker.StateChanged += OnTrackerStateChanged;
 
@@ -422,14 +430,20 @@ public sealed class DashboardViewModel : BaseViewModel
                 }
             }
 
+            var isRu = _localization.CurrentLanguage == AppLanguage.Ru;
+            var dayWord = isRu ? "дн." : "days";
             HeatmapTotalTimeText = Fmt(totalPeriodSec);
-            HeatmapAvgDayText = activeDaysCount > 0 ? Fmt(totalPeriodSec / activeDaysCount) : "0м";
-            HeatmapConsistencyText = $"{activeDaysCount} из {totalDays} дн. ({Math.Round((double)activeDaysCount / totalDays * 100):F0}%)";
+            HeatmapAvgDayText = activeDaysCount > 0 ? Fmt(totalPeriodSec / activeDaysCount) : "0m";
+            HeatmapConsistencyText = isRu 
+                ? $"{activeDaysCount} из {totalDays} дн. ({Math.Round((double)activeDaysCount / totalDays * 100):F0}%)"
+                : $"{activeDaysCount} of {totalDays} days ({Math.Round((double)activeDaysCount / totalDays * 100):F0}%)";
             HeatmapBestDayText = bestDaySec > 0
-                ? $"{bestDayDate.ToString("d MMM", new System.Globalization.CultureInfo("ru-RU"))} ({Fmt(bestDaySec)})"
+                ? $"{bestDayDate.ToString("d MMM", isRu ? new System.Globalization.CultureInfo("ru-RU") : System.Globalization.CultureInfo.InvariantCulture)} ({Fmt(bestDaySec)})"
                 : "—";
 
-            HeatmapStatsText = $"🔥 Серия: {streak} {GetDaysWord(streak)} · Всего активных: {activeDaysCount} дн.";
+            HeatmapStatsText = isRu 
+                ? $"🔥 Серия: {streak} {GetDaysWord(streak)} · Всего активных: {activeDaysCount} дн."
+                : $"🔥 Streak: {streak} {(streak == 1 ? "day" : "days")} · Total active: {activeDaysCount} days";
             HeatmapWeeks = new ObservableCollection<HeatmapWeekItem>(weeks);
         }
         catch { }
@@ -475,25 +489,28 @@ public sealed class DashboardViewModel : BaseViewModel
                 }
             }
 
+            var isRu = _localization.CurrentLanguage == AppLanguage.Ru;
             if (restDurations.Count > 0)
             {
                 double avgRestH = restDurations.Average();
                 int h = (int)avgRestH;
                 int m = (int)((avgRestH - h) * 60);
-                RhythmRestDurationText = $"{h}ч {m:D2}м";
+                RhythmRestDurationText = isRu ? $"{h}ч {m:D2}м" : $"{h}h {m:D2}m";
                 
                 if (avgRestH >= 7 && avgRestH <= 9)
-                    RhythmNoteText = "Здоровый баланс сна и отдыха";
+                    RhythmNoteText = isRu ? "Здоровый баланс сна и отдыха" : "Healthy sleep & rest balance";
                 else if (avgRestH < 6)
-                    RhythmNoteText = "Короткий ночной перерыв (< 6ч)";
+                    RhythmNoteText = isRu ? "Короткий ночной перерыв (< 6ч)" : "Short night rest gap (< 6h)";
                 else
-                    RhythmNoteText = "Длительный ночной перерыв";
+                    RhythmNoteText = isRu ? "Длительный ночной перерыв" : "Extended night rest gap";
             }
             else
             {
                 // Single day or no continuous pairs
                 RhythmRestDurationText = "—";
-                RhythmNoteText = $"По данным за {rhythms.Count} {GetDaysWord(rhythms.Count)}";
+                RhythmNoteText = isRu 
+                    ? $"По данным за {rhythms.Count} {GetDaysWord(rhythms.Count)}"
+                    : $"Based on {rhythms.Count} {(rhythms.Count == 1 ? "day" : "days")}";
             }
         }
         catch { }
@@ -546,11 +563,12 @@ public sealed class DashboardViewModel : BaseViewModel
 
     private void ComputeTrendsAndMetrics(long active, long idle, long prevActive, DateTime from)
     {
+        var isRu = _localization?.CurrentLanguage == AppLanguage.Ru;
         long totalSpan = active + idle;
         if (totalSpan > 0 && idle > 0)
         {
             double idlePct = (double)idle / totalSpan * 100.0;
-            IdleRatioText = $"{idlePct:F0}% от общего времени";
+            IdleRatioText = isRu ? $"{idlePct:F0}% от общего времени" : $"{idlePct:F0}% of total time";
             HasIdleRatio = true;
         }
         else
@@ -560,9 +578,9 @@ public sealed class DashboardViewModel : BaseViewModel
 
         TrendPeriodLabel = SelectedPeriod switch
         {
-            TimePeriod.Today => "по сравнению со вчера",
-            TimePeriod.Week  => "по сравнению с прошлой неделей",
-            _                => "по сравнению с прошлым месяцем"
+            TimePeriod.Today => isRu ? "по сравнению со вчера" : "compared to yesterday",
+            TimePeriod.Week  => isRu ? "по сравнению с прошлой неделей" : "compared to last week",
+            _                => isRu ? "по сравнению с прошлым месяцем" : "compared to last month"
         };
 
         if (prevActive == 0 && active == 0)
@@ -588,7 +606,7 @@ public sealed class DashboardViewModel : BaseViewModel
             else if (diff > 0)
                 TrendDiffText = $"+{Fmt(diff)}";
             else
-                TrendDiffText = "столько же";
+                TrendDiffText = isRu ? "столько же" : "same";
 
             TrendColorHex = pct > 0 ? "#818CF8" : (pct < 0 ? "#34D399" : "#9CA3AF");
             HasTrend = true;
@@ -599,14 +617,18 @@ public sealed class DashboardViewModel : BaseViewModel
         {
             int daysElapsed = (int)now.DayOfWeek == 0 ? 7 : (int)now.DayOfWeek;
             long avg = active / Math.Max(1, daysElapsed);
-            SubMetricText = $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)";
+            SubMetricText = isRu 
+                ? $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)"
+                : $"📊 Avg: {Fmt(avg)}/day ({daysElapsed} days)";
             HasSubMetric = true;
         }
         else if (SelectedPeriod == TimePeriod.Month)
         {
             int daysElapsed = Math.Max(1, now.Day);
             long avg = active / daysElapsed;
-            SubMetricText = $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)";
+            SubMetricText = isRu 
+                ? $"📊 В ср: {Fmt(avg)}/день ({daysElapsed} дн.)"
+                : $"📊 Avg: {Fmt(avg)}/day ({daysElapsed} days)";
             HasSubMetric = true;
         }
         else
@@ -638,10 +660,11 @@ public sealed class DashboardViewModel : BaseViewModel
 
         if (rest > 0)
         {
+            var isRu = _localization?.CurrentLanguage == AppLanguage.Ru;
             series.Add(new PieSeries<double>
             {
                 Values      = [Math.Round(rest / 3600.0, 3)],
-                Name        = "Остальные",
+                Name        = isRu ? "Остальные" : "Others",
                 Fill        = new SolidColorPaint(Palette[5]),
                 Stroke      = null,
                 InnerRadius = 55,
@@ -663,13 +686,14 @@ public sealed class DashboardViewModel : BaseViewModel
         };
 
         var doubles = values.Select(v => Math.Round(v / 3600.0, 2)).ToArray();
+        var isRu = _localization?.CurrentLanguage == AppLanguage.Ru;
 
         BarSeries =
         [
             new ColumnSeries<double>
             {
                 Values               = doubles,
-                Name                 = "Активное время (ч)",
+                Name                 = isRu ? "Активное время (ч)" : "Active time (h)",
                 Fill                 = new SolidColorPaint(Palette[0]),
                 Stroke               = null,
                 MaxBarWidth          = double.MaxValue,
@@ -685,7 +709,7 @@ public sealed class DashboardViewModel : BaseViewModel
                 Labeler        = _selectedPeriod switch
                 {
                     TimePeriod.Today  => v => $"{(int)v:D2}:00",
-                    TimePeriod.Month  => v => $"{(int)v + 1} чис.",
+                    TimePeriod.Month  => v => isRu ? $"{(int)v + 1} чис." : $"{(int)v + 1}",
                     _                 => v => v.ToString(),
                 },
                 LabelsRotation = _selectedPeriod == TimePeriod.Today  ? -60 :
@@ -704,8 +728,8 @@ public sealed class DashboardViewModel : BaseViewModel
                 TextSize    = 11,
                 LabelsPaint = new SolidColorPaint(new SKColor(156, 163, 175)),
                 Labeler     = v => v < 1
-                    ? $"{(int)Math.Round(v * 60)}м"
-                    : $"{v:F1}ч",
+                    ? (isRu ? $"{(int)Math.Round(v * 60)}м" : $"{(int)Math.Round(v * 60)}m")
+                    : (isRu ? $"{v:F1}ч" : $"{v:F1}h"),
             }
         ];
     }
@@ -715,6 +739,7 @@ public sealed class DashboardViewModel : BaseViewModel
     private (DateTime from, DateTime to, string[] labels) GetPeriodRange()
     {
         var now = DateTime.Now;
+        var isRu = _localization?.CurrentLanguage == AppLanguage.Ru;
         return _selectedPeriod switch
         {
             TimePeriod.Today => (
@@ -725,7 +750,7 @@ public sealed class DashboardViewModel : BaseViewModel
             TimePeriod.Week => (
                 now.Date.AddDays(-(int)now.DayOfWeek == 0 ? -6 : -(int)now.DayOfWeek + 1),
                 now.Date.AddDays(7 - ((int)now.DayOfWeek == 0 ? 7 : (int)now.DayOfWeek) + 1),
-                ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+                isRu ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
             ),
             TimePeriod.Month => (
                 new DateTime(now.Year, now.Month, 1),
@@ -737,13 +762,8 @@ public sealed class DashboardViewModel : BaseViewModel
         };
     }
 
-    private static string Fmt(long s)
-    {
-        var ts = TimeSpan.FromSeconds(s);
-        if (ts.TotalHours >= 1)  return $"{(int)ts.TotalHours}ч {ts.Minutes:D2}м";
-        if (ts.TotalMinutes >= 1) return $"{ts.Minutes}м {ts.Seconds:D2}с";
-        return $"{ts.Seconds}с";
-    }
+    private static string Fmt(long s) =>
+        LocalizationService.FormatDurationFull(s);
 
     public static string FormatClicks(long clicks) => clicks switch
     {
@@ -752,11 +772,18 @@ public sealed class DashboardViewModel : BaseViewModel
         _            => $"{clicks:N0}"
     };
 
-    public static string FormatDistance(double meters) => meters switch
+    public static string FormatDistance(double meters)
     {
-        >= 10_000 => $"{meters / 1000.0:F1} км",
-        >= 1_000  => $"{meters / 1000.0:F2} км",
-        _         => $"{meters:F0} м"
-    };
+        bool isRu = LocalizationService.IsRussian;
+        string kmUnit = isRu ? "км" : "km";
+        string mUnit = isRu ? "м" : "m";
+
+        return meters switch
+        {
+            >= 10_000 => $"{meters / 1000.0:F1} {kmUnit}",
+            >= 1_000  => $"{meters / 1000.0:F2} {kmUnit}",
+            _         => $"{meters:F0} {mUnit}"
+        };
+    }
 }
 

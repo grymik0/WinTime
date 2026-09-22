@@ -3,14 +3,16 @@ using System.Windows.Input;
 using WinTime.Core;
 using WinTime.Data;
 using WinTime.Models;
+using WinTime.Services;
 
 namespace WinTime.ViewModels;
 
 public sealed class ProcessesViewModel : BaseViewModel
 {
-    private readonly UptimeRepository  _uptimeRepo;
-    private readonly ActivityRepository _activityRepo;
-    private readonly ActivityTracker   _tracker;
+    private readonly UptimeRepository   _uptimeRepo;
+    private readonly ActivityRepository  _activityRepo;
+    private readonly ActivityTracker    _tracker;
+    private readonly LocalizationService _localization;
 
     private List<ProcessUptimeItem> _allItems = [];
     private ObservableCollection<ProcessUptimeItem> _items = [];
@@ -101,11 +103,25 @@ public sealed class ProcessesViewModel : BaseViewModel
     public ICommand RefreshCommand      { get; }
     public ICommand ToggleExpandCommand { get; }
 
-    public ProcessesViewModel(UptimeRepository uptimeRepo, ActivityRepository activityRepo, ActivityTracker tracker)
+    public ProcessesViewModel(UptimeRepository uptimeRepo, ActivityRepository activityRepo, ActivityTracker tracker, LocalizationService localization)
     {
         _uptimeRepo   = uptimeRepo;
         _activityRepo = activityRepo;
         _tracker      = tracker;
+        _localization = localization;
+
+        _localization.LanguageChanged += (_, _) =>
+        {
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
+            {
+                foreach (var item in _allItems)
+                {
+                    item.RefreshFormattedStrings();
+                    foreach (var title in item.WindowTitles)
+                        title.RefreshFormattedStrings();
+                }
+            });
+        };
 
         _tracker.StateChanged += OnTrackerStateChanged;
 

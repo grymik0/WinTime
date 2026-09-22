@@ -52,7 +52,7 @@
                         Cursor="Hand"
                         Padding="4 0"
                         Margin="4 0"
-                        ToolTip="Развернуть полный вид" />
+                        ToolTip="{DynamicResource Widget_TipExpand}" />
 
                 <!-- Кнопка закрыть -->
                 <Button Grid.Column="3"
@@ -64,7 +64,7 @@
                         FontSize="11"
                         Cursor="Hand"
                         Padding="4 2"
-                        ToolTip="Скрыть виджет" />
+                        ToolTip="{DynamicResource Widget_TipHide}" />
             </Grid>
 
             <!-- 2. Развёрнутый стандартный вид (если IsCompactMode == false) -->
@@ -93,7 +93,7 @@
                             Cursor="Hand"
                             Padding="4 0"
                             Margin="0 0 4 0"
-                            ToolTip="Свернуть в компактную полоску" />
+                            ToolTip="{DynamicResource Widget_TipCollapse}" />
 
                     <!-- Кнопка скрыть виджет -->
                     <Button Grid.Column="2"
@@ -105,27 +105,27 @@
                             FontSize="11"
                             Cursor="Hand"
                             Padding="4 2"
-                            ToolTip="Скрыть виджет (включить можно во вкладке 'Виджет')" />
+                            ToolTip="{DynamicResource Widget_TipHide}" />
                 </Grid>
 
                 <!-- Блок 1: Текущее приложение -->
                 <StackPanel Visibility="{Binding ShowApp, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                    <TextBlock Text="В фокусе" FontSize="9" Foreground="#6B7280" />
+                    <TextBlock Text="{DynamicResource Widget_InFocus}" FontSize="9" Foreground="#6B7280" />
                     <TextBlock Text="{Binding CurrentAppName}"
-                               FontSize="13" FontWeight="SemiBold" Foreground="#6366F1"
+                               FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}"
                                TextTrimming="CharacterEllipsis" Margin="0 1 0 0" />
                 </StackPanel>
 
                 <!-- Блок 2: Время за сегодня -->
                 <StackPanel Visibility="{Binding ShowTime, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                    <TextBlock Text="Сегодня за ПК" FontSize="9" Foreground="#6B7280" />
+                    <TextBlock Text="{DynamicResource Widget_TodayPc}" FontSize="9" Foreground="#6B7280" />
                     <TextBlock Text="{Binding TodayTimeText}"
                                FontSize="15" FontWeight="Bold" Foreground="#10B981" Margin="0 1 0 0" />
                 </StackPanel>
 
                 <!-- Блок 3: Непрерывная текущая сессия (сбрасывается при AFK) -->
                 <StackPanel Visibility="{Binding ShowSession, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                    <TextBlock Text="Текущая сессия" FontSize="9" Foreground="#6B7280" />
+                    <TextBlock Text="{DynamicResource Widget_CurSession}" FontSize="9" Foreground="#6B7280" />
                     <TextBlock Text="{Binding SessionTimeText}"
                                FontSize="13" FontWeight="SemiBold" Foreground="#38BDF8" Margin="0 1 0 0" />
                 </StackPanel>
@@ -146,7 +146,7 @@
 
                 <!-- Блок 5: Мышь (клики и км) -->
                 <StackPanel Visibility="{Binding ShowMouse, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="Активность мыши" FontSize="9" Foreground="#6B7280" />
+                    <TextBlock Text="{DynamicResource Dash_MouseActivity}" FontSize="9" Foreground="#6B7280" />
                     <TextBlock Text="{Binding MouseSummaryText}"
                                FontSize="12" FontWeight="SemiBold" Foreground="#818CF8" Margin="0 1 0 0" />
                 </StackPanel>
@@ -154,3 +154,4 @@
         </StackPanel>
     </Border>
 </Window>
+

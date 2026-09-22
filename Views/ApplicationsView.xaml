@@ -8,14 +8,14 @@
 
         <!-- Стиль заголовков столбцов -->
         <Style x:Key="ColHeader" TargetType="DataGridColumnHeader">
-            <Setter Property="Background"        Value="#252535" />
-            <Setter Property="Foreground"        Value="#9CA3AF" />
+            <Setter Property="Background"        Value="{DynamicResource ControlBgBrush}" />
+            <Setter Property="Foreground"        Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="FontSize"          Value="12" />
             <Setter Property="Padding"           Value="12 0" />
             <Setter Property="Height"            Value="36" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="BorderThickness"   Value="0 0 0 1" />
-            <Setter Property="BorderBrush"       Value="#374151" />
+            <Setter Property="BorderBrush"       Value="{DynamicResource BorderBrushColor}" />
         </Style>
 
         <!-- Стиль ячеек -->
@@ -35,25 +35,25 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#2D2D44" />
+                    <Setter Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <!-- Стиль строк -->
         <Style x:Key="RowStyle" TargetType="DataGridRow">
-            <Setter Property="Background"     Value="#1E1E2E" />
+            <Setter Property="Background"     Value="{DynamicResource CardBgBrush}" />
             <Setter Property="Height"         Value="42" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Style.Triggers>
                 <Trigger Property="AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="#212133" />
+                    <Setter Property="Background" Value="{DynamicResource CardSubBgBrush}" />
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#2D2D44" />
+                    <Setter Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#252540" />
+                    <Setter Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -70,8 +70,8 @@
         </Grid.RowDefinitions>
 
         <!-- Заголовок -->
-        <TextBlock Grid.Row="0" Text="Приложения"
-                   FontSize="22" FontWeight="Bold" Foreground="White" />
+        <TextBlock Grid.Row="0" Text="{DynamicResource Apps_Title}"
+                   FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
 
         <!-- Поиск + Обновить -->
         <Grid Grid.Row="2">
@@ -85,19 +85,19 @@
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      Padding="10 7"
                      FontSize="13"
-                     Background="#1E1E2E"
-                     Foreground="White"
-                     BorderBrush="#374151"
+                     Background="{DynamicResource CardBgBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrushColor}"
                      BorderThickness="1"
                      VerticalContentAlignment="Center" />
 
             <Button Grid.Column="2"
-                    Content="🔄  Обновить"
+                    Content="{DynamicResource Common_Refresh}"
                     Command="{Binding RefreshCommand}"
                     Padding="14 7"
                     FontSize="13"
-                    Background="#252535"
-                    Foreground="#9CA3AF"
+                    Background="{DynamicResource ControlBgBrush}"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
                     BorderThickness="0"
                     Cursor="Hand" />
         </Grid>
@@ -113,10 +113,10 @@
                   SelectionMode="Single"
                   AlternationCount="2"
                   GridLinesVisibility="Horizontal"
-                  HorizontalGridLinesBrush="#252535"
-                  Background="#1E1E2E"
-                  Foreground="White"
-                  BorderBrush="#374151"
+                  HorizontalGridLinesBrush="{DynamicResource BorderBrushColor}"
+                  Background="{DynamicResource CardBgBrush}"
+                  Foreground="{DynamicResource TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource BorderBrushColor}"
                   BorderThickness="1"
                   RowHeaderWidth="0"
                   ColumnHeaderStyle="{StaticResource ColHeader}"
@@ -127,18 +127,18 @@
             <DataGrid.Columns>
 
                 <!-- Приложение (редактируемое) -->
-                <DataGridTemplateColumn Header="Приложение" Width="200" SortMemberPath="FriendlyName">
+                <DataGridTemplateColumn Header="{DynamicResource Apps_ColApp}" Width="200" SortMemberPath="FriendlyName">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding FriendlyName}"
-                                       Foreground="#E5E7EB" FontSize="13"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13"
                                        VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=LostFocus}"
-                                     Background="#252535" Foreground="White"
+                                     Background="{DynamicResource ControlBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
                                      BorderThickness="0" FontSize="13"
                                      VerticalContentAlignment="Center" />
                         </DataTemplate>
@@ -146,22 +146,22 @@
                 </DataGridTemplateColumn>
 
                 <!-- Процесс (только чтение) -->
-                <DataGridTemplateColumn Header="Процесс" Width="180" IsReadOnly="True" SortMemberPath="ProcessName">
+                <DataGridTemplateColumn Header="{DynamicResource Apps_ColProcess}" Width="180" IsReadOnly="True" SortMemberPath="ProcessName">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding ProcessName}"
-                                       Foreground="#6B7280" FontFamily="Consolas"
+                                       Foreground="{DynamicResource TextMutedBrush}" FontFamily="Consolas"
                                        FontSize="12" VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
                 <!-- Категория -->
-                <DataGridTemplateColumn Header="Категория" Width="160" SortMemberPath="Category">
+                <DataGridTemplateColumn Header="{DynamicResource Apps_ColCategory}" Width="160" SortMemberPath="Category">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Category}"
-                                       Foreground="#9CA3AF" FontSize="13"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13"
                                        VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -169,7 +169,7 @@
                         <DataTemplate>
                             <ComboBox ItemsSource="{x:Static vm:ApplicationsViewModel.Categories}"
                                       SelectedItem="{Binding Category, UpdateSourceTrigger=PropertyChanged}"
-                                      Background="#252535" Foreground="White"
+                                      Background="{DynamicResource ControlBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
                                       BorderThickness="0" FontSize="13"
                                       VerticalContentAlignment="Center" />
                         </DataTemplate>
@@ -177,7 +177,7 @@
                 </DataGridTemplateColumn>
 
                 <!-- Не отслеживать -->
-                <DataGridTemplateColumn Header="Не отслеживать" Width="130" IsReadOnly="True" SortMemberPath="IsBlacklisted">
+                <DataGridTemplateColumn Header="{DynamicResource Apps_ColBlacklist}" Width="130" IsReadOnly="True" SortMemberPath="IsBlacklisted">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsBlacklisted, UpdateSourceTrigger=PropertyChanged}"

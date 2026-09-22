@@ -54,15 +54,15 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36 24" MaxWidth="640">
 
-            <TextBlock Text="Настройки" FontSize="22" FontWeight="Bold"
+            <TextBlock Text="{DynamicResource Settings_Title}" FontSize="22" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 4" />
-            <TextBlock Text="Конфигурация WinTime"
+            <TextBlock Text="{DynamicResource Settings_Subtitle}"
                        FontSize="13" Foreground="{DynamicResource TextMutedBrush}" />
 
-            <TextBlock Text="ОТСЛЕЖИВАНИЕ" Style="{StaticResource SectionHeader}" />
+            <TextBlock Text="{DynamicResource Settings_SectionTracking}" Style="{StaticResource SectionHeader}" />
 
             <!-- AFK Slider -->
-            <TextBlock Text="Порог бездействия (AFK)" Style="{StaticResource SettingLabel}" />
+            <TextBlock Text="{DynamicResource Settings_AfkThreshold}" Style="{StaticResource SettingLabel}" />
             <Grid Margin="0 0 0 4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -72,29 +72,29 @@
                         Minimum="1" Maximum="10"
                         Value="{Binding AfkThresholdMinutes}"
                         TickFrequency="1" IsSnapToTickEnabled="True"
-                        Foreground="#6366F1"
+                        Foreground="{DynamicResource AccentBrush}"
                         VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1"
                            Margin="12 0 0 0"
                            FontSize="15" FontWeight="SemiBold"
-                           Foreground="#6366F1" VerticalAlignment="Center">
-                    <Run Text="{Binding AfkThresholdMinutes}" /><Run Text=" мин" />
+                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center">
+                    <Run Text="{Binding AfkThresholdMinutes}" /><Run Text=" " /><Run Text="{DynamicResource Settings_AfkUnit}" />
                 </TextBlock>
             </Grid>
             <TextBlock Style="{StaticResource SettingHint}"
-                       Text="Если в течение этого времени нет ввода с мыши/клавиатуры — время считается AFK." />
+                       Text="{DynamicResource Settings_AfkHint}" />
 
-            <TextBlock Text="СИСТЕМА" Style="{StaticResource SectionHeader}" />
+            <TextBlock Text="{DynamicResource Settings_SectionSystem}" Style="{StaticResource SectionHeader}" />
 
             <CheckBox IsChecked="{Binding LaunchOnStartup}"
-                      Foreground="#E5E7EB" FontSize="14"
-                      Content="Запускать WinTime при старте Windows"
+                      Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14"
+                      Content="{DynamicResource Settings_LaunchStartup}"
                       Margin="0 0 0 20"
                       Cursor="Hand" />
 
-            <TextBlock Text="БАЗА ДАННЫХ" Style="{StaticResource SectionHeader}" />
+            <TextBlock Text="{DynamicResource Settings_SectionDb}" Style="{StaticResource SectionHeader}" />
 
-            <TextBlock Text="Путь к файлу базы данных" Style="{StaticResource SettingLabel}" />
+            <TextBlock Text="{DynamicResource Settings_DbPath}" Style="{StaticResource SettingLabel}" />
             <Grid Margin="0 0 0 6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -107,14 +107,14 @@
                          IsReadOnly="True"
                          Padding="10 7"
                          FontSize="13" FontFamily="Consolas"
-                         Background="#1E1E2E"
-                         Foreground="#9CA3AF"
-                         BorderBrush="#374151"
+                         Background="{DynamicResource CardBgBrush}"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         BorderBrush="{DynamicResource BorderBrushColor}"
                          BorderThickness="1"
                          VerticalContentAlignment="Center" />
 
                 <Button Grid.Column="2"
-                        Content="Обзор…"
+                        Content="{DynamicResource Settings_DbBrowse}"
                         Command="{Binding ChooseDbPathCommand}"
                         Style="{StaticResource ActionButton}"
                         Margin="0" />
@@ -125,22 +125,22 @@
                        Margin="0 0 0 20"
                        TextWrapping="Wrap" />
 
-            <TextBlock Text="ЭКСПОРТ ДАННЫХ" Style="{StaticResource SectionHeader}" />
+            <TextBlock Text="{DynamicResource Settings_SectionExport}" Style="{StaticResource SectionHeader}" />
 
             <WrapPanel Margin="0 0 0 8">
-                <Button Content="📥  Экспорт в CSV"
+                <Button Content="{DynamicResource Settings_ExportCsv}"
                         Command="{Binding ExportCsvCommand}"
                         Style="{StaticResource ActionButton}"
                         Margin="0 0 8 8" />
-                <Button Content="📥  Экспорт в JSON"
+                <Button Content="{DynamicResource Settings_ExportJson}"
                         Command="{Binding ExportJsonCommand}"
                         Style="{StaticResource ActionButton}"
                         Margin="0 0 0 8" />
             </WrapPanel>
 
-            <TextBlock Text="ОПАСНАЯ ЗОНА" Style="{StaticResource SectionHeader}" />
+            <TextBlock Text="{DynamicResource Settings_SectionDanger}" Style="{StaticResource SectionHeader}" />
 
-            <Button Content="🗑  Очистить историю активности"
+            <Button Content="{DynamicResource Settings_ClearHistory}"
                     Command="{Binding ClearHistoryCommand}"
                     Background="#3B1B1B"
                     Foreground="#F87171"
@@ -161,8 +161,9 @@
             </Button>
             <TextBlock Style="{StaticResource SettingHint}"
                        Margin="0 6 0 0"
-                       Text="Удаляет все записи об активности. Список приложений остаётся." />
+                       Text="{DynamicResource Settings_ClearHint}" />
 
         </StackPanel>
     </ScrollViewer>
 </UserControl>
+

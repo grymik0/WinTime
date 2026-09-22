@@ -29,14 +29,14 @@
         </Style>
 
         <Style x:Key="ColHeader" TargetType="DataGridColumnHeader">
-            <Setter Property="Background"             Value="#252535" />
-            <Setter Property="Foreground"             Value="#9CA3AF" />
+            <Setter Property="Background"             Value="{DynamicResource ControlBgBrush}" />
+            <Setter Property="Foreground"             Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="FontSize"               Value="12" />
             <Setter Property="Padding"                Value="12 0" />
             <Setter Property="Height"                 Value="36" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="BorderThickness"        Value="0 0 0 1" />
-            <Setter Property="BorderBrush"            Value="#374151" />
+            <Setter Property="BorderBrush"            Value="{DynamicResource BorderBrushColor}" />
         </Style>
 
         <Style x:Key="CellStyle" TargetType="DataGridCell">
@@ -55,13 +55,13 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#2D2D44" />
+                    <Setter Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style x:Key="RowStyle" TargetType="DataGridRow">
-            <Setter Property="Background"     Value="#1E1E2E" />
+            <Setter Property="Background"     Value="{DynamicResource CardBgBrush}" />
             <Setter Property="MinHeight"      Value="44" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="DetailsVisibility" Value="Collapsed" />
@@ -70,13 +70,13 @@
                     <Setter Property="DetailsVisibility" Value="Visible" />
                 </DataTrigger>
                 <Trigger Property="AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="#212133" />
+                    <Setter Property="Background" Value="{DynamicResource CardSubBgBrush}" />
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#2D2D44" />
+                    <Setter Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#252540" />
+                    <Setter Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -99,20 +99,20 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <TextBlock Text="Время работы процессов"
-                           FontSize="22" FontWeight="Bold" Foreground="White" />
-                <TextBlock Text="Отслеживание всех запущенных окон: общее время в системе против активного фокуса"
-                           FontSize="12" Foreground="#9CA3AF" Margin="0 4 0 0" />
+                <TextBlock Text="{DynamicResource Proc_Title}"
+                           FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="{DynamicResource Proc_Subtitle}"
+                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Content="Сегодня" Margin="0 0 8 0"
+                <Button Content="{DynamicResource Common_Today}" Margin="0 0 8 0"
                         Command="{Binding SetTodayCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsPeriodToday}" Value="True">
-                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                     <Setter Property="Foreground" Value="White" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -120,13 +120,13 @@
                     </Button.Style>
                 </Button>
 
-                <Button Content="Неделя" Margin="0 0 8 0"
+                <Button Content="{DynamicResource Common_Week}" Margin="0 0 8 0"
                         Command="{Binding SetWeekCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsPeriodWeek}" Value="True">
-                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                     <Setter Property="Foreground" Value="White" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -134,13 +134,13 @@
                     </Button.Style>
                 </Button>
 
-                <Button Content="Месяц"
+                <Button Content="{DynamicResource Common_Month}"
                         Command="{Binding SetMonthCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsPeriodMonth}" Value="True">
-                                    <Setter Property="Background" Value="#6366F1" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                     <Setter Property="Foreground" Value="White" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -162,22 +162,22 @@
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      Padding="10 7"
                      FontSize="13"
-                     Background="#1E1E2E"
-                     Foreground="White"
-                     BorderBrush="#374151"
+                     Background="{DynamicResource CardBgBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrushColor}"
                      BorderThickness="1"
                      VerticalContentAlignment="Center" />
 
             <!-- Переключатель режима (Все / Только игры) -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="14 0 0 0">
-                <Button Content="Все процессы"
+                <Button Content="{DynamicResource Proc_AllProcesses}"
                         Command="{Binding ShowAllProcessesCommand}"
                         Background="{Binding FilterAllBackground}"
                         Foreground="{Binding FilterAllForeground}"
                         Style="{StaticResource PeriodBtn}"
                         Margin="0 0 6 0" />
 
-                <Button Content="🎮  Игровой режим"
+                <Button Content="{DynamicResource Proc_GameMode}"
                         Command="{Binding ShowOnlyGamesCommand}"
                         Background="{Binding FilterGamesBackground}"
                         Foreground="{Binding FilterGamesForeground}"
@@ -185,12 +185,12 @@
             </StackPanel>
 
             <Button Grid.Column="3"
-                    Content="🔄  Обновить"
+                    Content="{DynamicResource Common_Refresh}"
                     Command="{Binding RefreshCommand}"
                     Padding="14 7"
                     FontSize="13"
-                    Background="#252535"
-                    Foreground="#9CA3AF"
+                    Background="{DynamicResource ControlBgBrush}"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
                     BorderThickness="0"
                     Cursor="Hand" />
         </Grid>
@@ -205,10 +205,10 @@
                   SelectionMode="Single"
                   AlternationCount="2"
                   GridLinesVisibility="Horizontal"
-                  HorizontalGridLinesBrush="#252535"
-                  Background="#1E1E2E"
-                  Foreground="White"
-                  BorderBrush="#374151"
+                  HorizontalGridLinesBrush="{DynamicResource BorderBrushColor}"
+                  Background="{DynamicResource CardBgBrush}"
+                  Foreground="{DynamicResource TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource BorderBrushColor}"
                   BorderThickness="1"
                   RowHeaderWidth="0"
                   LoadingRow="AppsGrid_LoadingRow"
@@ -227,10 +227,10 @@
                                     BorderThickness="0"
                                     Cursor="Hand"
                                     Width="26" Height="26"
-                                    ToolTip="Показать вкладки и заголовки окон">
+                                    ToolTip="{DynamicResource Proc_ExpandTooltip}">
                                 <Button.Style>
                                     <Style TargetType="Button">
-                                        <Setter Property="Foreground" Value="#6B7280" />
+                                        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="Button">
@@ -239,8 +239,8 @@
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="BtnBorder" Property="Background" Value="#2D2D44" />
-                                                            <Setter Property="Foreground" Value="#A5B4FC" />
+                                                            <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
@@ -255,7 +255,7 @@
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                                                     <Setter Property="Text" Value="▼" />
-                                                    <Setter Property="Foreground" Value="#818CF8" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -266,7 +266,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="Статус" Width="110" SortMemberPath="IsCurrentlyRunning">
+                <DataGridTemplateColumn Header="{DynamicResource Proc_ColStatus}" Width="110" SortMemberPath="IsCurrentlyRunning">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -282,14 +282,15 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Text="{Binding StatusText}"
-                                           FontSize="12"
+                                <TextBlock FontSize="12"
                                            VerticalAlignment="Center">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="#9CA3AF" />
+                                            <Setter Property="Text" Value="{DynamicResource Proc_StatusClosed}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsCurrentlyRunning}" Value="True">
+                                                    <Setter Property="Text" Value="{DynamicResource Proc_StatusRunning}" />
                                                     <Setter Property="Foreground" Value="#34D399" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -301,11 +302,11 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="Приложение" Width="200" SortMemberPath="FriendlyName">
+                <DataGridTemplateColumn Header="{DynamicResource Proc_ColApp}" Width="200" SortMemberPath="FriendlyName">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding FriendlyName}"
-                                       Foreground="#E5E7EB"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                        FontSize="13"
                                        FontWeight="Medium"
                                        VerticalAlignment="Center" />
@@ -313,11 +314,11 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="Процесс" Width="160" SortMemberPath="ProcessName">
+                <DataGridTemplateColumn Header="{DynamicResource Proc_ColProcess}" Width="160" SortMemberPath="ProcessName">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding ProcessName}"
-                                       Foreground="#6B7280"
+                                       Foreground="{DynamicResource TextMutedBrush}"
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        VerticalAlignment="Center" />
@@ -325,7 +326,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="Время работы" Width="140" SortMemberPath="UptimeSeconds">
+                <DataGridTemplateColumn Header="{DynamicResource Proc_ColUptime}" Width="140" SortMemberPath="UptimeSeconds">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding FormattedUptime}"
@@ -337,11 +338,11 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="В фокусе" Width="130" SortMemberPath="ActiveSeconds">
+                <DataGridTemplateColumn Header="{DynamicResource Proc_ColActive}" Width="130" SortMemberPath="ActiveSeconds">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding FormattedActiveTime}"
-                                       Foreground="#A78BFA"
+                                       Foreground="{DynamicResource AccentBrush}"
                                        FontSize="13"
                                        FontWeight="SemiBold"
                                        VerticalAlignment="Center" />
@@ -349,7 +350,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="% активности" Width="140" SortMemberPath="ActiveRatioPercent">
+                <DataGridTemplateColumn Header="{DynamicResource Proc_ColRatio}" Width="140" SortMemberPath="ActiveRatioPercent">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid VerticalAlignment="Center">
@@ -360,7 +361,7 @@
 
                                 <TextBlock Grid.Column="0"
                                            Text="{Binding FormattedRatio}"
-                                           Foreground="#E5E7EB"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                            FontSize="12"
                                            VerticalAlignment="Center" />
 
@@ -368,8 +369,8 @@
                                              Height="6"
                                              Minimum="0" Maximum="100"
                                              Value="{Binding ActiveRatioPercent, Mode=OneWay}"
-                                             Background="#252535"
-                                             Foreground="#6366F1"
+                                             Background="{DynamicResource ControlBgBrush}"
+                                             Foreground="{DynamicResource AccentBrush}"
                                              BorderThickness="0"
                                              VerticalAlignment="Center" />
                             </Grid>
@@ -381,7 +382,7 @@
 
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
-                    <Border Background="#14141E" BorderBrush="#2D2D44" BorderThickness="0 1 0 1" Padding="46 12 24 14">
+                    <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="0 1 0 1" Padding="46 12 24 14">
                         <StackPanel>
                             <Grid Margin="0 0 0 8">
                                 <Grid.ColumnDefinitions>
@@ -389,14 +390,14 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="📄  Вкладки и окна" FontSize="12" FontWeight="SemiBold" Foreground="#818CF8" />
-                                    <TextBlock Text=" (детализация за выбранный период)" FontSize="11" Foreground="#6B7280" Margin="4 1 0 0" />
+                                    <TextBlock Text="{DynamicResource Proc_RowDetailsTitle}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                                    <TextBlock Text="{DynamicResource Proc_RowDetailsSub}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="4 1 0 0" />
                                 </StackPanel>
-                                <TextBlock Grid.Column="1" Text="Загрузка заголовков…" FontSize="11" Foreground="#9CA3AF"
+                                <TextBlock Grid.Column="1" Text="{DynamicResource Proc_RowDetailsLoading}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
                                            Visibility="{Binding IsLoadingTitles, Converter={StaticResource BoolToVisibility}}" />
                             </Grid>
 
-                            <TextBlock Text="Нет отдельных заголовков окон за выбранный период"
+                            <TextBlock Text="{DynamicResource Proc_RowDetailsEmpty}"
                                        FontSize="12" Foreground="#6B7280" Margin="0 4"
                                        Visibility="{Binding HasNoTitles, Converter={StaticResource BoolToVisibility}}" />
 
@@ -412,13 +413,13 @@
 
                                             <TextBlock Text="{Binding DisplayTitle}"
                                                        ToolTip="{Binding RawTitle}"
-                                                       Foreground="#D1D5DB" FontSize="12"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12"
                                                        VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis"
                                                        Margin="0 0 16 0" />
 
                                             <TextBlock Grid.Column="1" Text="{Binding FormattedTime}"
-                                                       Foreground="#9CA3AF" FontSize="12"
+                                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="12"
                                                        VerticalAlignment="Center"
                                                        HorizontalAlignment="Right"
                                                        Margin="0 0 12 0" />
@@ -429,13 +430,13 @@
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="{Binding Percentage, StringFormat={}{0:F0}%}"
-                                                           Foreground="#9CA3AF" FontSize="11"
+                                                           Foreground="{DynamicResource TextMutedBrush}" FontSize="11"
                                                            VerticalAlignment="Center" />
                                                 <ProgressBar Grid.Column="1"
                                                              Value="{Binding Percentage}"
                                                              Maximum="100" Height="5"
-                                                             Background="#252535"
-                                                             Foreground="#6366F1"
+                                                             Background="{DynamicResource ControlBgBrush}"
+                                                             Foreground="{DynamicResource AccentBrush}"
                                                              BorderThickness="0"
                                                              VerticalAlignment="Center" />
                                             </Grid>

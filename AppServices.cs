@@ -52,10 +52,10 @@ internal static class AppServices
         Buffer  = new InMemoryBuffer();
         Tracker = new ActivityTracker(AppRepo, ActivityRepo, UptimeRepo, Buffer, Settings);
 
-        DashboardVm          = new DashboardViewModel(ActivityRepo, IconService, Tracker);
-        ProcessesVm          = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker);
+        DashboardVm          = new DashboardViewModel(ActivityRepo, IconService, Tracker, Localization);
+        ProcessesVm          = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker, Localization);
         ApplicationsVm       = new ApplicationsViewModel(AppRepo, ActivityRepo);
-        ProfileVm            = new ProfileViewModel(ActivityRepo, Tracker);
+        ProfileVm            = new ProfileViewModel(ActivityRepo, Tracker, Localization);
         DesktopWidgetVm      = new DesktopWidgetViewModel(Tracker, ActivityRepo, Settings);
         ThemeVm              = new ThemeCustomizationViewModel(ThemeService, Localization);
         SettingsVm           = new SettingsViewModel(Settings, ActivityRepo, ExportService);

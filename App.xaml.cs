@@ -25,6 +25,12 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        try
+        {
+            SystemStartupManager.UnblockFile(Environment.ProcessPath);
+        }
+        catch { }
+
         _singleInstanceMutex = new Mutex(true, "WinTime_SingleInstance", out bool createdNew);
         if (!createdNew)
         {

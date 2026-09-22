@@ -15,7 +15,7 @@ public sealed class AchievementItem
     public string BorderBrush     => IsUnlocked ? "#6366F1" : "#2A2A3C";
     public string IconOpacity     => IsUnlocked ? "1.0" : "0.35";
     public string TitleForeground => IsUnlocked ? "White" : "#9CA3AF";
-    public string StatusBadgeText => IsUnlocked ? "Получено" : "В процессе";
+    public string StatusBadgeText { get; set; } = string.Empty;
     public string StatusBadgeBg   => IsUnlocked ? "#065F46" : "#252535";
     public string StatusBadgeFg   => IsUnlocked ? "#34D399" : "#6B7280";
 }

@@ -50,8 +50,8 @@
 
             <!-- Заголовок -->
             <StackPanel Grid.Row="0" Margin="0 0 0 24">
-                <TextBlock Text="Виджет на рабочий стол" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 4" />
-                <TextBlock Text="Настройка плавающего мини-информера поверх окон и рабочего стола" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{DynamicResource Widget_Title}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 4" />
+                <TextBlock Text="{DynamicResource Widget_Subtitle}" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" />
             </StackPanel>
 
             <!-- Основной контент: 2 колонки (Слева настройки, справа интерактивный предпросмотр) -->
@@ -66,23 +66,23 @@
                 <StackPanel Grid.Column="0">
 
                     <!-- Статус и главные кнопки управления -->
-                    <Border Background="#1E1E2E" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
+                    <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
                         <StackPanel>
                             <Grid Margin="0 0 0 12">
                                 <StackPanel>
-                                    <TextBlock Text="Состояние виджета" FontSize="14" FontWeight="SemiBold" Foreground="White" />
-                                    <TextBlock Text="Отображение на экране Windows" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_StateSection}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                    <TextBlock Text="{DynamicResource Widget_ScreenDisplay}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                                 <Border HorizontalAlignment="Right" VerticalAlignment="Center"
                                         CornerRadius="6" Padding="10 4">
                                     <TextBlock FontSize="12" FontWeight="Bold">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="Text" Value="ОТКЛЮЧЁН" />
+                                                <Setter Property="Text" Value="{DynamicResource Widget_StatusOff}" />
                                                 <Setter Property="Foreground" Value="#EF4444" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsWidgetEnabled}" Value="True">
-                                                        <Setter Property="Text" Value="АКТИВЕН" />
+                                                        <Setter Property="Text" Value="{DynamicResource Widget_StatusOn}" />
                                                         <Setter Property="Foreground" Value="#10B981" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -97,10 +97,12 @@
                                         Margin="0 0 8 8">
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource ActionButton}">
-                                            <Setter Property="Background" Value="#4F46E5" />
+                                            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                            <Setter Property="Foreground" Value="White" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsWidgetEnabled}" Value="True">
-                                                    <Setter Property="Background" Value="#374151" />
+                                                    <Setter Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -114,10 +116,10 @@
                                     <TextBlock>
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="Text" Value="📐  Компактный вид" />
+                                                <Setter Property="Text" Value="{DynamicResource Widget_CompactBtn}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsCompactMode}" Value="True">
-                                                        <Setter Property="Text" Value="📖  Развёрнутый вид" />
+                                                        <Setter Property="Text" Value="{DynamicResource Widget_ExpandedBtn}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -125,109 +127,109 @@
                                     </TextBlock>
                                 </Button>
 
-                                <Button Content="📍  Сбросить позицию"
+                                <Button Content="{DynamicResource Widget_ResetPos}"
                                         Command="{Binding ResetPositionCommand}"
                                         Style="{StaticResource ActionButton}"
                                         Margin="0 0 0 8"
-                                        ToolTip="Вернуть виджет в правый верхний угол экрана" />
+                                        ToolTip="{DynamicResource Widget_ResetPosTip}" />
                             </WrapPanel>
                         </StackPanel>
                     </Border>
 
                     <!-- Поведение и взаимодействие (Сквозные клики и слой) -->
-                    <TextBlock Text="ПОВЕДЕНИЕ И ВЗАИМОДЕЙСТВИЕ" Style="{StaticResource SettingSectionTitle}" />
+                    <TextBlock Text="{DynamicResource Widget_SectionBehavior}" Style="{StaticResource SettingSectionTitle}" />
 
-                    <Border Background="#1E1E2E" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
+                    <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
                         <StackPanel>
                             <!-- Сквозные клики (Click-through) -->
                             <CheckBox IsChecked="{Binding IsClickThrough}" Margin="0 0 0 14" Cursor="Hand">
                                 <StackPanel Margin="6 0 0 0">
-                                    <TextBlock Text="🔒  Пропускать клики сквозь виджет (Click-through)" FontSize="13" Foreground="White" FontWeight="Medium" />
-                                    <TextBlock Text="Курсор проходит насквозь в окна позади него, не мешая работе и играм" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_ClickThrough}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Widget_ClickThroughDesc}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
 
-                            <Border Height="1" Background="#252535" Margin="0 0 0 14" />
+                            <Border Height="1" Background="{DynamicResource BorderBrushColor}" Margin="0 0 0 14" />
 
                             <!-- Слой (Поверх всех окон) -->
                             <CheckBox IsChecked="{Binding IsTopmost}" Cursor="Hand">
                                 <StackPanel Margin="6 0 0 0">
-                                    <TextBlock Text="📌  Всегда поверх всех окон" FontSize="13" Foreground="White" FontWeight="Medium" />
-                                    <TextBlock Text="Если выключить — виджет останется на рабочем столе и скроется под окнами" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_Topmost}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Widget_TopmostDesc}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
                         </StackPanel>
                     </Border>
 
                     <!-- Выбор информационных блоков -->
-                    <TextBlock Text="ОТОБРАЖАЕМЫЕ БЛОКИ" Style="{StaticResource SettingSectionTitle}" />
+                    <TextBlock Text="{DynamicResource Widget_SectionBlocks}" Style="{StaticResource SettingSectionTitle}" />
 
-                    <Border Background="#1E1E2E" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
+                    <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="18 16" Margin="0 0 0 16">
                         <StackPanel>
                             <CheckBox IsChecked="{Binding ShowApp}" Margin="0 0 0 14" Cursor="Hand">
                                 <StackPanel Margin="6 0 0 0">
-                                    <TextBlock Text="Текущее активное приложение" FontSize="13" Foreground="White" FontWeight="Medium" />
-                                    <TextBlock Text="Название программы в фокусе или статус бездействия (AFK)" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowApp}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowAppDesc}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
 
-                            <Border Height="1" Background="#252535" Margin="0 0 0 14" />
+                            <Border Height="1" Background="{DynamicResource BorderBrushColor}" Margin="0 0 0 14" />
 
                             <CheckBox IsChecked="{Binding ShowTime}" Margin="0 0 0 14" Cursor="Hand">
                                 <StackPanel Margin="6 0 0 0">
-                                    <TextBlock Text="Экранное время за сегодня" FontSize="13" Foreground="White" FontWeight="Medium" />
-                                    <TextBlock Text="Общее время активного использования компьютера" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowTime}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowTimeDesc}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
 
-                            <Border Height="1" Background="#252535" Margin="0 0 0 14" />
+                            <Border Height="1" Background="{DynamicResource BorderBrushColor}" Margin="0 0 0 14" />
 
                             <!-- Новое: Таймер непрерывной сессии -->
                             <CheckBox IsChecked="{Binding ShowSession}" Margin="0 0 0 14" Cursor="Hand">
                                 <StackPanel Margin="6 0 0 0">
-                                    <TextBlock Text="Таймер непрерывной текущей сессии" FontSize="13" Foreground="White" FontWeight="Medium" />
-                                    <TextBlock Text="Время непрерывной работы без отдыха (сбрасывается при уходе в AFK)" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowSession}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowSessionDesc}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
 
-                            <Border Height="1" Background="#252535" Margin="0 0 0 14" />
+                            <Border Height="1" Background="{DynamicResource BorderBrushColor}" Margin="0 0 0 14" />
 
                             <CheckBox IsChecked="{Binding ShowLevel}" Margin="0 0 0 14" Cursor="Hand">
                                 <StackPanel Margin="6 0 0 0">
-                                    <TextBlock Text="Уровень профиля и опыт (XP)" FontSize="13" Foreground="White" FontWeight="Medium" />
-                                    <TextBlock Text="Ранг, текущий уровень и прогресс до следующего уровня" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowLevel}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowLevelDesc}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
 
-                            <Border Height="1" Background="#252535" Margin="0 0 0 14" />
+                            <Border Height="1" Background="{DynamicResource BorderBrushColor}" Margin="0 0 0 14" />
 
                             <CheckBox IsChecked="{Binding ShowMouse}" Cursor="Hand">
                                 <StackPanel Margin="6 0 0 0">
-                                    <TextBlock Text="Активность мыши" FontSize="13" Foreground="White" FontWeight="Medium" />
-                                    <TextBlock Text="Количество кликов и пройденная дистанция курсора в реальном времени" FontSize="11" Foreground="#6B7280" Margin="0 2 0 0" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowMouse}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Widget_ShowMouseDesc}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                                 </StackPanel>
                             </CheckBox>
                         </StackPanel>
                     </Border>
 
                     <!-- Настройки внешнего вида -->
-                    <TextBlock Text="ВНЕШНИЙ ВИД И ПРОЗРАЧНОСТЬ" Style="{StaticResource SettingSectionTitle}" />
+                    <TextBlock Text="{DynamicResource Widget_SectionAppearance}" Style="{StaticResource SettingSectionTitle}" />
 
-                    <Border Background="#1E1E2E" CornerRadius="10" Padding="18 16">
+                    <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="10" Padding="18 16">
                         <StackPanel>
                             <Grid Margin="0 0 0 6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Непрозрачность окна" FontSize="13" Foreground="White" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{Binding WidgetOpacityPercentText}" FontSize="13" FontWeight="Bold" Foreground="#6366F1" VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource Widget_Opacity}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding WidgetOpacityPercentText}" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
                             </Grid>
 
                             <Slider Minimum="0.3" Maximum="1.0"
-                                    Value="{Binding WidgetOpacity}"
-                                    TickFrequency="0.05" IsSnapToTickEnabled="True"
-                                    Foreground="#6366F1" Margin="0 6 0 0" />
+                                     Value="{Binding WidgetOpacity}"
+                                     TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                     Foreground="{DynamicResource AccentBrush}" Margin="0 6 0 0" />
                         </StackPanel>
                     </Border>
 
@@ -235,16 +237,16 @@
 
                 <!-- Правая колонка: Интерактивный Live Preview виджета -->
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
-                    <TextBlock Text="ПРЕДПРОСМОТР ВИДЖЕТА" Style="{StaticResource SettingSectionTitle}" Margin="0 0 0 10" />
+                    <TextBlock Text="{DynamicResource Widget_PreviewSection}" Style="{StaticResource SettingSectionTitle}" Margin="0 0 0 10" />
 
                     <!-- Стилизованная область рабочего стола с макетом -->
-                    <Border Background="#12121A" BorderBrush="#252535" BorderThickness="1" CornerRadius="12" Padding="20">
+                    <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="12" Padding="20">
                         <StackPanel HorizontalAlignment="Center">
 
                             <!-- Сам макет виджета в реальном размере -->
                             <Border Width="220"
                                     Background="#EE181825"
-                                    BorderBrush="#3B3B52"
+                                    BorderBrush="{DynamicResource BorderBrushColor}"
                                     BorderThickness="1"
                                     CornerRadius="14"
                                     Padding="14 12"
@@ -288,19 +290,19 @@
 
                                         <!-- Блок 1: Активное приложение -->
                                         <StackPanel Visibility="{Binding ShowApp, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                                            <TextBlock Text="В фокусе" FontSize="9" Foreground="#6B7280" />
-                                            <TextBlock Text="{Binding CurrentAppName}" FontSize="13" FontWeight="SemiBold" Foreground="#6366F1" TextTrimming="CharacterEllipsis" Margin="0 1 0 0" />
+                                            <TextBlock Text="{DynamicResource Widget_InFocus}" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{Binding CurrentAppName}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" TextTrimming="CharacterEllipsis" Margin="0 1 0 0" />
                                         </StackPanel>
 
                                         <!-- Блок 2: Время за сегодня -->
                                         <StackPanel Visibility="{Binding ShowTime, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                                            <TextBlock Text="Сегодня за ПК" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{DynamicResource Widget_TodayPc}" FontSize="9" Foreground="#6B7280" />
                                             <TextBlock Text="{Binding TodayTimeText}" FontSize="15" FontWeight="Bold" Foreground="#10B981" Margin="0 1 0 0" />
                                         </StackPanel>
 
                                         <!-- Блок 3: Текущая сессия -->
                                         <StackPanel Visibility="{Binding ShowSession, Converter={StaticResource BoolToVis}}" Margin="0 0 0 6">
-                                            <TextBlock Text="Текущая сессия" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{DynamicResource Widget_CurSession}" FontSize="9" Foreground="#6B7280" />
                                             <TextBlock Text="{Binding SessionTimeText}" FontSize="13" FontWeight="SemiBold" Foreground="#38BDF8" Margin="0 1 0 0" />
                                         </StackPanel>
 
@@ -320,15 +322,15 @@
 
                                         <!-- Блок 5: Мышь -->
                                         <StackPanel Visibility="{Binding ShowMouse, Converter={StaticResource BoolToVis}}">
-                                            <TextBlock Text="Активность мыши" FontSize="9" Foreground="#6B7280" />
-                                            <TextBlock Text="{Binding MouseSummaryText}" FontSize="12" FontWeight="SemiBold" Foreground="#818CF8" Margin="0 1 0 0" />
+                                            <TextBlock Text="{DynamicResource Dash_MouseActivity}" FontSize="9" Foreground="#6B7280" />
+                                            <TextBlock Text="{Binding MouseSummaryText}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0 1 0 0" />
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
 
                             <TextBlock Text="💡 Зажмите левую кнопку мыши на виджете, чтобы перетащить его в удобное место экрана."
-                                       FontSize="11" Foreground="#6B7280" TextWrapping="Wrap" Margin="0 16 0 0" TextAlignment="Center" />
+                                       FontSize="11" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" Margin="0 16 0 0" TextAlignment="Center" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -337,3 +339,4 @@
         </Grid>
     </ScrollViewer>
 </UserControl>
+

@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.Win32;
 
 namespace WinTime.Core;
@@ -10,10 +11,30 @@ public static class SystemStartupManager
     private const string RegKey  = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
     private const string AppName = "WinTime";
 
+    /// <summary>
+    /// Removes the Mark of the Web (Zone.Identifier stream) so Windows never prompts
+    /// with "Open File - Security Warning: Unknown Publisher" upon launch.
+    /// </summary>
+    public static void UnblockFile(string? filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) return;
+        try
+        {
+            // Windows Alternate Data Stream for Mark of the Web is filePath:Zone.Identifier
+            DeleteFileW($"{filePath}:Zone.Identifier");
+        }
+        catch { }
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", EntryPoint = "DeleteFileW", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static extern bool DeleteFileW(string lpFileName);
+
     public static void Enable(string exePath)
     {
         try
         {
+            UnblockFile(exePath);
             using var key = Registry.CurrentUser.OpenSubKey(RegKey, writable: true);
             key?.SetValue(AppName, $"\"{exePath}\"");
         }
@@ -49,6 +70,8 @@ public static class SystemStartupManager
         {
             var currentExe = Environment.ProcessPath;
             if (string.IsNullOrEmpty(currentExe)) return;
+
+            UnblockFile(currentExe);
 
             using var key = Registry.CurrentUser.OpenSubKey(RegKey, writable: true);
             if (key is null) return;

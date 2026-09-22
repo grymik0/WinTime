@@ -31,16 +31,12 @@ public sealed class WindowTitleStatItem : BaseViewModel
 
     public string FormattedTime => FormatDuration(TotalSeconds);
 
-    private static string FormatDuration(long totalSec)
+    public void RefreshFormattedStrings()
     {
-        if (totalSec <= 0) return "0с";
-        var h = totalSec / 3600;
-        var m = (totalSec % 3600) / 60;
-        var s = totalSec % 60;
-
-        if (h > 0) return $"{h}ч {m}м";
-        if (m > 0) return $"{m}м {s}с";
-        return $"{s}с";
+        OnPropertyChanged(nameof(FormattedTime));
     }
+
+    private static string FormatDuration(long totalSec) =>
+        WinTime.Services.LocalizationService.FormatDuration(totalSec);
 }
 
