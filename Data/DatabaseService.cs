@@ -83,6 +83,15 @@ public sealed class DatabaseService : IDisposable
                 MouseClicks     INTEGER NOT NULL DEFAULT 0,
                 DistanceMeters  REAL    NOT NULL DEFAULT 0
             );
+
+            CREATE TABLE IF NOT EXISTS AppLimits (
+                Id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                AppId            INTEGER NOT NULL REFERENCES Applications(Id) ON DELETE CASCADE,
+                MaxDailySeconds  INTEGER NOT NULL,
+                ActionType       INTEGER NOT NULL DEFAULT 0,
+                IsEnabled        INTEGER NOT NULL DEFAULT 1,
+                UNIQUE(AppId)
+            );
         ";
         cmd.ExecuteNonQuery();
     }

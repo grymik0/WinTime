@@ -1,0 +1,331 @@
+<UserControl x:Class="WinTime.Views.GoalsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:WinTime.Models"
+             Background="{DynamicResource AppBgBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <Style x:Key="ColHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="Background"        Value="{DynamicResource ControlBgBrush}" />
+            <Setter Property="Foreground"        Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="FontSize"          Value="12" />
+            <Setter Property="Padding"           Value="12 0" />
+            <Setter Property="Height"            Value="36" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderThickness"   Value="0 0 0 1" />
+            <Setter Property="BorderBrush"       Value="{DynamicResource BorderBrushColor}" />
+        </Style>
+
+        <Style x:Key="CellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderThickness"   Value="0" />
+            <Setter Property="FocusVisualStyle"  Value="{x:Null}" />
+            <Setter Property="Background"        Value="Transparent" />
+            <Setter Property="Foreground"        Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" Padding="10 0">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RowStyle" TargetType="DataGridRow">
+            <Setter Property="Background"     Value="{DynamicResource CardBgBrush}" />
+            <Setter Property="Foreground"     Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Height"         Value="46" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="{DynamicResource CardSubBgBrush}" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource CardBgBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="24 20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Шапка -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="{DynamicResource Goals_Title}"
+                           FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="{DynamicResource Goals_Subtitle}"
+                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
+            </StackPanel>
+
+            <Button Grid.Column="1"
+                    Content="{DynamicResource Goals_BtnAdd}"
+                    Command="{Binding OpenAddDialogCommand}"
+                    Background="{DynamicResource AccentBrush}"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    Padding="16 8"
+                    FontSize="13"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    VerticalAlignment="Center">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+
+        <!-- Содержимое: Таблица или Empty State -->
+        <Grid Grid.Row="2">
+            <!-- Таблица лимитов -->
+            <DataGrid ItemsSource="{Binding Limits}"
+                      AutoGenerateColumns="False"
+                      CanUserDeleteRows="False"
+                      CanUserAddRows="False"
+                      CanUserReorderColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      AlternationCount="2"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="{DynamicResource BorderBrushColor}"
+                      Background="{DynamicResource CardBgBrush}"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      BorderBrush="{DynamicResource BorderBrushColor}"
+                      BorderThickness="1"
+                      RowHeaderWidth="0"
+                      ColumnHeaderStyle="{StaticResource ColHeader}"
+                      CellStyle="{StaticResource CellStyle}"
+                      RowStyle="{StaticResource RowStyle}">
+
+                <DataGrid.Columns>
+                    <!-- Имя приложения -->
+                    <DataGridTemplateColumn Header="{DynamicResource Goals_ColApp}" Width="*" MinWidth="160" SortMemberPath="FriendlyName">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Width="26" Height="26" CornerRadius="6" Background="{DynamicResource ControlBgBrush}" Margin="0 0 10 0">
+                                        <TextBlock Text="🎯" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13" />
+                                    </Border>
+                                    <TextBlock Text="{Binding FriendlyName}" FontWeight="SemiBold" FontSize="13"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Дневной лимит -->
+                    <DataGridTemplateColumn Header="{DynamicResource Goals_ColLimit}" Width="110" SortMemberPath="MaxDailySeconds">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FormattedLimit}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Потрачено сегодня -->
+                    <DataGridTemplateColumn Header="{DynamicResource Goals_ColToday}" Width="135" SortMemberPath="TodayUsedSeconds">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FormattedUsed}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Прогресс -->
+                    <DataGridTemplateColumn Header="{DynamicResource Goals_ColProgress}" Width="130" SortMemberPath="ProgressPercent">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel VerticalAlignment="Center" Margin="0 0 12 0">
+                                    <Grid Margin="0 0 0 4">
+                                        <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:F0}%}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Right" />
+                                    </Grid>
+                                    <ProgressBar Height="6" Value="{Binding ProgressPercent, Mode=OneWay}" Maximum="100" BorderThickness="0" Background="{DynamicResource ControlBgBrush}">
+                                        <ProgressBar.Style>
+                                            <Style TargetType="ProgressBar">
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsExceeded}" Value="True">
+                                                        <Setter Property="Foreground" Value="#EF4444" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ProgressBar.Style>
+                                    </ProgressBar>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Тип действия -->
+                    <DataGridTemplateColumn Header="{DynamicResource Goals_ColAction}" Width="130" SortMemberPath="ActionTypeTitle">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ActionTypeTitle}" ToolTip="{Binding ActionTypeTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Включение/выключение -->
+                    <DataGridTemplateColumn Header="{DynamicResource Goals_ColStatus}" Width="70">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"
+                                          Command="{Binding DataContext.ToggleLimitCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          CommandParameter="{Binding}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Удаление -->
+                    <DataGridTemplateColumn Width="45">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="🗑"
+                                        Command="{Binding DataContext.DeleteLimitCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Background="Transparent"
+                                        Foreground="#EF4444"
+                                        BorderThickness="0"
+                                        FontSize="13"
+                                        Cursor="Hand"
+                                        ToolTip="Удалить" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Пустое состояние -->
+            <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="12"
+                    Visibility="{Binding HasNoLimits, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="40 30">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="🎯" FontSize="36" HorizontalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Text="{DynamicResource Goals_EmptyTitle}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource Goals_EmptyDesc}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0 6 0 16" />
+                    <Button Content="{DynamicResource Goals_BtnAdd}"
+                            Command="{Binding OpenAddDialogCommand}"
+                            Background="{DynamicResource AccentBrush}"
+                            Foreground="White"
+                            Padding="16 8"
+                            FontSize="13"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            HorizontalAlignment="Center">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Модальный диалог добавления лимита -->
+            <Grid Visibility="{Binding IsDialogOpen, Converter={StaticResource BoolToVis}}" Background="#99000000">
+                <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="14"
+                        Width="420" Padding="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Goals_DialogTitle}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 16" />
+
+                        <!-- Выбор приложения -->
+                        <TextBlock Text="{DynamicResource Goals_DialogApp}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                        <ComboBox ItemsSource="{Binding AvailableApps}"
+                                  SelectedItem="{Binding SelectedAppForLimit}"
+                                  DisplayMemberPath="FriendlyName"
+                                  Height="36"
+                                  Margin="0 0 0 16" />
+
+                        <!-- Время (Часы и Минуты) -->
+                        <Grid Margin="0 0 0 16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{DynamicResource Goals_DialogHours}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                                <TextBox Text="{Binding DialogHours, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource ControlBgBrush}"
+                                         Foreground="{DynamicResource TextPrimaryBrush}"
+                                         BorderBrush="{DynamicResource BorderBrushColor}"
+                                         Padding="8 6" FontSize="13" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{DynamicResource Goals_DialogMins}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                                <TextBox Text="{Binding DialogMinutes, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource ControlBgBrush}"
+                                         Foreground="{DynamicResource TextPrimaryBrush}"
+                                         BorderBrush="{DynamicResource BorderBrushColor}"
+                                         Padding="8 6" FontSize="13" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Режим действия -->
+                        <TextBlock Text="{DynamicResource Goals_DialogAction}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                        <RadioButton Content="{DynamicResource Goals_ActionNotify}"
+                                     IsChecked="{Binding DialogActionType, ConverterParameter={x:Static models:LimitActionType.Notify}, Mode=OneWay}"
+                                     Checked="OnNotifyChecked"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
+                                     Margin="0 0 0 8" Cursor="Hand" />
+                        <RadioButton Content="{DynamicResource Goals_ActionClose}"
+                                     IsChecked="{Binding DialogActionType, ConverterParameter={x:Static models:LimitActionType.CloseProcess}, Mode=OneWay}"
+                                     Checked="OnCloseChecked"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
+                                     Margin="0 0 0 20" Cursor="Hand" />
+
+                        <!-- Кнопки диалога -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="{DynamicResource Goals_BtnCancel}"
+                                    Command="{Binding CloseDialogCommand}"
+                                    Background="{DynamicResource ControlBgBrush}"
+                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                    Padding="14 7"
+                                    Margin="0 0 10 0"
+                                    BorderThickness="0"
+                                    Cursor="Hand" />
+                            <Button Content="{DynamicResource Goals_BtnSave}"
+                                    Command="{Binding SaveLimitCommand}"
+                                    Background="{DynamicResource AccentBrush}"
+                                    Foreground="White"
+                                    FontWeight="SemiBold"
+                                    Padding="16 7"
+                                    BorderThickness="0"
+                                    Cursor="Hand" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
+

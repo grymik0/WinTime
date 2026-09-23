@@ -111,6 +111,7 @@ public sealed class LocalizationService
         _ruStrings["Nav_Dashboard"]        = "📊   Дашборд";
         _ruStrings["Nav_Processes"]        = "💻   Процессы";
         _ruStrings["Nav_Applications"]     = "🗂   Приложения";
+        _ruStrings["Nav_Goals"]            = "🎯   Цели и Лимиты";
         _ruStrings["Nav_Profile"]          = "🏆   Профиль";
         _ruStrings["Nav_Widget"]           = "📌   Виджет";
         _ruStrings["Nav_Theme"]            = "🎨   Оформление";
@@ -180,6 +181,29 @@ public sealed class LocalizationService
         _ruStrings["Apps_ColProcess"]      = "Процесс";
         _ruStrings["Apps_ColCategory"]     = "Категория";
         _ruStrings["Apps_ColBlacklist"]    = "Не отслеживать";
+
+        // Goals & Limits View
+        _ruStrings["Goals_Title"]          = "Ежедневные цели и лимиты";
+        _ruStrings["Goals_Subtitle"]       = "Установите дневную норму времени для игр или приложений с контролем превышения";
+        _ruStrings["Goals_BtnAdd"]         = "➕  Установить лимит";
+        _ruStrings["Goals_EmptyTitle"]     = "Лимиты ещё не установлены";
+        _ruStrings["Goals_EmptyDesc"]      = "Нажмите «Установить лимит», чтобы ограничить время в играх или приложениях.";
+        _ruStrings["Goals_ColApp"]         = "Приложение";
+        _ruStrings["Goals_ColLimit"]       = "Лимит в день";
+        _ruStrings["Goals_ColToday"]       = "Сегодня потрачено";
+        _ruStrings["Goals_ColProgress"]    = "Прогресс";
+        _ruStrings["Goals_ColAction"]      = "Действие";
+        _ruStrings["Goals_ColStatus"]      = "Статус";
+        _ruStrings["Goals_DialogTitle"]    = "Настройка лимита времени";
+        _ruStrings["Goals_DialogApp"]      = "Выберите приложение:";
+        _ruStrings["Goals_DialogHours"]    = "Часов:";
+        _ruStrings["Goals_DialogMins"]     = "Минут:";
+        _ruStrings["Goals_DialogAction"]   = "При исчерпании лимита:";
+        _ruStrings["Goals_ActionNotify"]   = "🔔 Уведомлять каждые 3 минуты";
+        _ruStrings["Goals_ActionClose"]    = "🛑 Закрывать процесс (с предупреждением 60 сек)";
+        _ruStrings["Goals_BtnSave"]        = "Сохранить";
+        _ruStrings["Goals_BtnCancel"]      = "Отмена";
+        _ruStrings["Goals_DeleteConfirm"]  = "Удалить этот лимит?";
 
         // Profile View
         _ruStrings["Profile_Title"]        = "Профиль и Достижения";
@@ -294,6 +318,7 @@ public sealed class LocalizationService
         _enStrings["Nav_Dashboard"]        = "📊   Dashboard";
         _enStrings["Nav_Processes"]        = "💻   Processes";
         _enStrings["Nav_Applications"]     = "🗂   Applications";
+        _enStrings["Nav_Goals"]            = "🎯   Goals & Limits";
         _enStrings["Nav_Profile"]          = "🏆   Profile";
         _enStrings["Nav_Widget"]           = "📌   Widget";
         _enStrings["Nav_Theme"]            = "🎨   Appearance";
@@ -363,6 +388,29 @@ public sealed class LocalizationService
         _enStrings["Apps_ColProcess"]      = "Process";
         _enStrings["Apps_ColCategory"]     = "Category";
         _enStrings["Apps_ColBlacklist"]    = "Do not track";
+
+        // Goals & Limits View
+        _enStrings["Goals_Title"]          = "Daily Goals & Limits";
+        _enStrings["Goals_Subtitle"]       = "Set daily time quotas for games or apps with over-limit enforcement";
+        _enStrings["Goals_BtnAdd"]         = "➕  Set New Limit";
+        _enStrings["Goals_EmptyTitle"]     = "No Limits Configured Yet";
+        _enStrings["Goals_EmptyDesc"]      = "Click \"Set New Limit\" to restrict daily time spent in gaming or applications.";
+        _enStrings["Goals_ColApp"]         = "Application";
+        _enStrings["Goals_ColLimit"]       = "Daily Quota";
+        _enStrings["Goals_ColToday"]       = "Used Today";
+        _enStrings["Goals_ColProgress"]    = "Progress";
+        _enStrings["Goals_ColAction"]      = "Action";
+        _enStrings["Goals_ColStatus"]      = "Status";
+        _enStrings["Goals_DialogTitle"]    = "Configure Time Limit";
+        _enStrings["Goals_DialogApp"]      = "Select Application:";
+        _enStrings["Goals_DialogHours"]    = "Hours:";
+        _enStrings["Goals_DialogMins"]     = "Minutes:";
+        _enStrings["Goals_DialogAction"]   = "When limit is exceeded:";
+        _enStrings["Goals_ActionNotify"]   = "🔔 Notify every 3 minutes";
+        _enStrings["Goals_ActionClose"]    = "🛑 Close process (with 60s warning)";
+        _enStrings["Goals_BtnSave"]        = "Save";
+        _enStrings["Goals_BtnCancel"]      = "Cancel";
+        _enStrings["Goals_DeleteConfirm"]  = "Delete this limit?";
 
         // Profile View
         _enStrings["Profile_Title"]        = "Profile & Achievements";

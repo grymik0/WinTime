@@ -24,6 +24,9 @@
         <DataTemplate DataType="{x:Type vm:ApplicationsViewModel}">
             <views:ApplicationsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:GoalsViewModel}">
+            <views:GoalsView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
             <views:ProfileView />
         </DataTemplate>
@@ -111,6 +114,10 @@
                     <Button Content="{DynamicResource Nav_Applications}"
                             Style="{StaticResource NavBtn}"
                             Command="{Binding NavigateApplicationsCommand}"
+                            Margin="0 2" />
+                    <Button Content="{DynamicResource Nav_Goals}"
+                            Style="{StaticResource NavBtn}"
+                            Command="{Binding NavigateGoalsCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Profile}"
                             Style="{StaticResource NavBtn}"

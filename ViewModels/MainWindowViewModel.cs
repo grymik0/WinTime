@@ -11,6 +11,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private readonly DashboardViewModel          _dashboard;
     private readonly ProcessesViewModel          _processes;
     private readonly ApplicationsViewModel       _applications;
+    private readonly GoalsViewModel              _goals;
     private readonly ProfileViewModel            _profile;
     private readonly DesktopWidgetViewModel      _widget;
     private readonly ThemeCustomizationViewModel _theme;
@@ -39,6 +40,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateDashboardCommand    { get; }
     public ICommand NavigateProcessesCommand    { get; }
     public ICommand NavigateApplicationsCommand { get; }
+    public ICommand NavigateGoalsCommand        { get; }
     public ICommand NavigateProfileCommand      { get; }
     public ICommand NavigateWidgetCommand       { get; }
     public ICommand NavigateThemeCommand        { get; }
@@ -49,6 +51,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         DashboardViewModel          dashboard,
         ProcessesViewModel          processes,
         ApplicationsViewModel       applications,
+        GoalsViewModel              goals,
         ProfileViewModel            profile,
         DesktopWidgetViewModel      widget,
         ThemeCustomizationViewModel theme,
@@ -58,6 +61,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         _dashboard    = dashboard;
         _processes    = processes;
         _applications = applications;
+        _goals        = goals;
         _profile      = profile;
         _widget       = widget;
         _theme        = theme;
@@ -82,6 +86,12 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             CurrentView = _applications;
             _ = _applications.LoadAsync();
+        });
+
+        NavigateGoalsCommand = new RelayCommand(() =>
+        {
+            CurrentView = _goals;
+            _ = _goals.LoadAsync();
         });
 
         NavigateProfileCommand = new RelayCommand(() =>
