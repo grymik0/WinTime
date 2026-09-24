@@ -278,6 +278,37 @@ public sealed class LocalizationService
         _ruStrings["Settings_ClearHistory"]= "🗑  Очистить историю активности";
         _ruStrings["Settings_ClearHint"]   = "Удаляет все записи об активности. Список приложений остаётся.";
 
+        // Weekly Recap
+        _ruStrings["Recap_BtnTitle"]       = "📅  Итоги недели";
+        _ruStrings["Recap_Title"]          = "✨  Еженедельный дайджест";
+        _ruStrings["Recap_Subtitle"]       = "Сводка вашей продуктивности за последние 7 дней";
+        _ruStrings["Recap_ScreenTime"]     = "Экранное время за неделю";
+        _ruStrings["Recap_DailyAvg"]       = "в среднем в день";
+        _ruStrings["Recap_TopApps"]        = "🏆  Топ приложений недели";
+        _ruStrings["Recap_RhythmTitle"]    = "🌙  Ритм сна и отдыха";
+        _ruStrings["Recap_AvgBedtime"]     = "Обычный отбой";
+        _ruStrings["Recap_AvgWakeup"]      = "Обычный подъём";
+        _ruStrings["Recap_AvgRest"]        = "Ночной сон";
+        _ruStrings["Recap_PeakDay"]        = "🚀  Самый активный день";
+        _ruStrings["Recap_MouseTitle"]     = "🖱️  Активность мыши";
+        _ruStrings["Recap_Clicks"]         = "кликов";
+        _ruStrings["Recap_Distance"]       = "пройденная дистанция";
+        _ruStrings["Recap_BtnClose"]       = "Отлично";
+        _ruStrings["Recap_PersonaSection"] = "🎯  Архетип недели";
+        _ruStrings["Recap_DynamicsSection"]= "📊  Динамика приложений к прошлой неделе";
+        _ruStrings["Recap_WorkVsWeekend"]  = "⚖️  Будни против Выходных";
+        _ruStrings["Recap_Workdays"]       = "Будни";
+        _ruStrings["Recap_Weekends"]       = "Выходные";
+        _ruStrings["Recap_GoldenHour"]     = "⏰  Пиковое время суток";
+        _ruStrings["Recap_BtnCopy"]        = "📋  Скопировать карточку";
+        _ruStrings["Recap_Copied"]         = "✓  Скопировано!";
+        _ruStrings["Recap_PromptTitle"]    = "✨  Итоги недели готовы!";
+        _ruStrings["Recap_PromptDesc"]     = "Сформирован ваш персональный дайджест продуктивности за прошедшие дни. Посмотрим, как прошла неделя?";
+        _ruStrings["Recap_PromptView"]     = "📊  Посмотреть итоги";
+        _ruStrings["Recap_PromptDismiss"]  = "Не интересно";
+        _ruStrings["Recap_CurrentWeekTab"] = "Текущая неделя";
+        _ruStrings["Recap_PreviousWeekTab"]= "Прошлая неделя";
+
         // Theme View
         _ruStrings["Theme_Title"]          = "Оформление и темы";
         _ruStrings["Theme_Subtitle"]       = "Настройте внешний вид WinTime: выбор темы оформления, языка и акцентных цветов";
@@ -487,6 +518,37 @@ public sealed class LocalizationService
         _enStrings["Settings_SectionDanger"] = "DANGER ZONE";
         _enStrings["Settings_ClearHistory"]= "🗑  Clear Activity History";
         _enStrings["Settings_ClearHint"]   = "Permanently clears all activity records. Applications list is kept.";
+
+        // Weekly Recap
+        _enStrings["Recap_BtnTitle"]       = "📅  Weekly Recap";
+        _enStrings["Recap_Title"]          = "✨  Weekly Recap";
+        _enStrings["Recap_Subtitle"]       = "Summary of your PC productivity over the last 7 days";
+        _enStrings["Recap_ScreenTime"]     = "Weekly Screen Time";
+        _enStrings["Recap_DailyAvg"]       = "daily average";
+        _enStrings["Recap_TopApps"]        = "🏆  Top Applications";
+        _enStrings["Recap_RhythmTitle"]    = "🌙  Sleep & Rest Rhythm";
+        _enStrings["Recap_AvgBedtime"]     = "Average Bedtime";
+        _enStrings["Recap_AvgWakeup"]      = "Average Wake-up";
+        _enStrings["Recap_AvgRest"]        = "Night Rest";
+        _enStrings["Recap_PeakDay"]        = "🚀  Peak Activity Day";
+        _enStrings["Recap_MouseTitle"]     = "🖱️  Mouse Activity";
+        _enStrings["Recap_Clicks"]         = "clicks";
+        _enStrings["Recap_Distance"]       = "distance moved";
+        _enStrings["Recap_BtnClose"]       = "Awesome";
+        _enStrings["Recap_PersonaSection"] = "🎯  Weekly Persona";
+        _enStrings["Recap_DynamicsSection"]= "📊  App Dynamics vs Previous Week";
+        _enStrings["Recap_WorkVsWeekend"]  = "⚖️  Workdays vs Weekends";
+        _enStrings["Recap_Workdays"]       = "Workdays";
+        _enStrings["Recap_Weekends"]       = "Weekends";
+        _enStrings["Recap_GoldenHour"]     = "⏰  Peak Time of Day";
+        _enStrings["Recap_BtnCopy"]        = "📋  Copy Card";
+        _enStrings["Recap_Copied"]         = "✓  Copied!";
+        _enStrings["Recap_PromptTitle"]    = "✨  Weekly Recap is Ready!";
+        _enStrings["Recap_PromptDesc"]     = "Your personal PC productivity digest for the past week is ready. Want to take a look?";
+        _enStrings["Recap_PromptView"]     = "📊  View Recap";
+        _enStrings["Recap_PromptDismiss"]  = "Not now";
+        _enStrings["Recap_CurrentWeekTab"] = "Current Week";
+        _enStrings["Recap_PreviousWeekTab"]= "Previous Week";
 
         // Theme View
         _enStrings["Theme_Title"]          = "Appearance & Themes";

@@ -338,6 +338,47 @@ public sealed class ActivityRepository
         return byDate.OrderBy(kv => kv.Key).Select(kv => (kv.Key, kv.Value.FirstActive, kv.Value.LastActive)).ToList();
     }
 
+    /// <summary>
+    /// Returns total active seconds broken down into 4 daytime intervals:
+    /// Night (00:00-06:00), Morning (06:00-12:00), Afternoon (12:00-18:00), Evening (18:00-00:00).
+    /// </summary>
+    public async Task<(long NightSec, long MorningSec, long AfternoonSec, long EveningSec)> GetTimeOfDayBreakdownAsync(DateTime from, DateTime to)
+    {
+        var rows = await _db.Connection.QueryAsync<dynamic>(@"
+            SELECT 
+                CASE 
+                    WHEN CAST(strftime('%H', s.StartTime) AS INTEGER) < 6 THEN 0
+                    WHEN CAST(strftime('%H', s.StartTime) AS INTEGER) < 12 THEN 1
+                    WHEN CAST(strftime('%H', s.StartTime) AS INTEGER) < 18 THEN 2
+                    ELSE 3
+                END AS TimeSlot,
+                SUM(s.DurationSeconds) AS TotalSec
+            FROM ActivitySessions s
+            JOIN Applications a ON a.Id = s.AppId
+            WHERE s.StartTime >= @From AND s.StartTime < @To
+              AND s.IsIdle = 0 AND a.IsBlacklisted = 0
+            GROUP BY TimeSlot",
+            new { From = Fmt(from), To = Fmt(to) });
+
+        long night = 0, morning = 0, afternoon = 0, evening = 0;
+        foreach (var r in rows)
+        {
+            if (r.TimeSlot != null && r.TotalSec != null)
+            {
+                int slot = (int)r.TimeSlot;
+                long val = (long)r.TotalSec;
+                switch (slot)
+                {
+                    case 0: night = val; break;
+                    case 1: morning = val; break;
+                    case 2: afternoon = val; break;
+                    case 3: evening = val; break;
+                }
+            }
+        }
+        return (night, morning, afternoon, evening);
+    }
+
     // Helpers
 
     private static string Fmt(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss");

@@ -137,6 +137,12 @@ public sealed class SettingsService
         set { _s.BedtimeReminderEnabled = value; Save(); }
     }
 
+    public string LastWeeklyRecapNotifiedWeek
+    {
+        get => _s.LastWeeklyRecapNotifiedWeek;
+        set { _s.LastWeeklyRecapNotifiedWeek = value; Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -188,6 +194,7 @@ public sealed class SettingsService
         public string AccentColor { get; set; } = "Indigo";
         public string Language { get; set; } = "Ru";
         public bool BedtimeReminderEnabled { get; set; } = true;
+        public string LastWeeklyRecapNotifiedWeek { get; set; } = string.Empty;
     }
 }
 

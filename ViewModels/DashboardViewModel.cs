@@ -127,7 +127,8 @@ public sealed class DashboardViewModel : BaseViewModel
 
     // Commands
 
-    public ICommand SetPeriodCommand { get; }
+    public ICommand SetPeriodCommand       { get; }
+    public ICommand OpenWeeklyRecapCommand { get; }
 
     // Colour palette
 
@@ -176,6 +177,52 @@ public sealed class DashboardViewModel : BaseViewModel
             OnPropertyChanged(nameof(IsPeriodMonth));
             _ = LoadDataAsync();
         });
+
+        OpenWeeklyRecapCommand = new RelayCommand(async () => await OpenWeeklyRecapAsync());
+    }
+
+    private async Task OpenWeeklyRecapAsync()
+    {
+        try
+        {
+            var vm = new WeeklyRecapViewModel(_activityRepo, _localization);
+            await vm.LoadAsync();
+
+            var wnd = new Views.WeeklyRecapWindow(vm);
+
+            try
+            {
+                DateTime today = DateTime.Today;
+                int diff = (int)today.DayOfWeek - (int)DayOfWeek.Monday;
+                if (diff < 0) diff += 7;
+                DateTime weekMonday = today.AddDays(-diff);
+                AppServices.Settings.LastWeeklyRecapNotifiedWeek = weekMonday.ToString("yyyy-MM-dd");
+            }
+            catch { }
+
+            var mainWnd = System.Windows.Application.Current?.MainWindow 
+                ?? System.Windows.Application.Current?.Windows.OfType<MainWindow>().FirstOrDefault(w => w.IsVisible);
+
+            if (mainWnd != null && mainWnd.IsVisible)
+            {
+                wnd.Owner = mainWnd;
+                wnd.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            }
+            else
+            {
+                wnd.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            }
+
+            wnd.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Не удалось открыть дайджест недели:\n\n{ex.Message}",
+                "WinTime",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
     }
 
     private void OnTrackerStateChanged(object? sender, TrackerStateEventArgs e)
