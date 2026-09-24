@@ -60,10 +60,24 @@ public sealed class SettingsViewModel : BaseViewModel
         private set => SetProperty(ref _dbChangeNote, value);
     }
 
-    public ICommand ChooseDbPathCommand  { get; }
-    public ICommand ExportCsvCommand     { get; }
-    public ICommand ExportJsonCommand    { get; }
-    public ICommand ClearHistoryCommand  { get; }
+    public bool BedtimeReminderEnabled
+    {
+        get => _settings.BedtimeReminderEnabled;
+        set
+        {
+            if (_settings.BedtimeReminderEnabled != value)
+            {
+                _settings.BedtimeReminderEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public ICommand ChooseDbPathCommand        { get; }
+    public ICommand ExportCsvCommand           { get; }
+    public ICommand ExportJsonCommand          { get; }
+    public ICommand ClearHistoryCommand        { get; }
+    public ICommand TestBedtimeReminderCommand { get; }
 
     // Constructor
 
@@ -80,10 +94,11 @@ public sealed class SettingsViewModel : BaseViewModel
         _launchOnStartup     = SystemStartupManager.IsEnabled();
         _databasePath        = settings.DatabasePath ?? string.Empty;
 
-        ChooseDbPathCommand = new RelayCommand(ChooseDbPath);
-        ExportCsvCommand    = new RelayCommand(async () => await ExportCsvAsync());
-        ExportJsonCommand   = new RelayCommand(async () => await ExportJsonAsync());
-        ClearHistoryCommand = new RelayCommand(async () => await ClearHistoryAsync());
+        ChooseDbPathCommand        = new RelayCommand(ChooseDbPath);
+        ExportCsvCommand           = new RelayCommand(async () => await ExportCsvAsync());
+        ExportJsonCommand          = new RelayCommand(async () => await ExportJsonAsync());
+        ClearHistoryCommand        = new RelayCommand(async () => await ClearHistoryAsync());
+        TestBedtimeReminderCommand = new RelayCommand(() => AppServices.BedtimeReminder?.TestNotification());
     }
 
     // Handlers

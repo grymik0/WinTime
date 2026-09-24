@@ -131,6 +131,12 @@ public sealed class SettingsService
         set { _s.Language = value; Save(); }
     }
 
+    public bool BedtimeReminderEnabled
+    {
+        get => _s.BedtimeReminderEnabled;
+        set { _s.BedtimeReminderEnabled = value; Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -181,6 +187,7 @@ public sealed class SettingsService
         public string ThemeMode { get; set; } = "Dark";
         public string AccentColor { get; set; } = "Indigo";
         public string Language { get; set; } = "Ru";
+        public bool BedtimeReminderEnabled { get; set; } = true;
     }
 }
 

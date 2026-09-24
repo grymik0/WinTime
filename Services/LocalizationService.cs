@@ -265,6 +265,9 @@ public sealed class LocalizationService
         _ruStrings["Settings_AfkHint"]     = "Если в течение этого времени нет ввода с мыши/клавиатуры — время считается AFK.";
         _ruStrings["Settings_SectionSystem"] = "СИСТЕМА";
         _ruStrings["Settings_LaunchStartup"] = "Запускать WinTime при старте Windows";
+        _ruStrings["Settings_BedtimeReminder"] = "Умные рекомендации ко сну";
+        _ruStrings["Settings_BedtimeReminderHint"] = "Напоминание за 1 час до привычного времени отбоя (на основе графика за последние недели)";
+        _ruStrings["Settings_BedtimeTest"] = "Проверить";
         _ruStrings["Settings_SectionDb"]   = "БАЗА ДАННЫХ";
         _ruStrings["Settings_DbPath"]      = "Путь к файлу базы данных";
         _ruStrings["Settings_DbBrowse"]    = "Обзор…";
@@ -472,6 +475,9 @@ public sealed class LocalizationService
         _enStrings["Settings_AfkHint"]     = "Time without mouse/keyboard input before counting as AFK.";
         _enStrings["Settings_SectionSystem"] = "SYSTEM";
         _enStrings["Settings_LaunchStartup"] = "Start WinTime on Windows startup";
+        _enStrings["Settings_BedtimeReminder"] = "Smart Bedtime Recommendations";
+        _enStrings["Settings_BedtimeReminderHint"] = "Reminder 1 hour before your usual bedtime (based on recent weekly rhythm)";
+        _enStrings["Settings_BedtimeTest"] = "Test";
         _enStrings["Settings_SectionDb"]   = "DATABASE";
         _enStrings["Settings_DbPath"]      = "Database file path";
         _enStrings["Settings_DbBrowse"]    = "Browse…";

@@ -21,8 +21,9 @@ internal static class AppServices
     public static ThemeService            ThemeService  { get; private set; } = null!;
     public static LocalizationService     Localization  { get; private set; } = null!;
     public static InMemoryBuffer          Buffer        { get; private set; } = null!;
-    public static ActivityTracker         Tracker       { get; private set; } = null!;
-    public static LimitEnforcerService    LimitEnforcer { get; private set; } = null!;
+    public static ActivityTracker         Tracker         { get; private set; } = null!;
+    public static LimitEnforcerService    LimitEnforcer   { get; private set; } = null!;
+    public static BedtimeReminderService  BedtimeReminder { get; private set; } = null!;
 
     public static DashboardViewModel          DashboardVm          { get; private set; } = null!;
     public static ProcessesViewModel          ProcessesVm          { get; private set; } = null!;
@@ -57,6 +58,8 @@ internal static class AppServices
         Tracker       = new ActivityTracker(AppRepo, ActivityRepo, UptimeRepo, Buffer, Settings);
         LimitEnforcer = new LimitEnforcerService(GoalRepo, ActivityRepo, Tracker, Localization);
         _ = LimitEnforcer.ReloadLimitsAsync();
+        BedtimeReminder = new BedtimeReminderService(ActivityRepo, Settings, Tracker, Localization);
+        BedtimeReminder.Start();
 
         DashboardVm          = new DashboardViewModel(ActivityRepo, IconService, Tracker, Localization);
         ProcessesVm          = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker, Localization);
@@ -71,6 +74,8 @@ internal static class AppServices
 
     public static async Task ShutdownAsync()
     {
+        BedtimeReminder?.Dispose();
+
         if (Tracker is not null)
             await Tracker.StopAsync();
 

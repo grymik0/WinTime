@@ -89,8 +89,44 @@
             <CheckBox IsChecked="{Binding LaunchOnStartup}"
                       Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14"
                       Content="{DynamicResource Settings_LaunchStartup}"
-                      Margin="0 0 0 20"
+                      Margin="0 0 0 16"
                       Cursor="Hand" />
+
+            <!-- Умные рекомендации ко сну -->
+            <Grid Margin="0 0 0 20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <CheckBox IsChecked="{Binding BedtimeReminderEnabled}"
+                              Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14"
+                              Content="{DynamicResource Settings_BedtimeReminder}"
+                              Cursor="Hand" />
+                    <TextBlock Style="{StaticResource SettingHint}"
+                               Text="{DynamicResource Settings_BedtimeReminderHint}"
+                               Margin="0 4 0 0" />
+                </StackPanel>
+                <Button Grid.Column="2"
+                        Content="{DynamicResource Settings_BedtimeTest}"
+                        Command="{Binding TestBedtimeReminderCommand}"
+                        Background="{DynamicResource ControlBgBrush}"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        Padding="14 6"
+                        FontSize="12"
+                        BorderThickness="0"
+                        VerticalAlignment="Top"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
 
             <TextBlock Text="{DynamicResource Settings_SectionDb}" Style="{StaticResource SectionHeader}" />
 
