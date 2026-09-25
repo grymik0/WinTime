@@ -7,17 +7,29 @@ namespace WinTime.ViewModels;
 
 public sealed class DesktopWidgetViewModel : BaseViewModel
 {
-    private readonly ActivityTracker    _tracker;
-    private readonly ActivityRepository _activityRepo;
-    private readonly SettingsService   _settings;
+    private readonly ActivityTracker      _tracker;
+    private readonly ActivityRepository   _activityRepo;
+    private readonly SettingsService     _settings;
+    private readonly LimitEnforcerService _limitEnforcer;
+    private readonly DailyQuestEngine     _questEngine;
+    private readonly LocalizationService  _localization;
 
-    private string _currentAppName   = "Ожидание...";
-    private string _todayTimeText    = "0с";
-    private string _sessionTimeText  = "0с";
-    private string _userLevelText    = "Ур. 1";
+    private string _currentAppName   = LocalizationService.IsRussian ? "Ожидание..." : "Waiting...";
+    private string _todayTimeText    = LocalizationService.FormatDuration(0);
+    private string _sessionTimeText  = LocalizationService.FormatDuration(0);
+    private int    _currentUserLevel = 1;
+    private string _userLevelText    = LocalizationService.IsRussian ? "Ур. 1" : "Lvl 1";
     private string _xpProgressText   = "0 / 1000 XP";
     private double _xpProgress       = 0;
-    private string _mouseSummaryText = "0 кл · 0 м";
+    private string _mouseSummaryText = LocalizationService.IsRussian ? "0 кл · 0 м" : "0 clicks · 0 m";
+
+    private int    _currentStreak;
+    private bool   _hasAppLimit;
+    private bool   _isLimitExceeded;
+    private bool   _isLimitWarning;
+    private string _limitRemainingText = string.Empty;
+    private string _limitStatusText    = string.Empty;
+    private double _limitProgress;
 
     public string CurrentAppName   { get => _currentAppName;   private set => SetProperty(ref _currentAppName,   value); }
     public string TodayTimeText    { get => _todayTimeText;    private set => SetProperty(ref _todayTimeText,    value); }
@@ -26,6 +38,59 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
     public string XpProgressText   { get => _xpProgressText;   private set => SetProperty(ref _xpProgressText,   value); }
     public double XpProgress       { get => _xpProgress;       private set => SetProperty(ref _xpProgress,       value); }
     public string MouseSummaryText { get => _mouseSummaryText; private set => SetProperty(ref _mouseSummaryText, value); }
+
+    // Streak properties
+    public int CurrentStreak
+    {
+        get => _currentStreak;
+        private set
+        {
+            if (SetProperty(ref _currentStreak, value))
+            {
+                OnPropertyChanged(nameof(StreakBadgeText));
+                OnPropertyChanged(nameof(HasStreak));
+                OnPropertyChanged(nameof(StreakTooltip));
+            }
+        }
+    }
+
+    public string StreakBadgeText => CurrentStreak > 0 ? $"🔥 {CurrentStreak}" : string.Empty;
+    public bool HasStreak => CurrentStreak > 0 && ShowStreak;
+    public string StreakTooltip => LocalizationService.IsRussian
+        ? $"Текущая серия активности: {CurrentStreak} дн."
+        : $"Current activity streak: {CurrentStreak} d.";
+
+    // Active App Limit properties
+    public bool HasAppLimit          => _hasAppLimit && ShowLimit;
+    public bool DoesNotHaveAppLimit  => !HasAppLimit;
+    public bool IsLimitExceeded      => _isLimitExceeded;
+    public bool IsLimitWarning    => _isLimitWarning;
+    public string LimitRemainingText => _limitRemainingText;
+    public string LimitStatusText    => _limitStatusText;
+    public double LimitProgress      => _limitProgress;
+
+    public string LimitBadgeColor
+    {
+        get
+        {
+            if (_isLimitExceeded) return "#EF4444";
+            if (_isLimitWarning)  return "#F59E0B";
+            return "#10B981";
+        }
+    }
+
+    // Display mode: 0 = Standard, 1 = Compact, 2 = Micro
+    public int WidgetDisplayMode
+    {
+        get => _settings.WidgetDisplayMode;
+        set => SetWidgetDisplayMode(value);
+    }
+
+    public bool IsStandardMode   => WidgetDisplayMode == 0;
+    public bool IsCompactMode    => WidgetDisplayMode == 1;
+    public bool IsNotCompactMode => WidgetDisplayMode == 0;
+    public bool IsMicroMode      => WidgetDisplayMode == 2;
+    public double WidgetContainerWidth => IsMicroMode ? double.NaN : 224;
 
     // Visibility toggles from settings
     public bool ShowApp
@@ -93,22 +158,34 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
         }
     }
 
-    public bool IsCompactMode
+    public bool ShowStreak
     {
-        get => _settings.WidgetCompactMode;
+        get => _settings.WidgetShowStreak;
         set
         {
-            if (_settings.WidgetCompactMode != value)
+            if (_settings.WidgetShowStreak != value)
             {
-                _settings.WidgetCompactMode = value;
-                OnPropertyChanged(nameof(IsCompactMode));
-                OnPropertyChanged(nameof(IsNotCompactMode));
-                CompactModeChanged?.Invoke(this, value);
+                _settings.WidgetShowStreak = value;
+                OnPropertyChanged(nameof(ShowStreak));
+                OnPropertyChanged(nameof(HasStreak));
             }
         }
     }
 
-    public bool IsNotCompactMode => !IsCompactMode;
+    public bool ShowLimit
+    {
+        get => _settings.WidgetShowLimit;
+        set
+        {
+            if (_settings.WidgetShowLimit != value)
+            {
+                _settings.WidgetShowLimit = value;
+                OnPropertyChanged(nameof(ShowLimit));
+                OnPropertyChanged(nameof(HasAppLimit));
+                OnPropertyChanged(nameof(DoesNotHaveAppLimit));
+            }
+        }
+    }
 
     public bool IsClickThrough
     {
@@ -174,16 +251,19 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
 
     public string WidgetOpacityPercentText => $"{(int)Math.Round(WidgetOpacity * 100)}%";
 
-    public event EventHandler<bool>? WidgetVisibilityChanged;
+    public event EventHandler<bool>?   WidgetVisibilityChanged;
     public event EventHandler<double>? WidgetOpacityChanged;
-    public event EventHandler<bool>? CompactModeChanged;
-    public event EventHandler<bool>? ClickThroughChanged;
-    public event EventHandler<bool>? TopmostChanged;
-    public event EventHandler? ResetPositionRequested;
+    public event EventHandler<bool>?   CompactModeChanged;
+    public event EventHandler<int>?    DisplayModeChanged;
+    public event EventHandler<bool>?   ClickThroughChanged;
+    public event EventHandler<bool>?   TopmostChanged;
+    public event EventHandler?         ResetPositionRequested;
 
-    public ICommand ToggleWidgetCommand  { get; }
-    public ICommand ResetPositionCommand { get; }
-    public ICommand ToggleCompactCommand { get; }
+    public ICommand ToggleWidgetCommand   { get; }
+    public ICommand ResetPositionCommand  { get; }
+    public ICommand ToggleCompactCommand  { get; }
+    public ICommand SetDisplayModeCommand { get; }
+    public ICommand CycleModeCommand      { get; }
 
     private long _todayActiveSeconds;
     private long _continuousSessionSeconds;
@@ -192,25 +272,77 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
     public DesktopWidgetViewModel(
         ActivityTracker tracker,
         ActivityRepository activityRepo,
-        SettingsService settings)
+        SettingsService settings,
+        LimitEnforcerService limitEnforcer,
+        DailyQuestEngine questEngine,
+        LocalizationService localization)
     {
-        _tracker      = tracker;
-        _activityRepo = activityRepo;
-        _settings     = settings;
+        _tracker       = tracker;
+        _activityRepo  = activityRepo;
+        _settings      = settings;
+        _limitEnforcer = limitEnforcer;
+        _questEngine   = questEngine;
+        _localization  = localization;
 
-        ToggleWidgetCommand  = new RelayCommand(() => IsWidgetEnabled = !IsWidgetEnabled);
-        ResetPositionCommand = new RelayCommand(() => ResetPositionRequested?.Invoke(this, EventArgs.Empty));
-        ToggleCompactCommand = new RelayCommand(() => IsCompactMode = !IsCompactMode);
+        ToggleWidgetCommand   = new RelayCommand(() => IsWidgetEnabled = !IsWidgetEnabled);
+        ResetPositionCommand  = new RelayCommand(() => ResetPositionRequested?.Invoke(this, EventArgs.Empty));
+        ToggleCompactCommand  = new RelayCommand(ToggleCompact);
+        CycleModeCommand      = new RelayCommand(CycleDisplayMode);
+        SetDisplayModeCommand = new RelayCommand<int>(SetWidgetDisplayMode);
 
         _tracker.StateChanged += OnTrackerStateChanged;
+        _localization.LanguageChanged += (_, _) =>
+        {
+            UserLevelText = LocalizationService.IsRussian ? $"Ур. {_currentUserLevel}" : $"Lvl {_currentUserLevel}";
+            TodayTimeText = Fmt(_todayActiveSeconds);
+            SessionTimeText = Fmt(_continuousSessionSeconds);
+            var (clicks, dist) = _tracker.GetTodayMouseMetrics();
+            string clicksUnit = LocalizationService.IsRussian ? "кл" : "clicks";
+            MouseSummaryText = $"{DashboardViewModel.FormatClicks(clicks)} {clicksUnit} · {DashboardViewModel.FormatDistance(dist)}";
+            OnPropertyChanged(nameof(WidgetToggleLabel));
+            OnPropertyChanged(nameof(StreakTooltip));
+            OnPropertyChanged(nameof(LimitStatusText));
+            _ = UpdateLifetimeAndLevelAsync();
+        };
+    }
+
+    public void ToggleCompact()
+    {
+        CycleDisplayMode();
+    }
+
+    public void SetWidgetDisplayMode(int mode)
+    {
+        mode = Math.Clamp(mode, 0, 2);
+        if (_settings.WidgetDisplayMode != mode)
+        {
+            _settings.WidgetDisplayMode = mode;
+            OnPropertyChanged(nameof(WidgetDisplayMode));
+            OnPropertyChanged(nameof(IsStandardMode));
+            OnPropertyChanged(nameof(IsCompactMode));
+            OnPropertyChanged(nameof(IsNotCompactMode));
+            OnPropertyChanged(nameof(IsMicroMode));
+            OnPropertyChanged(nameof(WidgetContainerWidth));
+            CompactModeChanged?.Invoke(this, mode == 1);
+            DisplayModeChanged?.Invoke(this, mode);
+        }
+    }
+
+    public void CycleDisplayMode()
+    {
+        int next = (WidgetDisplayMode + 1) % 3;
+        SetWidgetDisplayMode(next);
     }
 
     public void NotifySettingsChanged()
     {
         OnPropertyChanged(nameof(ShowApp));
         OnPropertyChanged(nameof(ShowTime));
+        OnPropertyChanged(nameof(ShowSession));
         OnPropertyChanged(nameof(ShowLevel));
         OnPropertyChanged(nameof(ShowMouse));
+        OnPropertyChanged(nameof(ShowStreak));
+        OnPropertyChanged(nameof(ShowLimit));
     }
 
     public async Task InitializeAsync()
@@ -222,9 +354,11 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
             TodayTimeText = Fmt(active);
 
             await UpdateLifetimeAndLevelAsync();
+            await UpdateStreakAsync();
 
             var (clicks, dist) = _tracker.GetTodayMouseMetrics();
-            MouseSummaryText = $"{DashboardViewModel.FormatClicks(clicks)} кл · {DashboardViewModel.FormatDistance(dist)}";
+            string clicksUnit = LocalizationService.IsRussian ? "кл" : "clicks";
+            MouseSummaryText = $"{DashboardViewModel.FormatClicks(clicks)} {clicksUnit} · {DashboardViewModel.FormatDistance(dist)}";
         }
         catch { }
     }
@@ -242,13 +376,54 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
                 CurrentAppName = string.IsNullOrWhiteSpace(e.AppName) 
                     ? (LocalizationService.IsRussian ? "Активность" : "Activity") 
                     : e.AppName;
+
+                // Update active app limit status
+                if (e.AppId > 0)
+                {
+                    var status = _limitEnforcer.GetLimitStatus(e.AppId);
+                    if (status.HasValue)
+                    {
+                        var (limitSec, usedSec, isExceeded) = status.Value;
+                        int rem = Math.Max(0, limitSec - usedSec);
+                        _hasAppLimit = true;
+                        _isLimitExceeded = isExceeded;
+                        _isLimitWarning = !isExceeded && rem <= 300;
+                        _limitRemainingText = LocalizationService.FormatDuration(rem);
+                        _limitProgress = limitSec > 0 ? Math.Clamp((double)usedSec / limitSec * 100.0, 0, 100) : 0;
+                        _limitStatusText = isExceeded
+                            ? (LocalizationService.IsRussian ? "Лимит исчерпан!" : "Limit exceeded!")
+                            : string.Format(_localization.GetString("Widget_LimitRemaining"), _limitRemainingText);
+                    }
+                    else
+                    {
+                        _hasAppLimit = false;
+                        _isLimitExceeded = false;
+                        _isLimitWarning = false;
+                        _limitRemainingText = string.Empty;
+                        _limitStatusText = string.Empty;
+                    }
+                }
+                else
+                {
+                    _hasAppLimit = false;
+                }
             }
             else
             {
                 _continuousSessionSeconds = 0;
                 SessionTimeText = LocalizationService.FormatDuration(0);
                 CurrentAppName = LocalizationService.IsRussian ? "💤 AFK / Бездействие" : "💤 AFK / Idle";
+                _hasAppLimit = false;
             }
+
+            OnPropertyChanged(nameof(HasAppLimit));
+            OnPropertyChanged(nameof(DoesNotHaveAppLimit));
+            OnPropertyChanged(nameof(IsLimitExceeded));
+            OnPropertyChanged(nameof(IsLimitWarning));
+            OnPropertyChanged(nameof(LimitRemainingText));
+            OnPropertyChanged(nameof(LimitStatusText));
+            OnPropertyChanged(nameof(LimitProgress));
+            OnPropertyChanged(nameof(LimitBadgeColor));
 
             var (clicks, dist) = _tracker.GetTodayMouseMetrics();
             string clicksUnit = LocalizationService.IsRussian ? "кл" : "clicks";
@@ -258,6 +433,7 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
             {
                 _dbRefreshCounter = 0;
                 _ = UpdateLifetimeAndLevelAsync();
+                _ = UpdateStreakAsync();
             }
         });
     }
@@ -272,9 +448,20 @@ public sealed class DesktopWidgetViewModel : BaseViewModel
             int level = (int)(totalXp / xpPerLevel) + 1;
             long curLvlXp = totalXp % xpPerLevel;
 
+            _currentUserLevel = level;
             UserLevelText = LocalizationService.IsRussian ? $"Ур. {level}" : $"Lvl {level}";
             XpProgressText = $"{curLvlXp} / {xpPerLevel} XP";
             XpProgress = Math.Clamp((double)curLvlXp / xpPerLevel * 100.0, 0, 100);
+        }
+        catch { }
+    }
+
+    private async Task UpdateStreakAsync()
+    {
+        try
+        {
+            var streak = await _questEngine.CalculateStreakAsync();
+            CurrentStreak = streak.CurrentStreak;
         }
         catch { }
     }

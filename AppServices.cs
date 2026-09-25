@@ -74,7 +74,7 @@ internal static class AppServices
         GoalsVm              = new GoalsViewModel(GoalRepo, AppRepo, ActivityRepo, LimitEnforcer, Localization);
         ProjectsVm           = new ProjectsViewModel(ProjectRepo, AppRepo, Localization);
         ProfileVm            = new ProfileViewModel(ActivityRepo, Tracker, Localization, QuestEngine);
-        DesktopWidgetVm      = new DesktopWidgetViewModel(Tracker, ActivityRepo, Settings);
+        DesktopWidgetVm      = new DesktopWidgetViewModel(Tracker, ActivityRepo, Settings, LimitEnforcer, QuestEngine, Localization);
         ThemeVm              = new ThemeCustomizationViewModel(ThemeService, Localization);
         SettingsVm           = new SettingsViewModel(Settings, ActivityRepo, ExportService);
         MainWindowVm         = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, GoalsVm, ProjectsVm, ProfileVm, DesktopWidgetVm, ThemeVm, SettingsVm, Localization);

@@ -278,6 +278,10 @@ public sealed class LocalizationService
         _ruStrings["Widget_BtnDisable"]    = "Выключить виджет";
         _ruStrings["Widget_CompactBtn"]    = "📐  Компактный вид";
         _ruStrings["Widget_ExpandedBtn"]   = "📖  Развёрнутый вид";
+        _ruStrings["Widget_ModeSection"]   = "РЕЖИМ ОТОБРАЖЕНИЯ ВИДЖЕТА";
+        _ruStrings["Widget_ModeStandard"]  = "Стандартный";
+        _ruStrings["Widget_ModeCompact"]   = "Компактный";
+        _ruStrings["Widget_ModeMicro"]     = "Микро-точка";
         _ruStrings["Widget_ResetPos"]      = "📍  Сбросить позицию";
         _ruStrings["Widget_ResetPosTip"]   = "Вернуть виджет в правый верхний угол экрана";
         _ruStrings["Widget_SectionBehavior"] = "ПОВЕДЕНИЕ И ВЗАИМОДЕЙСТВИЕ";
@@ -292,6 +296,10 @@ public sealed class LocalizationService
         _ruStrings["Widget_ShowTimeDesc"]  = "Общее время активного использования компьютера";
         _ruStrings["Widget_ShowSession"]   = "Таймер непрерывной текущей сессии";
         _ruStrings["Widget_ShowSessionDesc"] = "Время непрерывной работы без отдыха (сбрасывается при уходе в AFK)";
+        _ruStrings["Widget_ShowStreak"]    = "Серия активности (стрик 🔥)";
+        _ruStrings["Widget_ShowStreakDesc"]= "Текущее количество дней активности подряд";
+        _ruStrings["Widget_ShowLimit"]     = "Лимит времени активной программы";
+        _ruStrings["Widget_ShowLimitDesc"] = "Показывать остаток времени, если на программу установлен лимит";
         _ruStrings["Widget_ShowLevel"]     = "Уровень профиля и опыт (XP)";
         _ruStrings["Widget_ShowLevelDesc"] = "Ранг, текущий уровень и прогресс до следующего уровня";
         _ruStrings["Widget_ShowMouse"]     = "Активность мыши";
@@ -306,7 +314,12 @@ public sealed class LocalizationService
         _ruStrings["Widget_CurSession"]    = "Текущая сессия";
         _ruStrings["Widget_TipExpand"]     = "Развернуть полный вид";
         _ruStrings["Widget_TipCollapse"]   = "Свернуть в компактную полоску";
+        _ruStrings["Widget_TipMicro"]      = "Свернуть в микро-пилюлю";
+        _ruStrings["Widget_TipStandard"]   = "Развернуть полностью";
         _ruStrings["Widget_TipHide"]       = "Скрыть виджет";
+        _ruStrings["Widget_LimitRemaining"]= "Осталось: {0}";
+        _ruStrings["Widget_LimitExceeded"] = "Лимит исчерпан!";
+        _ruStrings["Widget_MicroHint"]     = "Двойной клик — развернуть, зажмите — переместить";
 
         // Settings View
         _ruStrings["Settings_Title"]       = "Настройки";
@@ -571,6 +584,10 @@ public sealed class LocalizationService
         _enStrings["Widget_BtnDisable"]    = "Disable Widget";
         _enStrings["Widget_CompactBtn"]    = "📐  Compact View";
         _enStrings["Widget_ExpandedBtn"]   = "📖  Expanded View";
+        _enStrings["Widget_ModeSection"]   = "WIDGET DISPLAY MODE";
+        _enStrings["Widget_ModeStandard"]  = "Standard";
+        _enStrings["Widget_ModeCompact"]   = "Compact";
+        _enStrings["Widget_ModeMicro"]     = "Micro Pill";
         _enStrings["Widget_ResetPos"]      = "📍  Reset Position";
         _enStrings["Widget_ResetPosTip"]   = "Move widget to top-right screen corner";
         _enStrings["Widget_SectionBehavior"] = "BEHAVIOR & INTERACTION";
@@ -585,6 +602,10 @@ public sealed class LocalizationService
         _enStrings["Widget_ShowTimeDesc"]  = "Total active PC usage today";
         _enStrings["Widget_ShowSession"]   = "Continuous Session Timer";
         _enStrings["Widget_ShowSessionDesc"] = "Time worked continuously without breaks (resets on AFK)";
+        _enStrings["Widget_ShowStreak"]    = "Activity Streak (🔥)";
+        _enStrings["Widget_ShowStreakDesc"]= "Current consecutive active days counter";
+        _enStrings["Widget_ShowLimit"]     = "Active App Limit Timer";
+        _enStrings["Widget_ShowLimitDesc"] = "Show remaining time if a daily limit is configured for the focused app";
         _enStrings["Widget_ShowLevel"]     = "Profile Level & XP";
         _enStrings["Widget_ShowLevelDesc"] = "Rank, current level, and progress to next level";
         _enStrings["Widget_ShowMouse"]     = "Mouse Activity";
@@ -599,7 +620,12 @@ public sealed class LocalizationService
         _enStrings["Widget_CurSession"]    = "Current Session";
         _enStrings["Widget_TipExpand"]     = "Expand to full view";
         _enStrings["Widget_TipCollapse"]   = "Collapse to compact strip";
+        _enStrings["Widget_TipMicro"]      = "Collapse to micro pill";
+        _enStrings["Widget_TipStandard"]   = "Expand to full view";
         _enStrings["Widget_TipHide"]       = "Hide widget";
+        _enStrings["Widget_LimitRemaining"]= "{0} left";
+        _enStrings["Widget_LimitExceeded"] = "Limit exceeded!";
+        _enStrings["Widget_MicroHint"]     = "Double click to expand, drag to move";
 
         // Settings View
         _enStrings["Settings_Title"]       = "Settings";
