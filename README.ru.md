@@ -81,24 +81,9 @@ WinTime тихо работает в системном трее Windows, отс
 ### Запуск из исходного кода
 
 ```bash
-git clone https://github.com/your-username/WinTime.git
+git clone
 cd WinTime
 dotnet run -p:Platform=x64
-```
-
-### Сборка через Visual Studio
-
-1. Откройте файл `WinTime.sln` в **Visual Studio 2022** (v17.10+) или JetBrains Rider.
-2. Выберите конфигурацию **Release | x64** (или **Debug | x64**).
-3. Назначьте `WinTime` запускаемым проектом (Startup Project).
-4. Нажмите **F5** для запуска.
-
-### Сборка автономного исполняемого файла (Self-Contained)
-
-Чтобы получить единый `.exe` файл, которому не требуется предварительно установленный .NET:
-
-```bash
-dotnet publish WinTime.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
 ### Первый запуск
@@ -135,8 +120,4 @@ WinTime/
 - Все заголовки окон, временные метки и журналы работы хранятся исключительно на вашем диске.
 
 ---
-
-## Лицензия
-
-Проект распространяется под открытой лицензией [MIT License](LICENSE).
 
