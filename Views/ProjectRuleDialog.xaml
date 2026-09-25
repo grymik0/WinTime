@@ -1,0 +1,157 @@
+<Window x:Class="WinTime.Views.ProjectRuleDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Добавить правило проекта"
+        Width="490" Height="430"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border Background="{DynamicResource AppBgBrush}"
+            BorderBrush="{DynamicResource BorderBrushColor}"
+            BorderThickness="1"
+            CornerRadius="16"
+            Padding="24 20"
+            Margin="24">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="4" Opacity="0.25" />
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{DynamicResource RuleDlg_Title}"
+                           FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
+                           VerticalAlignment="Center" />
+
+                <Button Grid.Column="1"
+                        Content="✕"
+                        Click="Cancel_Click"
+                        Width="28" Height="28"
+                        Background="{DynamicResource ControlBgBrush}"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        FontSize="11"
+                        BorderThickness="0"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" CornerRadius="14">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <!-- Content -->
+            <StackPanel Grid.Row="1" Margin="0 18 0 16">
+                <!-- Application -->
+                <TextBlock Text="{DynamicResource RuleDlg_App}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <ComboBox x:Name="AppsComboBox"
+                          DisplayMemberPath="DisplayName"
+                          SelectedValuePath="Id"
+                          Margin="0 0 0 14" />
+
+                <!-- Window title keyword -->
+                <TextBlock Text="{DynamicResource RuleDlg_Keyword}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <TextBox x:Name="KeywordTextBox"
+                         Background="{DynamicResource ControlBgBrush}"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         CaretBrush="{DynamicResource TextPrimaryBrush}"
+                         BorderBrush="{DynamicResource BorderBrushColor}"
+                         BorderThickness="1"
+                         Padding="10 8"
+                         FontSize="13"
+                         Margin="0 0 0 14" />
+
+                <!-- Hint -->
+                <Border Background="{DynamicResource ControlBgBrush}" CornerRadius="8" Padding="12 10">
+                    <TextBlock Text="{DynamicResource RuleDlg_Hint}"
+                               FontSize="11" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" LineHeight="16" />
+                </Border>
+            </StackPanel>
+
+            <!-- Actions -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="{DynamicResource ProjectDlg_BtnCancel}"
+                        Click="Cancel_Click"
+                        Background="{DynamicResource ControlBgBrush}"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrushColor}"
+                        BorderThickness="1"
+                        FontWeight="SemiBold"
+                        FontSize="13"
+                        Padding="14 9"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Grid.Column="2"
+                        Content="{DynamicResource RuleDlg_BtnAdd}"
+                        Click="Save_Click"
+                        Background="{DynamicResource AccentBrush}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        FontSize="13"
+                        Padding="14 9"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
+

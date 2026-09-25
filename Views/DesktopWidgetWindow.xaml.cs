@@ -34,12 +34,15 @@ public partial class DesktopWidgetWindow : Window
         {
             ResetPosition();
         }
+
+        Core.AnimationHelper.PlayZoomFadeIn(WidgetBorder, fromScale: 0.90, fromY: 6, durationMs: 220);
     }
 
     public void ResetPosition()
     {
         var workArea = SystemParameters.WorkArea;
-        Left = workArea.Right - Width - 24;
+        double w = ActualWidth > 0 ? ActualWidth : 220;
+        Left = workArea.Right - w - 24;
         Top  = workArea.Top + 36;
         _settings.WidgetLeft = Left;
         _settings.WidgetTop  = Top;
@@ -85,6 +88,14 @@ public partial class DesktopWidgetWindow : Window
         }
     }
 
+    private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (DataContext is DesktopWidgetViewModel vm)
+        {
+            vm.CycleDisplayMode();
+        }
+    }
+
     private void Window_LocationChanged(object? sender, EventArgs e)
     {
         if (IsLoaded && Left >= 0 && Top >= 0)
@@ -100,3 +111,4 @@ public partial class DesktopWidgetWindow : Window
         Hide();
     }
 }
+

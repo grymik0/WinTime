@@ -43,12 +43,51 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="{DynamicResource Dash_Title}" FontSize="22" FontWeight="Bold"
                            Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
 
-                <TextBlock Grid.Column="1" Text="{DynamicResource Common_Loading}"
+                <!-- Кнопка "📅 Итоги недели" -->
+                <Button Grid.Column="1"
+                        Content="{DynamicResource Recap_BtnTitle}"
+                        Command="{Binding OpenWeeklyRecapCommand}"
+                        Background="{DynamicResource CardBgBrush}"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrushColor}"
+                        BorderThickness="1"
+                        FontWeight="SemiBold"
+                        Padding="14 7"
+                        FontSize="12"
+                        Cursor="Hand"
+                        VerticalAlignment="Center"
+                        Margin="0 0 16 0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <TextBlock Grid.Column="2" Text="{DynamicResource Common_Loading}"
                            Foreground="{DynamicResource TextMutedBrush}" FontSize="13"
                            VerticalAlignment="Center"
                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}" />
@@ -108,9 +147,9 @@
                 <Border Style="{StaticResource StatCard}" Margin="0 0 8 0">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Dash_ScreenTime}"
-                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 6" />
+                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 6" />
                         <TextBlock Text="{Binding TotalTime}"
-                                   FontSize="26" FontWeight="Bold" Foreground="White" />
+                                   FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
 
                         <Grid Margin="0 6 0 0"
                               Visibility="{Binding HasTrend, Converter={StaticResource BoolToVisibility}}">
@@ -138,12 +177,12 @@
                 <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Dash_AfkTime}"
-                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 6" />
+                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 6" />
                         <TextBlock Text="{Binding IdleTime}"
                                    FontSize="26" FontWeight="Bold" Foreground="#F59E0B" />
 
                         <TextBlock Text="{Binding IdleRatioText}"
-                                   FontSize="11" Foreground="#9CA3AF" Margin="0 8 0 0"
+                                   FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 8 0 0"
                                    Visibility="{Binding HasIdleRatio, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
                 </Border>
@@ -151,13 +190,13 @@
                 <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Dash_TopApp}"
-                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 6" />
+                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 6" />
                         <TextBlock Text="{Binding TopApp}"
                                    FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}"
                                    TextTrimming="CharacterEllipsis" />
 
                         <TextBlock Text="{Binding SubMetricText}"
-                                   FontSize="11" Foreground="#9CA3AF" Margin="0 14 0 0"
+                                   FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 14 0 0"
                                    TextTrimming="CharacterEllipsis"
                                    Visibility="{Binding HasSubMetric, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
@@ -166,7 +205,7 @@
                 <Border Style="{StaticResource StatCard}" Margin="8 0 0 0">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Dash_MouseActivity}"
-                                   FontSize="12" Foreground="#6B7280" Margin="0 0 0 8" />
+                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 8" />
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -180,7 +219,7 @@
                                 <TextBlock Text="{Binding MouseClicksText}"
                                            FontSize="20" FontWeight="Bold" Foreground="#10B981"
                                            TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{DynamicResource Dash_Clicks}" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
+                                <TextBlock Text="{DynamicResource Dash_Clicks}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 2 0 0" />
                             </StackPanel>
 
                             <!-- Тонкий вертикальный разделитель -->
@@ -191,7 +230,7 @@
                                 <TextBlock Text="{Binding MouseDistanceText}"
                                            FontSize="20" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"
                                            TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{DynamicResource Dash_Distance}" FontSize="11" Foreground="#9CA3AF" Margin="0 2 0 0" />
+                                <TextBlock Text="{DynamicResource Dash_Distance}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 2 0 0" />
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -256,13 +295,13 @@
                                 <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
                                     <!-- Подписи дней недели -->
                                     <StackPanel Margin="0 18 8 0">
-                                        <TextBlock Text="1" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text=""  FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text="3" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text=""  FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text="5" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text=""  FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text="7" FontSize="9" Foreground="#6B7280" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="1" FontSize="9" Foreground="{DynamicResource TextMutedBrush}" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text=""  FontSize="9" Foreground="{DynamicResource TextMutedBrush}" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="3" FontSize="9" Foreground="{DynamicResource TextMutedBrush}" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text=""  FontSize="9" Foreground="{DynamicResource TextMutedBrush}" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="5" FontSize="9" Foreground="{DynamicResource TextMutedBrush}" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text=""  FontSize="9" Foreground="{DynamicResource TextMutedBrush}" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="7" FontSize="9" Foreground="{DynamicResource TextMutedBrush}" Height="16" VerticalAlignment="Center" />
                                     </StackPanel>
 
                                     <!-- Недели -->
@@ -277,7 +316,7 @@
                                                 <StackPanel Margin="1.5 0">
                                                     <!-- Подпись месяца -->
                                                     <TextBlock Text="{Binding MonthLabel}"
-                                                               FontSize="10" Foreground="#9CA3AF"
+                                                               FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"
                                                                Height="18"
                                                                TextTrimming="None" />
 
@@ -303,13 +342,13 @@
 
                             <!-- Легенда -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24 4 0 0">
-                                <TextBlock Text="{DynamicResource Dash_HeatmapLess}" FontSize="11" Foreground="#6B7280" VerticalAlignment="Center" Margin="0 0 6 0" />
-                                <Border Width="11" Height="11" CornerRadius="2" Background="#252535" Margin="2 0" ToolTip="0 ч" />
-                                <Border Width="11" Height="11" CornerRadius="2" Background="#3730A3" Margin="2 0" ToolTip="до 1 ч" />
-                                <Border Width="11" Height="11" CornerRadius="2" Background="#4F46E5" Margin="2 0" ToolTip="1–3 ч" />
-                                <Border Width="11" Height="11" CornerRadius="2" Background="#6366F1" Margin="2 0" ToolTip="3–6 ч" />
-                                <Border Width="11" Height="11" CornerRadius="2" Background="#818CF8" Margin="2 0" ToolTip="6+ ч" />
-                                <TextBlock Text="{DynamicResource Dash_HeatmapMore}" FontSize="11" Foreground="#6B7280" VerticalAlignment="Center" Margin="6 0 0 0" />
+                                <TextBlock Text="{DynamicResource Dash_HeatmapLess}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" Margin="0 0 6 0" />
+                                <Border Width="11" Height="11" CornerRadius="2" Background="{Binding HeatmapLegend0Brush}" Margin="2 0" ToolTip="0 ч" />
+                                <Border Width="11" Height="11" CornerRadius="2" Background="{Binding HeatmapLegend1Brush}" Margin="2 0" ToolTip="до 1 ч" />
+                                <Border Width="11" Height="11" CornerRadius="2" Background="{Binding HeatmapLegend2Brush}" Margin="2 0" ToolTip="1–3 ч" />
+                                <Border Width="11" Height="11" CornerRadius="2" Background="{Binding HeatmapLegend3Brush}" Margin="2 0" ToolTip="3–6 ч" />
+                                <Border Width="11" Height="11" CornerRadius="2" Background="{Binding HeatmapLegend4Brush}" Margin="2 0" ToolTip="6+ ч" />
+                                <TextBlock Text="{DynamicResource Dash_HeatmapMore}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" Margin="6 0 0 0" />
                             </StackPanel>
                         </StackPanel>
 
@@ -318,7 +357,7 @@
 
                         <!-- Правая колонка: Анализ привычек и постоянства -->
                         <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="6 0 0 0">
-                            <TextBlock Text="{DynamicResource Dash_ConsistencyTitle}" FontSize="12" FontWeight="SemiBold" Foreground="#9CA3AF" Margin="0 0 12 0" />
+                            <TextBlock Text="{DynamicResource Dash_ConsistencyTitle}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 12 0" />
 
                             <Grid Margin="0 10 0 0">
                                 <Grid.RowDefinitions>
@@ -333,7 +372,7 @@
                                 <!-- Метрика 1: Всего за 20 недель -->
                                 <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 8" Margin="0 0 6 6">
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource Dash_Total20Weeks}" FontSize="10" Foreground="#6B7280" />
+                                        <TextBlock Text="{DynamicResource Dash_Total20Weeks}" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" />
                                         <TextBlock Text="{Binding HeatmapTotalTimeText}" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 2 0 0" />
                                     </StackPanel>
                                 </Border>
@@ -341,7 +380,7 @@
                                 <!-- Метрика 2: Регулярность -->
                                 <Border Grid.Row="0" Grid.Column="1" Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 8" Margin="6 0 0 6">
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource Dash_Regularity}" FontSize="10" Foreground="#6B7280" />
+                                        <TextBlock Text="{DynamicResource Dash_Regularity}" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" />
                                         <TextBlock Text="{Binding HeatmapConsistencyText}" FontSize="13" FontWeight="Bold" Foreground="#10B981" Margin="0 2 0 0" />
                                     </StackPanel>
                                 </Border>
@@ -349,7 +388,7 @@
                                 <!-- Метрика 3: В активный день -->
                                 <Border Grid.Row="1" Grid.Column="0" Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 8" Margin="0 6 6 0">
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource Dash_InActiveDay}" FontSize="10" Foreground="#6B7280" />
+                                        <TextBlock Text="{DynamicResource Dash_InActiveDay}" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" />
                                         <TextBlock Text="{Binding HeatmapAvgDayText}" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" Margin="0 2 0 0" />
                                     </StackPanel>
                                 </Border>
@@ -357,7 +396,7 @@
                                 <!-- Метрика 4: Рекордный день -->
                                 <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 8" Margin="6 6 0 0">
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource Dash_BestDay}" FontSize="10" Foreground="#6B7280" />
+                                        <TextBlock Text="{DynamicResource Dash_BestDay}" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" />
                                         <TextBlock Text="{Binding HeatmapBestDayText}" FontSize="13" FontWeight="Bold" Foreground="#F59E0B" Margin="0 2 0 0" />
                                     </StackPanel>
                                 </Border>
@@ -463,7 +502,7 @@
                     </ItemsControl>
 
                     <TextBlock Text="{DynamicResource Dash_NoAppsData}"
-                               Foreground="#6B7280" FontSize="13" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" TextWrapping="Wrap"
                                Margin="0 8 0 0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">

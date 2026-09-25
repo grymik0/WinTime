@@ -74,6 +74,7 @@ public sealed class ThemeService
         Color textPrimaryColor;
         Color textSecondaryColor;
         Color textMutedColor;
+        Color modalDimmerColor;
 
         switch (theme)
         {
@@ -88,6 +89,7 @@ public sealed class ThemeService
                 textPrimaryColor    = (Color)ColorConverter.ConvertFromString("#111827");
                 textSecondaryColor  = (Color)ColorConverter.ConvertFromString("#4B5563");
                 textMutedColor      = (Color)ColorConverter.ConvertFromString("#9CA3AF");
+                modalDimmerColor    = Color.FromArgb(60, 0, 0, 0);
                 break;
 
             case AppThemeMode.Midnight:
@@ -101,6 +103,7 @@ public sealed class ThemeService
                 textPrimaryColor    = (Color)ColorConverter.ConvertFromString("#FFFFFF");
                 textSecondaryColor  = (Color)ColorConverter.ConvertFromString("#9CA3AF");
                 textMutedColor      = (Color)ColorConverter.ConvertFromString("#6B7280");
+                modalDimmerColor    = Color.FromArgb(160, 0, 0, 0);
                 break;
 
             case AppThemeMode.Dark:
@@ -115,6 +118,7 @@ public sealed class ThemeService
                 textPrimaryColor    = (Color)ColorConverter.ConvertFromString("#FFFFFF");
                 textSecondaryColor  = (Color)ColorConverter.ConvertFromString("#9CA3AF");
                 textMutedColor      = (Color)ColorConverter.ConvertFromString("#6B7280");
+                modalDimmerColor    = Color.FromArgb(130, 0, 0, 0);
                 break;
         }
 
@@ -167,6 +171,7 @@ public sealed class ThemeService
         res["TextMutedBrush"]      = new SolidColorBrush(textMutedColor);
         res["AccentBrush"]         = new SolidColorBrush(accentColor);
         res["AccentHoverBrush"]    = new SolidColorBrush(accentHoverColor);
+        res["ModalDimmerBrush"]    = new SolidColorBrush(modalDimmerColor);
 
         ThemeChanged?.Invoke(this, EventArgs.Empty);
     }

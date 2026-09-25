@@ -88,10 +88,59 @@ public partial class App : Application
 
         SetupTrayIcon();
 
+        _mainWindow = new MainWindow();
+        MainWindow = _mainWindow;
+        _mainWindow.Show();
+
         InitDesktopWidget(settings);
 
-        _mainWindow = new MainWindow();
-        _mainWindow.Show();
+        _ = CheckWeeklyRecapPromptAsync(settings);
+    }
+
+    private async Task CheckWeeklyRecapPromptAsync(SettingsService settings)
+    {
+        try
+        {
+            DateTime today = DateTime.Today;
+            int diff = (int)today.DayOfWeek - (int)DayOfWeek.Monday;
+            if (diff < 0) diff += 7;
+            DateTime weekMonday = today.AddDays(-diff);
+            string currentWeekKey = weekMonday.ToString("yyyy-MM-dd");
+
+            if (settings.LastWeeklyRecapNotifiedWeek == currentWeekKey)
+                return;
+
+            // Allow the main window to settle
+            await Task.Delay(1500);
+
+            // Check if there is meaningful activity in the past 7 days (>= 30 mins)
+            var (activeSec, _) = await AppServices.ActivityRepo.GetTotalsAsync(today.AddDays(-7), today.AddDays(1));
+            if (activeSec < 1800)
+                return;
+
+            // Record this week so the prompt is never shown again this week
+            settings.LastWeeklyRecapNotifiedWeek = currentWeekKey;
+
+            var dlg = new WeeklyRecapPromptDialog
+            {
+                Owner = _mainWindow
+            };
+
+            dlg.ShowDialog();
+
+            if (dlg.UserWantsToViewRecap)
+            {
+                var vm = new ViewModels.WeeklyRecapViewModel(AppServices.ActivityRepo, AppServices.Localization);
+                await vm.LoadAsync();
+                var recapWnd = new WeeklyRecapWindow(vm)
+                {
+                    Owner = _mainWindow,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                recapWnd.ShowDialog();
+            }
+        }
+        catch { }
     }
 
     private void InitDesktopWidget(SettingsService settings)

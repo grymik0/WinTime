@@ -20,6 +20,7 @@ public partial class FirstRunDialog : Window
         _settings = settings;
         _localization = localization;
         InitializeComponent();
+        Core.AnimationHelper.AttachWindowEntrance(this);
         UpdateLanguageButtonStyles();
     }
 

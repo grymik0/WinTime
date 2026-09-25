@@ -11,6 +11,8 @@ public sealed class MainWindowViewModel : BaseViewModel
     private readonly DashboardViewModel          _dashboard;
     private readonly ProcessesViewModel          _processes;
     private readonly ApplicationsViewModel       _applications;
+    private readonly GoalsViewModel              _goals;
+    private readonly ProjectsViewModel           _projects;
     private readonly ProfileViewModel            _profile;
     private readonly DesktopWidgetViewModel      _widget;
     private readonly ThemeCustomizationViewModel _theme;
@@ -23,8 +25,32 @@ public sealed class MainWindowViewModel : BaseViewModel
     public object? CurrentView
     {
         get => _currentView;
-        private set => SetProperty(ref _currentView, value);
+        private set
+        {
+            if (SetProperty(ref _currentView, value))
+            {
+                OnPropertyChanged(nameof(IsDashboardActive));
+                OnPropertyChanged(nameof(IsProcessesActive));
+                OnPropertyChanged(nameof(IsApplicationsActive));
+                OnPropertyChanged(nameof(IsGoalsActive));
+                OnPropertyChanged(nameof(IsProjectsActive));
+                OnPropertyChanged(nameof(IsProfileActive));
+                OnPropertyChanged(nameof(IsWidgetActive));
+                OnPropertyChanged(nameof(IsThemeActive));
+                OnPropertyChanged(nameof(IsSettingsActive));
+            }
+        }
     }
+
+    public bool IsDashboardActive    => CurrentView == _dashboard;
+    public bool IsProcessesActive    => CurrentView == _processes;
+    public bool IsApplicationsActive => CurrentView == _applications;
+    public bool IsGoalsActive        => CurrentView == _goals;
+    public bool IsProjectsActive     => CurrentView == _projects;
+    public bool IsProfileActive      => CurrentView == _profile;
+    public bool IsWidgetActive       => CurrentView == _widget;
+    public bool IsThemeActive        => CurrentView == _theme;
+    public bool IsSettingsActive     => CurrentView == _settings;
 
     public bool IsTracking
     {
@@ -39,6 +65,8 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateDashboardCommand    { get; }
     public ICommand NavigateProcessesCommand    { get; }
     public ICommand NavigateApplicationsCommand { get; }
+    public ICommand NavigateGoalsCommand        { get; }
+    public ICommand NavigateProjectsCommand     { get; }
     public ICommand NavigateProfileCommand      { get; }
     public ICommand NavigateWidgetCommand       { get; }
     public ICommand NavigateThemeCommand        { get; }
@@ -49,6 +77,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         DashboardViewModel          dashboard,
         ProcessesViewModel          processes,
         ApplicationsViewModel       applications,
+        GoalsViewModel              goals,
+        ProjectsViewModel           projects,
         ProfileViewModel            profile,
         DesktopWidgetViewModel      widget,
         ThemeCustomizationViewModel theme,
@@ -58,6 +88,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         _dashboard    = dashboard;
         _processes    = processes;
         _applications = applications;
+        _goals        = goals;
+        _projects     = projects;
         _profile      = profile;
         _widget       = widget;
         _theme        = theme;
@@ -82,6 +114,18 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             CurrentView = _applications;
             _ = _applications.LoadAsync();
+        });
+
+        NavigateGoalsCommand = new RelayCommand(() =>
+        {
+            CurrentView = _goals;
+            _ = _goals.LoadAsync();
+        });
+
+        NavigateProjectsCommand = new RelayCommand(() =>
+        {
+            CurrentView = _projects;
+            _ = _projects.LoadDataAsync();
         });
 
         NavigateProfileCommand = new RelayCommand(() =>

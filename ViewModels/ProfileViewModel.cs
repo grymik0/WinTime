@@ -12,6 +12,7 @@ public sealed class ProfileViewModel : BaseViewModel
     private readonly ActivityRepository  _activityRepo;
     private readonly ActivityTracker     _tracker;
     private readonly LocalizationService _localization;
+    private readonly DailyQuestEngine    _questEngine;
 
     private int _userLevel = 1;
     private string _rankTitle = "🌱 Новичок";
@@ -24,6 +25,13 @@ public sealed class ProfileViewModel : BaseViewModel
     private string _activeDaysFormatted = "0 дн.";
     private string _unlockedAchievementsCountText = "0 / 12";
 
+    private int _currentStreak;
+    private int _bestStreak;
+    private bool _isActiveToday;
+    private string _streakStatusHint = string.Empty;
+    private long _bonusXp;
+
+    private ObservableCollection<DailyQuest> _dailyQuests = [];
     private ObservableCollection<AchievementItem> _achievements = [];
 
     public int UserLevel
@@ -80,6 +88,42 @@ public sealed class ProfileViewModel : BaseViewModel
         private set => SetProperty(ref _unlockedAchievementsCountText, value);
     }
 
+    public int CurrentStreak
+    {
+        get => _currentStreak;
+        private set => SetProperty(ref _currentStreak, value);
+    }
+
+    public int BestStreak
+    {
+        get => _bestStreak;
+        private set => SetProperty(ref _bestStreak, value);
+    }
+
+    public bool IsActiveToday
+    {
+        get => _isActiveToday;
+        private set => SetProperty(ref _isActiveToday, value);
+    }
+
+    public string StreakStatusHint
+    {
+        get => _streakStatusHint;
+        private set => SetProperty(ref _streakStatusHint, value);
+    }
+
+    public long BonusXp
+    {
+        get => _bonusXp;
+        private set => SetProperty(ref _bonusXp, value);
+    }
+
+    public ObservableCollection<DailyQuest> DailyQuests
+    {
+        get => _dailyQuests;
+        private set => SetProperty(ref _dailyQuests, value);
+    }
+
     public ObservableCollection<AchievementItem> Achievements
     {
         get => _achievements;
@@ -87,15 +131,32 @@ public sealed class ProfileViewModel : BaseViewModel
     }
 
     public ICommand RefreshCommand { get; }
+    public ICommand ClaimQuestCommand { get; }
 
-    public ProfileViewModel(ActivityRepository activityRepo, ActivityTracker tracker, LocalizationService localization)
+    public ProfileViewModel(
+        ActivityRepository activityRepo,
+        ActivityTracker tracker,
+        LocalizationService localization,
+        DailyQuestEngine questEngine)
     {
         _activityRepo = activityRepo;
         _tracker      = tracker;
         _localization = localization;
+        _questEngine  = questEngine;
 
         _localization.LanguageChanged += async (_, _) => await LoadAsync();
         RefreshCommand = new RelayCommand(async () => await LoadAsync());
+        ClaimQuestCommand = new RelayCommand<DailyQuest>(async q => await ClaimQuestAsync(q));
+    }
+
+    private async Task ClaimQuestAsync(DailyQuest? quest)
+    {
+        if (quest == null || !quest.CanClaim) return;
+        bool claimed = await _questEngine.ClaimRewardAsync(quest);
+        if (claimed)
+        {
+            await LoadAsync();
+        }
     }
 
     public async Task LoadAsync()
@@ -107,8 +168,22 @@ public sealed class ProfileViewModel : BaseViewModel
             var (lifetimeActive, maxDaySec, activeDays, totalClicks, totalDistMeters) =
                 await _activityRepo.GetLifetimeStatsAsync();
 
-            // 1 minute of activity = 10 XP (600 XP/hr)
-            long totalXp = (lifetimeActive / 60) * 10;
+            var streakInfo = await _questEngine.CalculateStreakAsync();
+            CurrentStreak  = streakInfo.CurrentStreak;
+            BestStreak     = streakInfo.BestStreak;
+            IsActiveToday  = streakInfo.IsActiveToday;
+            BonusXp        = streakInfo.BonusXp;
+
+            bool isEn = _localization.CurrentLanguage == AppLanguage.En;
+            StreakStatusHint = IsActiveToday
+                ? (isEn ? "Activity counted for today ✓" : "Серия зачтена на сегодня ✓")
+                : (isEn ? "Be active for 5+ min today to keep the streak!" : "Проведите хотя бы 5 минут за ПК сегодня, чтобы продлить серию!");
+
+            var quests = await _questEngine.EnsureAndEvaluateTodayQuestsAsync();
+            DailyQuests = new ObservableCollection<DailyQuest>(quests);
+
+            // 1 minute of activity = 10 XP (600 XP/hr) + Bonus XP from quests
+            long totalXp = (lifetimeActive / 60) * 10 + BonusXp;
             CurrentXp = totalXp;
 
             // Level progression: each level requires 1000 XP
@@ -124,7 +199,6 @@ public sealed class ProfileViewModel : BaseViewModel
             RankTitle = GetRankTitle(level, _localization.CurrentLanguage);
 
             var ts = TimeSpan.FromSeconds(lifetimeActive);
-            bool isEn = _localization.CurrentLanguage == AppLanguage.En;
             TotalTimeFormatted = isEn
                 ? $"{(int)ts.TotalHours}h {ts.Minutes}m"
                 : $"{(int)ts.TotalHours} ч {ts.Minutes} м";

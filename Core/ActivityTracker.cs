@@ -14,6 +14,7 @@ public sealed class ActivityTracker : IAsyncDisposable
     private readonly ApplicationRepository _appRepo;
     private readonly ActivityRepository    _activityRepo;
     private readonly UptimeRepository      _uptimeRepo;
+    private readonly ProjectRepository?    _projectRepo;
     private readonly InMemoryBuffer        _buffer;
     private readonly SettingsService       _settings;
 
@@ -70,13 +71,15 @@ public sealed class ActivityTracker : IAsyncDisposable
         ActivityRepository    activityRepo,
         UptimeRepository      uptimeRepo,
         InMemoryBuffer        buffer,
-        SettingsService       settings)
+        SettingsService       settings,
+        ProjectRepository?    projectRepo = null)
     {
         _appRepo      = appRepo;
         _activityRepo = activityRepo;
         _uptimeRepo   = uptimeRepo;
         _buffer       = buffer;
         _settings     = settings;
+        _projectRepo  = projectRepo;
     }
 
     public (long Clicks, double DistanceMeters) GetTodayMouseMetrics()
@@ -368,7 +371,16 @@ public sealed class ActivityTracker : IAsyncDisposable
         {
             var sessions = _buffer.Flush();
             if (sessions.Count > 0)
+            {
+                if (_projectRepo is not null)
+                {
+                    foreach (var s in sessions)
+                    {
+                        s.ProjectId = _projectRepo.MatchProjectId(s.AppId, s.WindowTitle);
+                    }
+                }
                 await _activityRepo.InsertBatchAsync(sessions);
+            }
 
             List<(int AppId, int Seconds)> uptimeList;
             lock (_uptimeLock)

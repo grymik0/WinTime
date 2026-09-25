@@ -109,8 +109,26 @@ public sealed class SettingsService
 
     public bool WidgetCompactMode
     {
-        get => _s.WidgetCompactMode;
-        set { _s.WidgetCompactMode = value; Save(); }
+        get => _s.WidgetDisplayMode == 1;
+        set { _s.WidgetDisplayMode = value ? 1 : 0; Save(); }
+    }
+
+    public int WidgetDisplayMode
+    {
+        get => _s.WidgetDisplayMode;
+        set { _s.WidgetDisplayMode = value; Save(); }
+    }
+
+    public bool WidgetShowStreak
+    {
+        get => _s.WidgetShowStreak;
+        set { _s.WidgetShowStreak = value; Save(); }
+    }
+
+    public bool WidgetShowLimit
+    {
+        get => _s.WidgetShowLimit;
+        set { _s.WidgetShowLimit = value; Save(); }
     }
 
     public string ThemeMode
@@ -131,6 +149,18 @@ public sealed class SettingsService
         set { _s.Language = value; Save(); }
     }
 
+    public bool BedtimeReminderEnabled
+    {
+        get => _s.BedtimeReminderEnabled;
+        set { _s.BedtimeReminderEnabled = value; Save(); }
+    }
+
+    public string LastWeeklyRecapNotifiedWeek
+    {
+        get => _s.LastWeeklyRecapNotifiedWeek;
+        set { _s.LastWeeklyRecapNotifiedWeek = value; Save(); }
+    }
+
     // Load / Save
 
     public void Load()
@@ -141,6 +171,10 @@ public sealed class SettingsService
             {
                 var json = File.ReadAllText(SettingsPath);
                 _s = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                if (_s.WidgetCompactMode && _s.WidgetDisplayMode == 0)
+                {
+                    _s.WidgetDisplayMode = 1;
+                }
             }
         }
         catch
@@ -178,9 +212,14 @@ public sealed class SettingsService
         public bool WidgetTopmost { get; set; } = true;
         public bool WidgetShowSession { get; set; } = true;
         public bool WidgetCompactMode { get; set; } = false;
+        public int WidgetDisplayMode { get; set; } = 0;
+        public bool WidgetShowStreak { get; set; } = true;
+        public bool WidgetShowLimit { get; set; } = true;
         public string ThemeMode { get; set; } = "Dark";
         public string AccentColor { get; set; } = "Indigo";
         public string Language { get; set; } = "Ru";
+        public bool BedtimeReminderEnabled { get; set; } = true;
+        public string LastWeeklyRecapNotifiedWeek { get; set; } = string.Empty;
     }
 }
 

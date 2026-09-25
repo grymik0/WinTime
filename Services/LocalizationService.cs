@@ -111,6 +111,8 @@ public sealed class LocalizationService
         _ruStrings["Nav_Dashboard"]        = "📊   Дашборд";
         _ruStrings["Nav_Processes"]        = "💻   Процессы";
         _ruStrings["Nav_Applications"]     = "🗂   Приложения";
+        _ruStrings["Nav_Goals"]            = "🎯   Цели и Лимиты";
+        _ruStrings["Nav_Projects"]         = "💼   Проекты";
         _ruStrings["Nav_Profile"]          = "🏆   Профиль";
         _ruStrings["Nav_Widget"]           = "📌   Виджет";
         _ruStrings["Nav_Theme"]            = "🎨   Оформление";
@@ -123,6 +125,10 @@ public sealed class LocalizationService
         _ruStrings["Common_Today"]         = "Сегодня";
         _ruStrings["Common_Week"]          = "Неделя";
         _ruStrings["Common_Month"]         = "Месяц";
+        _ruStrings["Window_Minimize"]      = "Свернуть";
+        _ruStrings["Window_Maximize"]      = "Развернуть";
+        _ruStrings["Window_Restore"]       = "Восстановить";
+        _ruStrings["Window_Close"]         = "Закрыть в трей";
 
         // Dashboard
         _ruStrings["Dash_Title"]           = "Дашборд";
@@ -181,6 +187,71 @@ public sealed class LocalizationService
         _ruStrings["Apps_ColCategory"]     = "Категория";
         _ruStrings["Apps_ColBlacklist"]    = "Не отслеживать";
 
+        // Goals & Limits View
+        _ruStrings["Goals_Title"]          = "Ежедневные цели и лимиты";
+        _ruStrings["Goals_Subtitle"]       = "Установите дневную норму времени для игр или приложений с контролем превышения";
+        _ruStrings["Goals_BtnAdd"]         = "➕  Установить лимит";
+        _ruStrings["Goals_EmptyTitle"]     = "Лимиты ещё не установлены";
+        _ruStrings["Goals_EmptyDesc"]      = "Нажмите «Установить лимит», чтобы ограничить время в играх или приложениях.";
+        _ruStrings["Goals_ColApp"]         = "Приложение";
+        _ruStrings["Goals_ColLimit"]       = "Лимит в день";
+        _ruStrings["Goals_ColToday"]       = "Сегодня потрачено";
+        _ruStrings["Goals_ColProgress"]    = "Прогресс";
+        _ruStrings["Goals_ColAction"]      = "Действие";
+        _ruStrings["Goals_ColStatus"]      = "Статус";
+        _ruStrings["Goals_DialogTitle"]    = "Настройка лимита времени";
+        _ruStrings["Goals_DialogApp"]      = "Выберите приложение:";
+        _ruStrings["Goals_DialogHours"]    = "Часов:";
+        _ruStrings["Goals_DialogMins"]     = "Минут:";
+        _ruStrings["Goals_DialogAction"]   = "При исчерпании лимита:";
+        _ruStrings["Goals_ActionNotify"]   = "🔔 Уведомлять каждые 3 минуты";
+        _ruStrings["Goals_ActionClose"]    = "🛑 Закрывать процесс (с предупреждением 60 сек)";
+        _ruStrings["Goals_BtnSave"]        = "Сохранить";
+        _ruStrings["Goals_BtnCancel"]      = "Отмена";
+        _ruStrings["Goals_DeleteConfirm"]  = "Удалить этот лимит?";
+
+        // Projects View & Dialogs
+        _ruStrings["Projects_Title"]               = "Проекты и тегирование";
+        _ruStrings["Projects_Subtitle"]            = "Автоматический учёт времени по проектам, клиентам и задачам";
+        _ruStrings["Projects_ReapplyBtn"]          = "🔄  Применить ко всей истории";
+        _ruStrings["Projects_NewProjectBtn"]       = "➕  Новый проект";
+        _ruStrings["Projects_PeriodToday"]         = "Сегодня";
+        _ruStrings["Projects_PeriodWeek"]          = "Неделя";
+        _ruStrings["Projects_PeriodMonth"]         = "Месяц";
+        _ruStrings["Projects_PeriodAllTime"]       = "За всё время";
+        _ruStrings["Projects_CardTime"]            = "⏱  Проектное время";
+        _ruStrings["Projects_CardTopProject"]      = "🏆  Главный проект";
+        _ruStrings["Projects_CardCoverage"]        = "📊  Охват времени";
+        _ruStrings["Projects_CardCoverageHint"]    = "времени в проектах";
+        _ruStrings["Projects_CardUnassigned"]      = "💤  Вне проектов";
+        _ruStrings["Projects_CardUnassignedHint"]  = "неразмеченные окна";
+        _ruStrings["Projects_AddRule"]             = "➕ Правило";
+        _ruStrings["Projects_EditProject"]         = "Редактировать проект";
+        _ruStrings["Projects_DeleteProject"]       = "Удалить проект";
+        _ruStrings["Projects_EmptyTitle"]          = "Проекты пока не созданы";
+        _ruStrings["Projects_EmptyDesc"]           = "Создайте проект и добавьте правила (например, Visual Studio или заголовок окна 'WinTime'), чтобы система автоматически вела учёт времени по вашим задачам.";
+        _ruStrings["Projects_CreateFirstBtn"]      = "➕  Создать первый проект";
+        _ruStrings["Projects_DeleteConfirm"]       = "Удалить проект «{0}»?\nВсе привязанные правила будут удалены, а время вернется в нераспределенное.";
+        _ruStrings["Projects_DeleteRuleConfirm"]   = "Удалить правило «{0}»?";
+        _ruStrings["Projects_AppliedNotification"] = "Правила успешно применены ко всем прошлым записям активности!";
+        _ruStrings["Projects_CountFormat"]         = "{0} проектов · {1} правил";
+        _ruStrings["ProjectDlg_TitleNew"]          = "Новый проект";
+        _ruStrings["ProjectDlg_TitleEdit"]         = "Редактировать проект";
+        _ruStrings["ProjectDlg_Name"]              = "Название проекта:";
+        _ruStrings["ProjectDlg_Desc"]              = "Описание (необязательно):";
+        _ruStrings["ProjectDlg_Icon"]              = "Иконка проекта:";
+        _ruStrings["ProjectDlg_Color"]             = "Цвет проекта:";
+        _ruStrings["ProjectDlg_BtnCancel"]         = "Отмена";
+        _ruStrings["ProjectDlg_BtnSave"]           = "Сохранить";
+        _ruStrings["ProjectDlg_NameRequired"]      = "Введите название проекта.";
+        _ruStrings["RuleDlg_Title"]                = "🏷️  Правило привязки активности";
+        _ruStrings["RuleDlg_App"]                  = "Приложение:";
+        _ruStrings["RuleDlg_Keyword"]              = "Слово или текст в заголовке окна (необязательно):";
+        _ruStrings["RuleDlg_Hint"]                 = "💡 Подсказка: можно привязать всю программу целиком (например, Figma) либо только вкладки/окна с определенным словом (например, 'WinTime' в Chrome или VS).";
+        _ruStrings["RuleDlg_BtnAdd"]               = "Добавить правило";
+        _ruStrings["RuleDlg_AnyApp"]               = "— Любое приложение (по ключевому слову) —";
+        _ruStrings["RuleDlg_AppOrKeywordRequired"] = "Выберите приложение или укажите ключевое слово для правила.";
+
         // Profile View
         _ruStrings["Profile_Title"]        = "Профиль и Достижения";
         _ruStrings["Profile_Subtitle"]     = "Ваш прогресс активности, уровни опыта и разблокированные награды";
@@ -190,6 +261,16 @@ public sealed class LocalizationService
         _ruStrings["Profile_Achievements"] = "Достижения";
         _ruStrings["Profile_Progress"]     = "Прогресс уровня";
         _ruStrings["Profile_AllAchList"]   = "🏆  Все достижения";
+        _ruStrings["Profile_StreakTitle"]  = "🔥  Серия активности";
+        _ruStrings["Profile_CurrentStreak"]= "Текущая серия";
+        _ruStrings["Profile_BestStreak"]   = "Рекорд серии";
+        _ruStrings["Profile_StreakDays"]   = "дн.";
+        _ruStrings["Profile_StreakActiveToday"] = "Зачтено сегодня ✓";
+        _ruStrings["Profile_StreakPendingToday"] = "Проведите еще немного времени за ПК, чтобы продлить серию!";
+        _ruStrings["Profile_DailyQuestsTitle"] = "🎯  Ежедневные квесты";
+        _ruStrings["Profile_DailyQuestsSubtitle"] = "Выполняйте задания каждый день и получайте бонусный опыт (XP)";
+        _ruStrings["Profile_QuestClaim"]   = "🎁 Забрать";
+        _ruStrings["Profile_QuestClaimed"] = "Получено ✓";
 
         // Desktop Widget Settings View
         _ruStrings["Widget_Title"]         = "Виджет на рабочий стол";
@@ -202,6 +283,10 @@ public sealed class LocalizationService
         _ruStrings["Widget_BtnDisable"]    = "Выключить виджет";
         _ruStrings["Widget_CompactBtn"]    = "📐  Компактный вид";
         _ruStrings["Widget_ExpandedBtn"]   = "📖  Развёрнутый вид";
+        _ruStrings["Widget_ModeSection"]   = "РЕЖИМ ОТОБРАЖЕНИЯ ВИДЖЕТА";
+        _ruStrings["Widget_ModeStandard"]  = "Стандартный";
+        _ruStrings["Widget_ModeCompact"]   = "Компактный";
+        _ruStrings["Widget_ModeMicro"]     = "Микро-точка";
         _ruStrings["Widget_ResetPos"]      = "📍  Сбросить позицию";
         _ruStrings["Widget_ResetPosTip"]   = "Вернуть виджет в правый верхний угол экрана";
         _ruStrings["Widget_SectionBehavior"] = "ПОВЕДЕНИЕ И ВЗАИМОДЕЙСТВИЕ";
@@ -216,6 +301,10 @@ public sealed class LocalizationService
         _ruStrings["Widget_ShowTimeDesc"]  = "Общее время активного использования компьютера";
         _ruStrings["Widget_ShowSession"]   = "Таймер непрерывной текущей сессии";
         _ruStrings["Widget_ShowSessionDesc"] = "Время непрерывной работы без отдыха (сбрасывается при уходе в AFK)";
+        _ruStrings["Widget_ShowStreak"]    = "Серия активности (стрик 🔥)";
+        _ruStrings["Widget_ShowStreakDesc"]= "Текущее количество дней активности подряд";
+        _ruStrings["Widget_ShowLimit"]     = "Лимит времени активной программы";
+        _ruStrings["Widget_ShowLimitDesc"] = "Показывать остаток времени, если на программу установлен лимит";
         _ruStrings["Widget_ShowLevel"]     = "Уровень профиля и опыт (XP)";
         _ruStrings["Widget_ShowLevelDesc"] = "Ранг, текущий уровень и прогресс до следующего уровня";
         _ruStrings["Widget_ShowMouse"]     = "Активность мыши";
@@ -230,7 +319,12 @@ public sealed class LocalizationService
         _ruStrings["Widget_CurSession"]    = "Текущая сессия";
         _ruStrings["Widget_TipExpand"]     = "Развернуть полный вид";
         _ruStrings["Widget_TipCollapse"]   = "Свернуть в компактную полоску";
+        _ruStrings["Widget_TipMicro"]      = "Свернуть в микро-пилюлю";
+        _ruStrings["Widget_TipStandard"]   = "Развернуть полностью";
         _ruStrings["Widget_TipHide"]       = "Скрыть виджет";
+        _ruStrings["Widget_LimitRemaining"]= "Осталось: {0}";
+        _ruStrings["Widget_LimitExceeded"] = "Лимит исчерпан!";
+        _ruStrings["Widget_MicroHint"]     = "Двойной клик — развернуть, зажмите — переместить";
 
         // Settings View
         _ruStrings["Settings_Title"]       = "Настройки";
@@ -241,6 +335,9 @@ public sealed class LocalizationService
         _ruStrings["Settings_AfkHint"]     = "Если в течение этого времени нет ввода с мыши/клавиатуры — время считается AFK.";
         _ruStrings["Settings_SectionSystem"] = "СИСТЕМА";
         _ruStrings["Settings_LaunchStartup"] = "Запускать WinTime при старте Windows";
+        _ruStrings["Settings_BedtimeReminder"] = "Умные рекомендации ко сну";
+        _ruStrings["Settings_BedtimeReminderHint"] = "Напоминание за 1 час до привычного времени отбоя (на основе графика за последние недели)";
+        _ruStrings["Settings_BedtimeTest"] = "Проверить";
         _ruStrings["Settings_SectionDb"]   = "БАЗА ДАННЫХ";
         _ruStrings["Settings_DbPath"]      = "Путь к файлу базы данных";
         _ruStrings["Settings_DbBrowse"]    = "Обзор…";
@@ -250,6 +347,37 @@ public sealed class LocalizationService
         _ruStrings["Settings_SectionDanger"] = "ОПАСНАЯ ЗОНА";
         _ruStrings["Settings_ClearHistory"]= "🗑  Очистить историю активности";
         _ruStrings["Settings_ClearHint"]   = "Удаляет все записи об активности. Список приложений остаётся.";
+
+        // Weekly Recap
+        _ruStrings["Recap_BtnTitle"]       = "📅  Итоги недели";
+        _ruStrings["Recap_Title"]          = "✨  Еженедельный дайджест";
+        _ruStrings["Recap_Subtitle"]       = "Сводка вашей продуктивности за последние 7 дней";
+        _ruStrings["Recap_ScreenTime"]     = "Экранное время за неделю";
+        _ruStrings["Recap_DailyAvg"]       = "в среднем в день";
+        _ruStrings["Recap_TopApps"]        = "🏆  Топ приложений недели";
+        _ruStrings["Recap_RhythmTitle"]    = "🌙  Ритм сна и отдыха";
+        _ruStrings["Recap_AvgBedtime"]     = "Обычный отбой";
+        _ruStrings["Recap_AvgWakeup"]      = "Обычный подъём";
+        _ruStrings["Recap_AvgRest"]        = "Ночной сон";
+        _ruStrings["Recap_PeakDay"]        = "🚀  Самый активный день";
+        _ruStrings["Recap_MouseTitle"]     = "🖱️  Активность мыши";
+        _ruStrings["Recap_Clicks"]         = "кликов";
+        _ruStrings["Recap_Distance"]       = "пройденная дистанция";
+        _ruStrings["Recap_BtnClose"]       = "Отлично";
+        _ruStrings["Recap_PersonaSection"] = "🎯  Архетип недели";
+        _ruStrings["Recap_DynamicsSection"]= "📊  Динамика приложений к прошлой неделе";
+        _ruStrings["Recap_WorkVsWeekend"]  = "⚖️  Будни против Выходных";
+        _ruStrings["Recap_Workdays"]       = "Будни";
+        _ruStrings["Recap_Weekends"]       = "Выходные";
+        _ruStrings["Recap_GoldenHour"]     = "⏰  Пиковое время суток";
+        _ruStrings["Recap_BtnCopy"]        = "📋  Скопировать карточку";
+        _ruStrings["Recap_Copied"]         = "✓  Скопировано!";
+        _ruStrings["Recap_PromptTitle"]    = "✨  Итоги недели готовы!";
+        _ruStrings["Recap_PromptDesc"]     = "Сформирован ваш персональный дайджест продуктивности за прошедшие дни. Посмотрим, как прошла неделя?";
+        _ruStrings["Recap_PromptView"]     = "📊  Посмотреть итоги";
+        _ruStrings["Recap_PromptDismiss"]  = "Не интересно";
+        _ruStrings["Recap_CurrentWeekTab"] = "Текущая неделя";
+        _ruStrings["Recap_PreviousWeekTab"]= "Прошлая неделя";
 
         // Theme View
         _ruStrings["Theme_Title"]          = "Оформление и темы";
@@ -294,6 +422,8 @@ public sealed class LocalizationService
         _enStrings["Nav_Dashboard"]        = "📊   Dashboard";
         _enStrings["Nav_Processes"]        = "💻   Processes";
         _enStrings["Nav_Applications"]     = "🗂   Applications";
+        _enStrings["Nav_Goals"]            = "🎯   Goals & Limits";
+        _enStrings["Nav_Projects"]         = "💼   Projects";
         _enStrings["Nav_Profile"]          = "🏆   Profile";
         _enStrings["Nav_Widget"]           = "📌   Widget";
         _enStrings["Nav_Theme"]            = "🎨   Appearance";
@@ -306,6 +436,10 @@ public sealed class LocalizationService
         _enStrings["Common_Today"]         = "Today";
         _enStrings["Common_Week"]          = "Week";
         _enStrings["Common_Month"]         = "Month";
+        _enStrings["Window_Minimize"]      = "Minimize";
+        _enStrings["Window_Maximize"]      = "Maximize";
+        _enStrings["Window_Restore"]       = "Restore";
+        _enStrings["Window_Close"]         = "Close to tray";
 
         // Dashboard
         _enStrings["Dash_Title"]           = "Dashboard";
@@ -364,6 +498,71 @@ public sealed class LocalizationService
         _enStrings["Apps_ColCategory"]     = "Category";
         _enStrings["Apps_ColBlacklist"]    = "Do not track";
 
+        // Goals & Limits View
+        _enStrings["Goals_Title"]          = "Daily Goals & Limits";
+        _enStrings["Goals_Subtitle"]       = "Set daily time quotas for games or apps with over-limit enforcement";
+        _enStrings["Goals_BtnAdd"]         = "➕  Set New Limit";
+        _enStrings["Goals_EmptyTitle"]     = "No Limits Configured Yet";
+        _enStrings["Goals_EmptyDesc"]      = "Click \"Set New Limit\" to restrict daily time spent in gaming or applications.";
+        _enStrings["Goals_ColApp"]         = "Application";
+        _enStrings["Goals_ColLimit"]       = "Daily Quota";
+        _enStrings["Goals_ColToday"]       = "Used Today";
+        _enStrings["Goals_ColProgress"]    = "Progress";
+        _enStrings["Goals_ColAction"]      = "Action";
+        _enStrings["Goals_ColStatus"]      = "Status";
+        _enStrings["Goals_DialogTitle"]    = "Configure Time Limit";
+        _enStrings["Goals_DialogApp"]      = "Select Application:";
+        _enStrings["Goals_DialogHours"]    = "Hours:";
+        _enStrings["Goals_DialogMins"]     = "Minutes:";
+        _enStrings["Goals_DialogAction"]   = "When limit is exceeded:";
+        _enStrings["Goals_ActionNotify"]   = "🔔 Notify every 3 minutes";
+        _enStrings["Goals_ActionClose"]    = "🛑 Close process (with 60s warning)";
+        _enStrings["Goals_BtnSave"]        = "Save";
+        _enStrings["Goals_BtnCancel"]      = "Cancel";
+        _enStrings["Goals_DeleteConfirm"]  = "Delete this limit?";
+
+        // Projects View & Dialogs
+        _enStrings["Projects_Title"]               = "Projects & Tagging";
+        _enStrings["Projects_Subtitle"]            = "Automatic time allocation by projects, clients, and tasks";
+        _enStrings["Projects_ReapplyBtn"]          = "🔄  Apply to All History";
+        _enStrings["Projects_NewProjectBtn"]       = "➕  New Project";
+        _enStrings["Projects_PeriodToday"]         = "Today";
+        _enStrings["Projects_PeriodWeek"]          = "Week";
+        _enStrings["Projects_PeriodMonth"]         = "Month";
+        _enStrings["Projects_PeriodAllTime"]       = "All Time";
+        _enStrings["Projects_CardTime"]            = "⏱  Project Time";
+        _enStrings["Projects_CardTopProject"]      = "🏆  Top Project";
+        _enStrings["Projects_CardCoverage"]        = "📊  Time Coverage";
+        _enStrings["Projects_CardCoverageHint"]    = "of time in projects";
+        _enStrings["Projects_CardUnassigned"]      = "💤  Unassigned";
+        _enStrings["Projects_CardUnassignedHint"]  = "untagged windows";
+        _enStrings["Projects_AddRule"]             = "➕ Rule";
+        _enStrings["Projects_EditProject"]         = "Edit Project";
+        _enStrings["Projects_DeleteProject"]       = "Delete Project";
+        _enStrings["Projects_EmptyTitle"]          = "No Projects Created Yet";
+        _enStrings["Projects_EmptyDesc"]           = "Create a project and add rules (such as Visual Studio or window title 'WinTime') so the system can automatically allocate time to your tasks.";
+        _enStrings["Projects_CreateFirstBtn"]      = "➕  Create First Project";
+        _enStrings["Projects_DeleteConfirm"]       = "Delete project \"{0}\"?\nAll attached rules will be removed and time returned to unassigned.";
+        _enStrings["Projects_DeleteRuleConfirm"]   = "Delete rule \"{0}\"?";
+        _enStrings["Projects_AppliedNotification"] = "Rules successfully applied to all past activity records!";
+        _enStrings["Projects_CountFormat"]         = "{0} projects · {1} rules";
+        _enStrings["ProjectDlg_TitleNew"]          = "New Project";
+        _enStrings["ProjectDlg_TitleEdit"]         = "Edit Project";
+        _enStrings["ProjectDlg_Name"]              = "Project Name:";
+        _enStrings["ProjectDlg_Desc"]              = "Description (optional):";
+        _enStrings["ProjectDlg_Icon"]              = "Project Icon:";
+        _enStrings["ProjectDlg_Color"]             = "Project Color:";
+        _enStrings["ProjectDlg_BtnCancel"]         = "Cancel";
+        _enStrings["ProjectDlg_BtnSave"]           = "Save";
+        _enStrings["ProjectDlg_NameRequired"]      = "Please enter a project name.";
+        _enStrings["RuleDlg_Title"]                = "🏷️  Activity Assignment Rule";
+        _enStrings["RuleDlg_App"]                  = "Application:";
+        _enStrings["RuleDlg_Keyword"]              = "Keyword or text in window title (optional):";
+        _enStrings["RuleDlg_Hint"]                 = "💡 Tip: You can bind an entire application (e.g. Figma) or only tabs/windows containing a specific keyword (e.g. 'WinTime' in Chrome or VS).";
+        _enStrings["RuleDlg_BtnAdd"]               = "Add Rule";
+        _enStrings["RuleDlg_AnyApp"]               = "— Any application (by keyword) —";
+        _enStrings["RuleDlg_AppOrKeywordRequired"] = "Please select an application or specify a window title keyword.";
+
         // Profile View
         _enStrings["Profile_Title"]        = "Profile & Achievements";
         _enStrings["Profile_Subtitle"]     = "Your activity milestones, XP progression, and unlocked awards";
@@ -373,6 +572,16 @@ public sealed class LocalizationService
         _enStrings["Profile_Achievements"] = "Achievements";
         _enStrings["Profile_Progress"]     = "Level Progression";
         _enStrings["Profile_AllAchList"]   = "🏆  All Achievements";
+        _enStrings["Profile_StreakTitle"]  = "🔥  Activity Streak";
+        _enStrings["Profile_CurrentStreak"]= "Current Streak";
+        _enStrings["Profile_BestStreak"]   = "Best Streak";
+        _enStrings["Profile_StreakDays"]   = "d.";
+        _enStrings["Profile_StreakActiveToday"] = "Completed today ✓";
+        _enStrings["Profile_StreakPendingToday"] = "Spend a little more active time today to keep your streak going!";
+        _enStrings["Profile_DailyQuestsTitle"] = "🎯  Daily Quests";
+        _enStrings["Profile_DailyQuestsSubtitle"] = "Complete daily quests and earn bonus experience (XP)";
+        _enStrings["Profile_QuestClaim"]   = "🎁 Claim";
+        _enStrings["Profile_QuestClaimed"] = "Claimed ✓";
 
         // Desktop Widget Settings View
         _enStrings["Widget_Title"]         = "Desktop Widget";
@@ -385,6 +594,10 @@ public sealed class LocalizationService
         _enStrings["Widget_BtnDisable"]    = "Disable Widget";
         _enStrings["Widget_CompactBtn"]    = "📐  Compact View";
         _enStrings["Widget_ExpandedBtn"]   = "📖  Expanded View";
+        _enStrings["Widget_ModeSection"]   = "WIDGET DISPLAY MODE";
+        _enStrings["Widget_ModeStandard"]  = "Standard";
+        _enStrings["Widget_ModeCompact"]   = "Compact";
+        _enStrings["Widget_ModeMicro"]     = "Micro Pill";
         _enStrings["Widget_ResetPos"]      = "📍  Reset Position";
         _enStrings["Widget_ResetPosTip"]   = "Move widget to top-right screen corner";
         _enStrings["Widget_SectionBehavior"] = "BEHAVIOR & INTERACTION";
@@ -399,6 +612,10 @@ public sealed class LocalizationService
         _enStrings["Widget_ShowTimeDesc"]  = "Total active PC usage today";
         _enStrings["Widget_ShowSession"]   = "Continuous Session Timer";
         _enStrings["Widget_ShowSessionDesc"] = "Time worked continuously without breaks (resets on AFK)";
+        _enStrings["Widget_ShowStreak"]    = "Activity Streak (🔥)";
+        _enStrings["Widget_ShowStreakDesc"]= "Current consecutive active days counter";
+        _enStrings["Widget_ShowLimit"]     = "Active App Limit Timer";
+        _enStrings["Widget_ShowLimitDesc"] = "Show remaining time if a daily limit is configured for the focused app";
         _enStrings["Widget_ShowLevel"]     = "Profile Level & XP";
         _enStrings["Widget_ShowLevelDesc"] = "Rank, current level, and progress to next level";
         _enStrings["Widget_ShowMouse"]     = "Mouse Activity";
@@ -413,7 +630,12 @@ public sealed class LocalizationService
         _enStrings["Widget_CurSession"]    = "Current Session";
         _enStrings["Widget_TipExpand"]     = "Expand to full view";
         _enStrings["Widget_TipCollapse"]   = "Collapse to compact strip";
+        _enStrings["Widget_TipMicro"]      = "Collapse to micro pill";
+        _enStrings["Widget_TipStandard"]   = "Expand to full view";
         _enStrings["Widget_TipHide"]       = "Hide widget";
+        _enStrings["Widget_LimitRemaining"]= "{0} left";
+        _enStrings["Widget_LimitExceeded"] = "Limit exceeded!";
+        _enStrings["Widget_MicroHint"]     = "Double click to expand, drag to move";
 
         // Settings View
         _enStrings["Settings_Title"]       = "Settings";
@@ -424,6 +646,9 @@ public sealed class LocalizationService
         _enStrings["Settings_AfkHint"]     = "Time without mouse/keyboard input before counting as AFK.";
         _enStrings["Settings_SectionSystem"] = "SYSTEM";
         _enStrings["Settings_LaunchStartup"] = "Start WinTime on Windows startup";
+        _enStrings["Settings_BedtimeReminder"] = "Smart Bedtime Recommendations";
+        _enStrings["Settings_BedtimeReminderHint"] = "Reminder 1 hour before your usual bedtime (based on recent weekly rhythm)";
+        _enStrings["Settings_BedtimeTest"] = "Test";
         _enStrings["Settings_SectionDb"]   = "DATABASE";
         _enStrings["Settings_DbPath"]      = "Database file path";
         _enStrings["Settings_DbBrowse"]    = "Browse…";
@@ -433,6 +658,37 @@ public sealed class LocalizationService
         _enStrings["Settings_SectionDanger"] = "DANGER ZONE";
         _enStrings["Settings_ClearHistory"]= "🗑  Clear Activity History";
         _enStrings["Settings_ClearHint"]   = "Permanently clears all activity records. Applications list is kept.";
+
+        // Weekly Recap
+        _enStrings["Recap_BtnTitle"]       = "📅  Weekly Recap";
+        _enStrings["Recap_Title"]          = "✨  Weekly Recap";
+        _enStrings["Recap_Subtitle"]       = "Summary of your PC productivity over the last 7 days";
+        _enStrings["Recap_ScreenTime"]     = "Weekly Screen Time";
+        _enStrings["Recap_DailyAvg"]       = "daily average";
+        _enStrings["Recap_TopApps"]        = "🏆  Top Applications";
+        _enStrings["Recap_RhythmTitle"]    = "🌙  Sleep & Rest Rhythm";
+        _enStrings["Recap_AvgBedtime"]     = "Average Bedtime";
+        _enStrings["Recap_AvgWakeup"]      = "Average Wake-up";
+        _enStrings["Recap_AvgRest"]        = "Night Rest";
+        _enStrings["Recap_PeakDay"]        = "🚀  Peak Activity Day";
+        _enStrings["Recap_MouseTitle"]     = "🖱️  Mouse Activity";
+        _enStrings["Recap_Clicks"]         = "clicks";
+        _enStrings["Recap_Distance"]       = "distance moved";
+        _enStrings["Recap_BtnClose"]       = "Awesome";
+        _enStrings["Recap_PersonaSection"] = "🎯  Weekly Persona";
+        _enStrings["Recap_DynamicsSection"]= "📊  App Dynamics vs Previous Week";
+        _enStrings["Recap_WorkVsWeekend"]  = "⚖️  Workdays vs Weekends";
+        _enStrings["Recap_Workdays"]       = "Workdays";
+        _enStrings["Recap_Weekends"]       = "Weekends";
+        _enStrings["Recap_GoldenHour"]     = "⏰  Peak Time of Day";
+        _enStrings["Recap_BtnCopy"]        = "📋  Copy Card";
+        _enStrings["Recap_Copied"]         = "✓  Copied!";
+        _enStrings["Recap_PromptTitle"]    = "✨  Weekly Recap is Ready!";
+        _enStrings["Recap_PromptDesc"]     = "Your personal PC productivity digest for the past week is ready. Want to take a look?";
+        _enStrings["Recap_PromptView"]     = "📊  View Recap";
+        _enStrings["Recap_PromptDismiss"]  = "Not now";
+        _enStrings["Recap_CurrentWeekTab"] = "Current Week";
+        _enStrings["Recap_PreviousWeekTab"]= "Previous Week";
 
         // Theme View
         _enStrings["Theme_Title"]          = "Appearance & Themes";

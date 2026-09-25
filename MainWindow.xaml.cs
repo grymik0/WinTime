@@ -23,6 +23,8 @@ public partial class MainWindow : Window
                     BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
         }
         catch { }
+
+        Loaded += (s, e) => PlayTransitionAnimation();
     }
 
     // Navigation animation
@@ -34,25 +36,11 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// Smooth tab transition: fade-in and slide-up.
+    /// Smooth Fluent tab transition: zoom-in and fade-in (Windows 11 / macOS style).
     /// </summary>
     private void PlayTransitionAnimation()
     {
-        var transform = (TranslateTransform)ContentArea.RenderTransform;
-
-        ContentArea.Opacity = 0;
-        transform.Y = 12;
-
-        var ease     = new CubicEase { EasingMode = EasingMode.EaseOut };
-        Duration duration = new Duration(TimeSpan.FromMilliseconds(200));
-
-        ContentArea.BeginAnimation(
-            OpacityProperty,
-            new DoubleAnimation(0, 1, duration) { EasingFunction = ease });
-
-        transform.BeginAnimation(
-            TranslateTransform.YProperty,
-            new DoubleAnimation(12, 0, duration) { EasingFunction = ease });
+        Core.AnimationHelper.PlayZoomFadeIn(ContentArea, fromScale: 0.96, fromY: 8, durationMs: 240);
     }
 
     /// <summary>
@@ -64,6 +52,54 @@ public partial class MainWindow : Window
         {
             e.Cancel = true;
             Hide();
+        }
+    }
+
+    // Window caption control handlers
+
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+    }
+
+    private void MaximizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        ToggleWindowState();
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    public void ToggleWindowState()
+    {
+        WindowState = WindowState == WindowState.Maximized
+            ? WindowState.Normal
+            : WindowState.Maximized;
+    }
+
+    private void Window_StateChanged(object? sender, EventArgs e)
+    {
+        if (WindowState == WindowState.Maximized)
+        {
+            MaximizeIcon.Data = Geometry.Parse("M 3,5 H 9 V 11 H 3 Z M 5,5 V 3 H 11 V 9 H 9");
+            MaximizeBtn.ToolTip = Application.Current?.TryFindResource("Window_Restore") as string ?? "Восстановить";
+        }
+        else
+        {
+            MaximizeIcon.Data = Geometry.Parse("M 3,3 H 11 V 11 H 3 Z");
+            MaximizeBtn.ToolTip = Application.Current?.TryFindResource("Window_Maximize") as string ?? "Развернуть";
+        }
+    }
+
+    protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+        if (e.Key == System.Windows.Input.Key.F11)
+        {
+            ToggleWindowState();
+            e.Handled = true;
         }
     }
 }

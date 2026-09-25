@@ -11,5 +11,6 @@ public sealed class ActivitySession
     public DateTime StartTime { get; set; }
     public int DurationSeconds { get; set; }
     public bool IsIdle { get; set; }
+    public int? ProjectId { get; set; }
 }
 

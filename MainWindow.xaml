@@ -11,7 +11,29 @@
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource AppBgBrush}"
         Foreground="{DynamicResource TextPrimaryBrush}"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        StateChanged="Window_StateChanged">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="36"
+                      ResizeBorderThickness="6"
+                      CornerRadius="0"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Style.Triggers>
+                <Trigger Property="WindowState" Value="Maximized">
+                    <Setter Property="BorderThickness" Value="7" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
 
     <!-- DataTemplate: ViewModel → View -->
     <Window.Resources>
@@ -23,6 +45,12 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:ApplicationsViewModel}">
             <views:ApplicationsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:GoalsViewModel}">
+            <views:GoalsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProjectsViewModel}">
+            <views:ProjectsView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
             <views:ProfileView />
@@ -45,6 +73,7 @@
             <Setter Property="FontSize"               Value="14" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Cursor"                 Value="Hand" />
+            <Setter Property="FocusVisualStyle"       Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -52,13 +81,95 @@
                                 Background="{TemplateBinding Background}"
                                 CornerRadius="8"
                                 Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalAlignment="Center" />
+                            <Grid>
+                                <!-- Active accent indicator pill on the left -->
+                                <Border x:Name="ActiveIndicator"
+                                        Width="3.5" Height="16"
+                                        CornerRadius="2"
+                                        Background="{DynamicResource AccentBrush}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Margin="-10 0 0 0"
+                                        Opacity="0" />
+
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="Center" />
+                            </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                                 <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                <Setter TargetName="ActiveIndicator" Property="Opacity" Value="1" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                            </MultiDataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="WindowControlBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="WindowCloseBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E81123" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#C4101E" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -85,10 +196,10 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Разделитель -->
+                <!-- Separator -->
                 <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource BorderBrushColor}" Margin="16 0" />
 
-                <!-- Кнопка паузы внизу -->
+                <!-- Pause tracking button at bottom -->
                 <Border DockPanel.Dock="Bottom" Padding="12 16">
                     <Button Style="{StaticResource NavBtn}"
                             Content="{Binding TrackingLabel}"
@@ -102,30 +213,47 @@
                 <StackPanel DockPanel.Dock="Top" Margin="10 16">
                     <Button Content="{DynamicResource Nav_Dashboard}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsDashboardActive}"
                             Command="{Binding NavigateDashboardCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Processes}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsProcessesActive}"
                             Command="{Binding NavigateProcessesCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Applications}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsApplicationsActive}"
                             Command="{Binding NavigateApplicationsCommand}"
+                            Margin="0 2" />
+                    <Button Content="{DynamicResource Nav_Goals}"
+                            Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsGoalsActive}"
+                            Command="{Binding NavigateGoalsCommand}"
+                            Margin="0 2" />
+                    <Button Content="{DynamicResource Nav_Projects}"
+                            Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsProjectsActive}"
+                            Command="{Binding NavigateProjectsCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Profile}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsProfileActive}"
                             Command="{Binding NavigateProfileCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Widget}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsWidgetActive}"
                             Command="{Binding NavigateWidgetCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Theme}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsThemeActive}"
                             Command="{Binding NavigateThemeCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Settings}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsSettingsActive}"
                             Command="{Binding NavigateSettingsCommand}"
                             Margin="0 2" />
                 </StackPanel>
@@ -133,14 +261,66 @@
             </DockPanel>
         </Border>
 
-        <ContentControl Grid.Column="1"
-                        x:Name="ContentArea"
-                        Content="{Binding CurrentView}"
-                        Focusable="False">
-            <ContentControl.RenderTransform>
-                <TranslateTransform />
-            </ContentControl.RenderTransform>
-        </ContentControl>
+        <!-- Right Main View Area -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Window Caption & TitleBar Controls -->
+            <Grid Grid.Row="0" Background="{DynamicResource AppBgBrush}">
+                <!-- TitleBar Control Buttons on the far right -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                    <!-- Minimize -->
+                    <Button Style="{StaticResource WindowControlBtn}"
+                            Click="MinimizeButton_Click"
+                            ToolTip="{DynamicResource Window_Minimize}">
+                        <Path Data="M 3,6 H 11"
+                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                              StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
+
+                    <!-- Maximize / Restore -->
+                    <Button x:Name="MaximizeBtn"
+                            Style="{StaticResource WindowControlBtn}"
+                            Click="MaximizeButton_Click"
+                            ToolTip="{DynamicResource Window_Maximize}">
+                        <Path x:Name="MaximizeIcon"
+                              Data="M 3,3 H 11 V 11 H 3 Z"
+                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                              StrokeThickness="1.2"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
+
+                    <!-- Close -->
+                    <Button Style="{StaticResource WindowCloseBtn}"
+                            Click="CloseButton_Click"
+                            ToolTip="{DynamicResource Window_Close}">
+                        <Path Data="M 3.5,3.5 L 10.5,10.5 M 10.5,3.5 L 3.5,10.5"
+                              Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                              StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Content Area -->
+            <ContentControl Grid.Row="1"
+                            x:Name="ContentArea"
+                            Content="{Binding CurrentView}"
+                            Focusable="False"
+                            RenderTransformOrigin="0.5,0.4">
+                <ContentControl.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                        <TranslateTransform Y="0" />
+                    </TransformGroup>
+                </ContentControl.RenderTransform>
+            </ContentControl>
+        </Grid>
 
     </Grid>
 </Window>
