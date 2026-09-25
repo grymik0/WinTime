@@ -46,7 +46,8 @@
     </Window.Resources>
 
     <!-- Main widget container -->
-    <Border Width="{Binding WidgetContainerWidth}"
+    <Border x:Name="WidgetBorder"
+            Width="{Binding WidgetContainerWidth}"
             Background="#EE181825"
             BorderBrush="#3B3B52"
             BorderThickness="1"

@@ -10,6 +10,7 @@ public partial class WeeklyRecapPromptDialog : Window
     public WeeklyRecapPromptDialog()
     {
         InitializeComponent();
+        Core.AnimationHelper.AttachWindowEntrance(this);
     }
 
     private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

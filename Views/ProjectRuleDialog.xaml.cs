@@ -18,6 +18,7 @@ public partial class ProjectRuleDialog : Window
     public ProjectRuleDialog(IReadOnlyList<AppModel> availableApps)
     {
         InitializeComponent();
+        Core.AnimationHelper.AttachWindowEntrance(this);
 
         var res = Application.Current?.Resources;
         string anyAppText = (string)(res?["RuleDlg_AnyApp"] ?? "— Любое приложение (по ключевому слову) —");

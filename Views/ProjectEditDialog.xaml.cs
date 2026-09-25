@@ -45,6 +45,7 @@ public partial class ProjectEditDialog : Window
     public ProjectEditDialog(Project? existing = null)
     {
         InitializeComponent();
+        Core.AnimationHelper.AttachWindowEntrance(this);
 
         if (existing is not null)
         {

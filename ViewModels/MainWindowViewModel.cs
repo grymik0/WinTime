@@ -25,8 +25,32 @@ public sealed class MainWindowViewModel : BaseViewModel
     public object? CurrentView
     {
         get => _currentView;
-        private set => SetProperty(ref _currentView, value);
+        private set
+        {
+            if (SetProperty(ref _currentView, value))
+            {
+                OnPropertyChanged(nameof(IsDashboardActive));
+                OnPropertyChanged(nameof(IsProcessesActive));
+                OnPropertyChanged(nameof(IsApplicationsActive));
+                OnPropertyChanged(nameof(IsGoalsActive));
+                OnPropertyChanged(nameof(IsProjectsActive));
+                OnPropertyChanged(nameof(IsProfileActive));
+                OnPropertyChanged(nameof(IsWidgetActive));
+                OnPropertyChanged(nameof(IsThemeActive));
+                OnPropertyChanged(nameof(IsSettingsActive));
+            }
+        }
     }
+
+    public bool IsDashboardActive    => CurrentView == _dashboard;
+    public bool IsProcessesActive    => CurrentView == _processes;
+    public bool IsApplicationsActive => CurrentView == _applications;
+    public bool IsGoalsActive        => CurrentView == _goals;
+    public bool IsProjectsActive     => CurrentView == _projects;
+    public bool IsProfileActive      => CurrentView == _profile;
+    public bool IsWidgetActive       => CurrentView == _widget;
+    public bool IsThemeActive        => CurrentView == _theme;
+    public bool IsSettingsActive     => CurrentView == _settings;
 
     public bool IsTracking
     {

@@ -47,13 +47,15 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="18" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="18" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
+                    <!-- Level and rank info -->
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="64" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Level avatar/badge -->
@@ -66,41 +68,8 @@
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12 0 0 0">
                             <TextBlock Text="{Binding RankTitle}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="{DynamicResource Profile_XpHint}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
-                        </StackPanel>
-
-                        <!-- Stats mini-badges -->
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource Profile_AllTime}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding TotalTimeFormatted}" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 2 0 0" HorizontalAlignment="Center" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource Profile_CurrentStreak}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 2 0 0">
-                                        <TextBlock Text="{Binding CurrentStreak}" FontSize="14" FontWeight="Bold" Foreground="#F97316" />
-                                        <TextBlock Text=" 🔥" FontSize="12" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource Profile_ActiveDays}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding ActiveDaysFormatted}" FontSize="14" FontWeight="Bold" Foreground="#10B981" Margin="0 2 0 0" HorizontalAlignment="Center" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource Profile_Achievements}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding UnlockedAchievementsCountText}" FontSize="14" FontWeight="Bold" Foreground="#F59E0B" Margin="0 2 0 0" HorizontalAlignment="Center" />
-                                </StackPanel>
-                            </Border>
+                            <TextBlock Text="{DynamicResource Profile_XpHint}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"
+                                       TextWrapping="Wrap" Margin="0 4 0 0" />
                         </StackPanel>
                     </Grid>
 
@@ -118,6 +87,40 @@
                             </ProgressBar.Clip>
                         </ProgressBar>
                     </StackPanel>
+
+                    <!-- Stats mini-badges (4-column responsive grid) -->
+                    <UniformGrid Grid.Row="4" Columns="4">
+                        <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 10" Margin="0 0 8 0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{DynamicResource Profile_AllTime}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding TotalTimeFormatted}" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 3 0 0" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 10" Margin="4 0 4 0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{DynamicResource Profile_CurrentStreak}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 3 0 0">
+                                    <TextBlock Text="{Binding CurrentStreak}" FontSize="14" FontWeight="Bold" Foreground="#F97316" />
+                                    <TextBlock Text=" 🔥" FontSize="12" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 10" Margin="4 0 4 0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{DynamicResource Profile_ActiveDays}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding ActiveDaysFormatted}" FontSize="14" FontWeight="Bold" Foreground="#10B981" Margin="0 3 0 0" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="12 10" Margin="8 0 0 0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{DynamicResource Profile_Achievements}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding UnlockedAchievementsCountText}" FontSize="14" FontWeight="Bold" Foreground="#F59E0B" Margin="0 3 0 0" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
                 </Grid>
             </Border>
 
@@ -275,7 +278,7 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <!-- Иконка квеста -->
+                                            <!-- Quest icon -->
                                             <Border Grid.Column="0" Width="34" Height="34" CornerRadius="8"
                                                     Background="{DynamicResource ControlBgBrush}"
                                                     HorizontalAlignment="Left" VerticalAlignment="Center">
@@ -284,7 +287,7 @@
                                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
 
-                                            <!-- Название, описание и шкала -->
+                                            <!-- Quest title, description and progress bar -->
                                             <StackPanel Grid.Column="1" Margin="8 0 14 0" VerticalAlignment="Center">
                                                 <Grid>
                                                     <StackPanel Orientation="Horizontal">
@@ -310,9 +313,9 @@
                                                 </ProgressBar>
                                             </StackPanel>
 
-                                            <!-- Кнопка «Забрать» или статус -->
+                                            <!-- Claim button or status badge -->
                                             <Grid Grid.Column="2" VerticalAlignment="Center">
-                                                <!-- Кнопка «Забрать» (если выполнен и не забран) -->
+                                                <!-- Claim button (if completed and unclaimed) -->
                                                 <Button Content="{Binding XpReward, StringFormat={}🎁 +{0} XP}"
                                                         Command="{Binding DataContext.ClaimQuestCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                         CommandParameter="{Binding}"
@@ -341,7 +344,7 @@
                                                     </Button.Style>
                                                 </Button>
 
-                                                <!-- Бейдж статуса (если еще не выполнен или уже забран) -->
+                                                <!-- Status badge (if not completed or already claimed) -->
                                                 <Border CornerRadius="6" Padding="10 5">
                                                     <Border.Style>
                                                         <Style TargetType="Border">

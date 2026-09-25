@@ -34,6 +34,8 @@ public partial class DesktopWidgetWindow : Window
         {
             ResetPosition();
         }
+
+        Core.AnimationHelper.PlayZoomFadeIn(WidgetBorder, fromScale: 0.90, fromY: 6, durationMs: 220);
     }
 
     public void ResetPosition()

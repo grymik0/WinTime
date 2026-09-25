@@ -73,6 +73,7 @@
             <Setter Property="FontSize"               Value="14" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Cursor"                 Value="Hand" />
+            <Setter Property="FocusVisualStyle"       Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -80,14 +81,39 @@
                                 Background="{TemplateBinding Background}"
                                 CornerRadius="8"
                                 Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalAlignment="Center" />
+                            <Grid>
+                                <!-- Active accent indicator pill on the left -->
+                                <Border x:Name="ActiveIndicator"
+                                        Width="3.5" Height="16"
+                                        CornerRadius="2"
+                                        Background="{DynamicResource AccentBrush}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Margin="-10 0 0 0"
+                                        Opacity="0" />
+
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="Center" />
+                            </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
                                 <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                             </Trigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                <Setter TargetName="ActiveIndicator" Property="Opacity" Value="1" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                            </MultiDataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -187,38 +213,47 @@
                 <StackPanel DockPanel.Dock="Top" Margin="10 16">
                     <Button Content="{DynamicResource Nav_Dashboard}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsDashboardActive}"
                             Command="{Binding NavigateDashboardCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Processes}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsProcessesActive}"
                             Command="{Binding NavigateProcessesCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Applications}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsApplicationsActive}"
                             Command="{Binding NavigateApplicationsCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Goals}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsGoalsActive}"
                             Command="{Binding NavigateGoalsCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Projects}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsProjectsActive}"
                             Command="{Binding NavigateProjectsCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Profile}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsProfileActive}"
                             Command="{Binding NavigateProfileCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Widget}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsWidgetActive}"
                             Command="{Binding NavigateWidgetCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Theme}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsThemeActive}"
                             Command="{Binding NavigateThemeCommand}"
                             Margin="0 2" />
                     <Button Content="{DynamicResource Nav_Settings}"
                             Style="{StaticResource NavBtn}"
+                            Tag="{Binding IsSettingsActive}"
                             Command="{Binding NavigateSettingsCommand}"
                             Margin="0 2" />
                 </StackPanel>
@@ -276,9 +311,13 @@
             <ContentControl Grid.Row="1"
                             x:Name="ContentArea"
                             Content="{Binding CurrentView}"
-                            Focusable="False">
+                            Focusable="False"
+                            RenderTransformOrigin="0.5,0.4">
                 <ContentControl.RenderTransform>
-                    <TranslateTransform />
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                        <TranslateTransform Y="0" />
+                    </TransformGroup>
                 </ContentControl.RenderTransform>
             </ContentControl>
         </Grid>

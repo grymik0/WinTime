@@ -23,6 +23,8 @@ public partial class MainWindow : Window
                     BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
         }
         catch { }
+
+        Loaded += (s, e) => PlayTransitionAnimation();
     }
 
     // Navigation animation
@@ -34,25 +36,11 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// Smooth tab transition: fade-in and slide-up.
+    /// Smooth Fluent tab transition: zoom-in and fade-in (Windows 11 / macOS style).
     /// </summary>
     private void PlayTransitionAnimation()
     {
-        var transform = (TranslateTransform)ContentArea.RenderTransform;
-
-        ContentArea.Opacity = 0;
-        transform.Y = 12;
-
-        var ease     = new CubicEase { EasingMode = EasingMode.EaseOut };
-        Duration duration = new Duration(TimeSpan.FromMilliseconds(200));
-
-        ContentArea.BeginAnimation(
-            OpacityProperty,
-            new DoubleAnimation(0, 1, duration) { EasingFunction = ease });
-
-        transform.BeginAnimation(
-            TranslateTransform.YProperty,
-            new DoubleAnimation(12, 0, duration) { EasingFunction = ease });
+        Core.AnimationHelper.PlayZoomFadeIn(ContentArea, fromScale: 0.96, fromY: 8, durationMs: 240);
     }
 
     /// <summary>
