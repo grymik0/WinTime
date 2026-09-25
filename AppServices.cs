@@ -17,6 +17,8 @@ internal static class AppServices
     public static UptimeRepository        UptimeRepo    { get; private set; } = null!;
     public static GoalRepository          GoalRepo      { get; private set; } = null!;
     public static ProjectRepository       ProjectRepo   { get; private set; } = null!;
+    public static QuestRepository         QuestRepo     { get; private set; } = null!;
+    public static DailyQuestEngine        QuestEngine   { get; private set; } = null!;
     public static IconService             IconService   { get; private set; } = null!;
     public static ExportService           ExportService { get; private set; } = null!;
     public static ThemeService            ThemeService  { get; private set; } = null!;
@@ -54,6 +56,7 @@ internal static class AppServices
         UptimeRepo    = new UptimeRepository(Database);
         GoalRepo      = new GoalRepository(Database);
         ProjectRepo   = new ProjectRepository(Database);
+        QuestRepo     = new QuestRepository(Database);
         IconService   = new IconService();
         ExportService = new ExportService(ActivityRepo, AppRepo);
 
@@ -63,13 +66,14 @@ internal static class AppServices
         _ = LimitEnforcer.ReloadLimitsAsync();
         BedtimeReminder = new BedtimeReminderService(ActivityRepo, Settings, Tracker, Localization);
         BedtimeReminder.Start();
+        QuestEngine   = new DailyQuestEngine(Database, QuestRepo, ActivityRepo, GoalRepo, Localization);
 
         DashboardVm          = new DashboardViewModel(ActivityRepo, IconService, Tracker, Localization, ThemeService);
         ProcessesVm          = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker, Localization);
         ApplicationsVm       = new ApplicationsViewModel(AppRepo, ActivityRepo);
         GoalsVm              = new GoalsViewModel(GoalRepo, AppRepo, ActivityRepo, LimitEnforcer, Localization);
         ProjectsVm           = new ProjectsViewModel(ProjectRepo, AppRepo, Localization);
-        ProfileVm            = new ProfileViewModel(ActivityRepo, Tracker, Localization);
+        ProfileVm            = new ProfileViewModel(ActivityRepo, Tracker, Localization, QuestEngine);
         DesktopWidgetVm      = new DesktopWidgetViewModel(Tracker, ActivityRepo, Settings);
         ThemeVm              = new ThemeCustomizationViewModel(ThemeService, Localization);
         SettingsVm           = new SettingsViewModel(Settings, ActivityRepo, ExportService);

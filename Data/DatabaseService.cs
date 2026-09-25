@@ -108,6 +108,32 @@ public sealed class DatabaseService : IDisposable
                 AppId         INTEGER NULL REFERENCES Applications(Id) ON DELETE CASCADE,
                 TitleKeyword  TEXT    NOT NULL DEFAULT ''
             );
+
+            CREATE TABLE IF NOT EXISTS UserStreaks (
+                Id             INTEGER PRIMARY KEY CHECK (Id = 1),
+                CurrentStreak  INTEGER NOT NULL DEFAULT 0,
+                BestStreak     INTEGER NOT NULL DEFAULT 0,
+                LastActiveDate TEXT    NULL,
+                BonusXp        INTEGER NOT NULL DEFAULT 0
+            );
+            INSERT OR IGNORE INTO UserStreaks (Id, CurrentStreak, BestStreak, LastActiveDate, BonusXp)
+            VALUES (1, 0, 0, NULL, 0);
+
+            CREATE TABLE IF NOT EXISTS DailyQuests (
+                Id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                Date         TEXT    NOT NULL,
+                QuestType    TEXT    NOT NULL,
+                Title        TEXT    NOT NULL,
+                Description  TEXT    NOT NULL,
+                TargetValue  INTEGER NOT NULL,
+                CurrentValue INTEGER NOT NULL DEFAULT 0,
+                IsCompleted  INTEGER NOT NULL DEFAULT 0,
+                IsClaimed    INTEGER NOT NULL DEFAULT 0,
+                XpReward     INTEGER NOT NULL DEFAULT 50,
+                Icon         TEXT    NOT NULL DEFAULT '🎯',
+                UNIQUE(Date, QuestType)
+            );
+            CREATE INDEX IF NOT EXISTS idx_daily_quests_date ON DailyQuests(Date);
         ";
         cmd.ExecuteNonQuery();
 

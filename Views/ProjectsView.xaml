@@ -65,8 +65,7 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24 20 24 24">
         <StackPanel>
-
-            <!-- Верхний блок заголовка -->
+            <!-- Header section -->
             <Grid Margin="0 0 0 20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -75,23 +74,21 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                    <TextBlock Text="💼  Проекты и тегирование" FontSize="22" FontWeight="Bold"
+                    <TextBlock Text="{DynamicResource Projects_Title}" FontSize="22" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="Автоматический учёт времени по проектам, клиентам и задачам"
+                    <TextBlock Text="{DynamicResource Projects_Subtitle}"
                                FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
                 </StackPanel>
 
-                <!-- Кнопка перепривязки правил -->
                 <Button Grid.Column="1"
-                        Content="🔄  Применить ко всей истории"
+                        Content="{DynamicResource Projects_ReapplyBtn}"
                         Command="{Binding ReapplyAllRulesCommand}"
                         Style="{StaticResource ActionBtn}"
                         Margin="0 0 10 0"
                         VerticalAlignment="Center" />
 
-                <!-- Кнопка создания проекта -->
                 <Button Grid.Column="2"
-                        Content="➕  Новый проект"
+                        Content="{DynamicResource Projects_NewProjectBtn}"
                         Command="{Binding CreateProjectCommand}"
                         Background="{DynamicResource AccentBrush}"
                         Foreground="White"
@@ -117,9 +114,9 @@
                 </Button>
             </Grid>
 
-            <!-- Фильтр периодов -->
+            <!-- Period filter buttons -->
             <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
-                <Button Content="Сегодня" Margin="0 0 8 0"
+                <Button Content="{DynamicResource Projects_PeriodToday}" Margin="0 0 8 0"
                         Command="{Binding SetPeriodCommand}"
                         CommandParameter="{x:Static vm:ProjectPeriod.Today}">
                     <Button.Style>
@@ -134,7 +131,7 @@
                     </Button.Style>
                 </Button>
 
-                <Button Content="Неделя" Margin="0 0 8 0"
+                <Button Content="{DynamicResource Projects_PeriodWeek}" Margin="0 0 8 0"
                         Command="{Binding SetPeriodCommand}"
                         CommandParameter="{x:Static vm:ProjectPeriod.Week}">
                     <Button.Style>
@@ -149,7 +146,7 @@
                     </Button.Style>
                 </Button>
 
-                <Button Content="Месяц" Margin="0 0 8 0"
+                <Button Content="{DynamicResource Projects_PeriodMonth}" Margin="0 0 8 0"
                         Command="{Binding SetPeriodCommand}"
                         CommandParameter="{x:Static vm:ProjectPeriod.Month}">
                     <Button.Style>
@@ -164,7 +161,7 @@
                     </Button.Style>
                 </Button>
 
-                <Button Content="За всё время"
+                <Button Content="{DynamicResource Projects_PeriodAllTime}"
                         Command="{Binding SetPeriodCommand}"
                         CommandParameter="{x:Static vm:ProjectPeriod.AllTime}">
                     <Button.Style>
@@ -180,11 +177,11 @@
                 </Button>
             </StackPanel>
 
-            <!-- Карточки суммарной статистики -->
+            <!-- Summary statistic cards -->
             <UniformGrid Columns="4" Margin="0 0 0 20">
                 <Border Style="{StaticResource StatCard}" Margin="0 0 8 0">
                     <StackPanel>
-                        <TextBlock Text="⏱  Проектное время" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{DynamicResource Projects_CardTime}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
                         <TextBlock Text="{Binding TotalProjectTimeText}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock Text="{Binding ProjectsCountText}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 4 0 0" />
                     </StackPanel>
@@ -192,7 +189,7 @@
 
                 <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
                     <StackPanel>
-                        <TextBlock Text="🏆  Главный проект" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{DynamicResource Projects_CardTopProject}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
                         <TextBlock Text="{Binding TopProjectName}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" TextTrimming="CharacterEllipsis" />
                         <TextBlock Text="{Binding TopProjectTimeText}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 4 0 0" />
                     </StackPanel>
@@ -200,22 +197,22 @@
 
                 <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
                     <StackPanel>
-                        <TextBlock Text="📊  Охват времени" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{DynamicResource Projects_CardCoverage}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
                         <TextBlock Text="{Binding CoveragePercentText}" FontSize="22" FontWeight="Bold" Foreground="#10B981" />
-                        <TextBlock Text="времени в проектах" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 4 0 0" />
+                        <TextBlock Text="{DynamicResource Projects_CardCoverageHint}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 4 0 0" />
                     </StackPanel>
                 </Border>
 
                 <Border Style="{StaticResource StatCard}" Margin="8 0 0 0">
                     <StackPanel>
-                        <TextBlock Text="💤  Вне проектов" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{DynamicResource Projects_CardUnassigned}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
                         <TextBlock Text="{Binding UnassignedTimeText}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" />
-                        <TextBlock Text="неразмеченные окна" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
+                        <TextBlock Text="{DynamicResource Projects_CardUnassignedHint}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
                     </StackPanel>
                 </Border>
             </UniformGrid>
 
-            <!-- Список проектов -->
+            <!-- Projects list -->
             <ItemsControl ItemsSource="{Binding Projects}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -231,7 +228,7 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <!-- Основная строка проекта -->
+                                <!-- Main project row -->
                                 <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -239,7 +236,7 @@
                                         <ColumnDefinition Width="180" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Иконка с цветным бейджем -->
+                                    <!-- Project icon with colored border -->
                                     <Border Grid.Column="0" Width="44" Height="44"
                                             Background="{DynamicResource ControlBgBrush}"
                                             BorderBrush="{Binding ColorHex}"
@@ -255,7 +252,7 @@
                                                    VerticalAlignment="Center" />
                                     </Border>
 
-                                    <!-- Название и описание -->
+                                    <!-- Name and description -->
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold"
                                                    Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -265,7 +262,7 @@
                                                    TextTrimming="CharacterEllipsis" />
                                     </StackPanel>
 
-                                    <!-- Время и прогресс -->
+                                    <!-- Time and progress -->
                                     <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                             <TextBlock Text="{Binding FormattedTime}" FontSize="18" FontWeight="Bold"
@@ -283,14 +280,14 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- Нижняя строка: Чипы правил и действия -->
+                                <!-- Bottom row: Rule chips and actions -->
                                 <Grid Grid.Row="1" Margin="58 12 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Список правил в виде бейджей -->
+                                    <!-- Rule badges list -->
                                     <ItemsControl Grid.Column="0" ItemsSource="{Binding Rules}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -323,16 +320,16 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
 
-                                    <!-- Кнопки действий проекта -->
+                                    <!-- Action buttons -->
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="8 0 0 0">
-                                        <Button Content="➕ Правило"
+                                        <Button Content="{DynamicResource Projects_AddRule}"
                                                 Command="{Binding DataContext.AddRuleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ActionBtn}"
                                                 Margin="0 0 6 0" />
 
                                         <Button Content="✏️"
-                                                ToolTip="Редактировать проект"
+                                                ToolTip="{DynamicResource Projects_EditProject}"
                                                 Command="{Binding DataContext.EditProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ActionBtn}"
@@ -340,7 +337,7 @@
                                                 Margin="0 0 6 0" />
 
                                         <Button Content="🗑️"
-                                                ToolTip="Удалить проект"
+                                                ToolTip="{DynamicResource Projects_DeleteProject}"
                                                 Command="{Binding DataContext.DeleteProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ActionBtn}"
@@ -353,7 +350,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- Пустое состояние (когда проектов нет) -->
+            <!-- Empty state -->
             <Border Background="{DynamicResource CardBgBrush}"
                     BorderBrush="{DynamicResource BorderBrushColor}"
                     BorderThickness="1"
@@ -372,12 +369,12 @@
                 </Border.Style>
                 <StackPanel HorizontalAlignment="Center">
                     <TextBlock Text="📂" FontSize="44" HorizontalAlignment="Center" Margin="0 0 0 10" />
-                    <TextBlock Text="Проекты пока не созданы" FontSize="18" FontWeight="Bold"
+                    <TextBlock Text="{DynamicResource Projects_EmptyTitle}" FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Создайте проект и добавьте правила (например, Visual Studio или заголовок окна 'WinTime'), чтобы система автоматически вела учёт времени по вашим задачам."
+                    <TextBlock Text="{DynamicResource Projects_EmptyDesc}"
                                FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"
                                TextAlignment="Center" MaxWidth="520" Margin="0 6 0 16" />
-                    <Button Content="➕  Создать первый проект"
+                    <Button Content="{DynamicResource Projects_CreateFirstBtn}"
                             Command="{Binding CreateProjectCommand}"
                             Background="{DynamicResource AccentBrush}"
                             Foreground="White"

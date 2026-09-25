@@ -203,8 +203,49 @@ public sealed class LocalizationService
         _ruStrings["Goals_ActionNotify"]   = "🔔 Уведомлять каждые 3 минуты";
         _ruStrings["Goals_ActionClose"]    = "🛑 Закрывать процесс (с предупреждением 60 сек)";
         _ruStrings["Goals_BtnSave"]        = "Сохранить";
-        _ruStrings["Goals_BtnCancel"]      = "Отмена";
         _ruStrings["Goals_DeleteConfirm"]  = "Удалить этот лимит?";
+
+        // Projects View & Dialogs
+        _ruStrings["Projects_Title"]               = "Проекты и тегирование";
+        _ruStrings["Projects_Subtitle"]            = "Автоматический учёт времени по проектам, клиентам и задачам";
+        _ruStrings["Projects_ReapplyBtn"]          = "🔄  Применить ко всей истории";
+        _ruStrings["Projects_NewProjectBtn"]       = "➕  Новый проект";
+        _ruStrings["Projects_PeriodToday"]         = "Сегодня";
+        _ruStrings["Projects_PeriodWeek"]          = "Неделя";
+        _ruStrings["Projects_PeriodMonth"]         = "Месяц";
+        _ruStrings["Projects_PeriodAllTime"]       = "За всё время";
+        _ruStrings["Projects_CardTime"]            = "⏱  Проектное время";
+        _ruStrings["Projects_CardTopProject"]      = "🏆  Главный проект";
+        _ruStrings["Projects_CardCoverage"]        = "📊  Охват времени";
+        _ruStrings["Projects_CardCoverageHint"]    = "времени в проектах";
+        _ruStrings["Projects_CardUnassigned"]      = "💤  Вне проектов";
+        _ruStrings["Projects_CardUnassignedHint"]  = "неразмеченные окна";
+        _ruStrings["Projects_AddRule"]             = "➕ Правило";
+        _ruStrings["Projects_EditProject"]         = "Редактировать проект";
+        _ruStrings["Projects_DeleteProject"]       = "Удалить проект";
+        _ruStrings["Projects_EmptyTitle"]          = "Проекты пока не созданы";
+        _ruStrings["Projects_EmptyDesc"]           = "Создайте проект и добавьте правила (например, Visual Studio или заголовок окна 'WinTime'), чтобы система автоматически вела учёт времени по вашим задачам.";
+        _ruStrings["Projects_CreateFirstBtn"]      = "➕  Создать первый проект";
+        _ruStrings["Projects_DeleteConfirm"]       = "Удалить проект «{0}»?\nВсе привязанные правила будут удалены, а время вернется в нераспределенное.";
+        _ruStrings["Projects_DeleteRuleConfirm"]   = "Удалить правило «{0}»?";
+        _ruStrings["Projects_AppliedNotification"] = "Правила успешно применены ко всем прошлым записям активности!";
+        _ruStrings["Projects_CountFormat"]         = "{0} проектов · {1} правил";
+        _ruStrings["ProjectDlg_TitleNew"]          = "Новый проект";
+        _ruStrings["ProjectDlg_TitleEdit"]         = "Редактировать проект";
+        _ruStrings["ProjectDlg_Name"]              = "Название проекта:";
+        _ruStrings["ProjectDlg_Desc"]              = "Описание (необязательно):";
+        _ruStrings["ProjectDlg_Icon"]              = "Иконка проекта:";
+        _ruStrings["ProjectDlg_Color"]             = "Цвет проекта:";
+        _ruStrings["ProjectDlg_BtnCancel"]         = "Отмена";
+        _ruStrings["ProjectDlg_BtnSave"]           = "Сохранить";
+        _ruStrings["ProjectDlg_NameRequired"]      = "Введите название проекта.";
+        _ruStrings["RuleDlg_Title"]                = "🏷️  Правило привязки активности";
+        _ruStrings["RuleDlg_App"]                  = "Приложение:";
+        _ruStrings["RuleDlg_Keyword"]              = "Слово или текст в заголовке окна (необязательно):";
+        _ruStrings["RuleDlg_Hint"]                 = "💡 Подсказка: можно привязать всю программу целиком (например, Figma) либо только вкладки/окна с определенным словом (например, 'WinTime' в Chrome или VS).";
+        _ruStrings["RuleDlg_BtnAdd"]               = "Добавить правило";
+        _ruStrings["RuleDlg_AnyApp"]               = "— Любое приложение (по ключевому слову) —";
+        _ruStrings["RuleDlg_AppOrKeywordRequired"] = "Выберите приложение или укажите ключевое слово для правила.";
 
         // Profile View
         _ruStrings["Profile_Title"]        = "Профиль и Достижения";
@@ -215,6 +256,16 @@ public sealed class LocalizationService
         _ruStrings["Profile_Achievements"] = "Достижения";
         _ruStrings["Profile_Progress"]     = "Прогресс уровня";
         _ruStrings["Profile_AllAchList"]   = "🏆  Все достижения";
+        _ruStrings["Profile_StreakTitle"]  = "🔥  Серия активности";
+        _ruStrings["Profile_CurrentStreak"]= "Текущая серия";
+        _ruStrings["Profile_BestStreak"]   = "Рекорд серии";
+        _ruStrings["Profile_StreakDays"]   = "дн.";
+        _ruStrings["Profile_StreakActiveToday"] = "Зачтено сегодня ✓";
+        _ruStrings["Profile_StreakPendingToday"] = "Проведите еще немного времени за ПК, чтобы продлить серию!";
+        _ruStrings["Profile_DailyQuestsTitle"] = "🎯  Ежедневные квесты";
+        _ruStrings["Profile_DailyQuestsSubtitle"] = "Выполняйте задания каждый день и получайте бонусный опыт (XP)";
+        _ruStrings["Profile_QuestClaim"]   = "🎁 Забрать";
+        _ruStrings["Profile_QuestClaimed"] = "Получено ✓";
 
         // Desktop Widget Settings View
         _ruStrings["Widget_Title"]         = "Виджет на рабочий стол";
@@ -445,8 +496,49 @@ public sealed class LocalizationService
         _enStrings["Goals_ActionNotify"]   = "🔔 Notify every 3 minutes";
         _enStrings["Goals_ActionClose"]    = "🛑 Close process (with 60s warning)";
         _enStrings["Goals_BtnSave"]        = "Save";
-        _enStrings["Goals_BtnCancel"]      = "Cancel";
         _enStrings["Goals_DeleteConfirm"]  = "Delete this limit?";
+
+        // Projects View & Dialogs
+        _enStrings["Projects_Title"]               = "Projects & Tagging";
+        _enStrings["Projects_Subtitle"]            = "Automatic time allocation by projects, clients, and tasks";
+        _enStrings["Projects_ReapplyBtn"]          = "🔄  Apply to All History";
+        _enStrings["Projects_NewProjectBtn"]       = "➕  New Project";
+        _enStrings["Projects_PeriodToday"]         = "Today";
+        _enStrings["Projects_PeriodWeek"]          = "Week";
+        _enStrings["Projects_PeriodMonth"]         = "Month";
+        _enStrings["Projects_PeriodAllTime"]       = "All Time";
+        _enStrings["Projects_CardTime"]            = "⏱  Project Time";
+        _enStrings["Projects_CardTopProject"]      = "🏆  Top Project";
+        _enStrings["Projects_CardCoverage"]        = "📊  Time Coverage";
+        _enStrings["Projects_CardCoverageHint"]    = "of time in projects";
+        _enStrings["Projects_CardUnassigned"]      = "💤  Unassigned";
+        _enStrings["Projects_CardUnassignedHint"]  = "untagged windows";
+        _enStrings["Projects_AddRule"]             = "➕ Rule";
+        _enStrings["Projects_EditProject"]         = "Edit Project";
+        _enStrings["Projects_DeleteProject"]       = "Delete Project";
+        _enStrings["Projects_EmptyTitle"]          = "No Projects Created Yet";
+        _enStrings["Projects_EmptyDesc"]           = "Create a project and add rules (such as Visual Studio or window title 'WinTime') so the system can automatically allocate time to your tasks.";
+        _enStrings["Projects_CreateFirstBtn"]      = "➕  Create First Project";
+        _enStrings["Projects_DeleteConfirm"]       = "Delete project \"{0}\"?\nAll attached rules will be removed and time returned to unassigned.";
+        _enStrings["Projects_DeleteRuleConfirm"]   = "Delete rule \"{0}\"?";
+        _enStrings["Projects_AppliedNotification"] = "Rules successfully applied to all past activity records!";
+        _enStrings["Projects_CountFormat"]         = "{0} projects · {1} rules";
+        _enStrings["ProjectDlg_TitleNew"]          = "New Project";
+        _enStrings["ProjectDlg_TitleEdit"]         = "Edit Project";
+        _enStrings["ProjectDlg_Name"]              = "Project Name:";
+        _enStrings["ProjectDlg_Desc"]              = "Description (optional):";
+        _enStrings["ProjectDlg_Icon"]              = "Project Icon:";
+        _enStrings["ProjectDlg_Color"]             = "Project Color:";
+        _enStrings["ProjectDlg_BtnCancel"]         = "Cancel";
+        _enStrings["ProjectDlg_BtnSave"]           = "Save";
+        _enStrings["ProjectDlg_NameRequired"]      = "Please enter a project name.";
+        _enStrings["RuleDlg_Title"]                = "🏷️  Activity Assignment Rule";
+        _enStrings["RuleDlg_App"]                  = "Application:";
+        _enStrings["RuleDlg_Keyword"]              = "Keyword or text in window title (optional):";
+        _enStrings["RuleDlg_Hint"]                 = "💡 Tip: You can bind an entire application (e.g. Figma) or only tabs/windows containing a specific keyword (e.g. 'WinTime' in Chrome or VS).";
+        _enStrings["RuleDlg_BtnAdd"]               = "Add Rule";
+        _enStrings["RuleDlg_AnyApp"]               = "— Any application (by keyword) —";
+        _enStrings["RuleDlg_AppOrKeywordRequired"] = "Please select an application or specify a window title keyword.";
 
         // Profile View
         _enStrings["Profile_Title"]        = "Profile & Achievements";
@@ -457,6 +549,16 @@ public sealed class LocalizationService
         _enStrings["Profile_Achievements"] = "Achievements";
         _enStrings["Profile_Progress"]     = "Level Progression";
         _enStrings["Profile_AllAchList"]   = "🏆  All Achievements";
+        _enStrings["Profile_StreakTitle"]  = "🔥  Activity Streak";
+        _enStrings["Profile_CurrentStreak"]= "Current Streak";
+        _enStrings["Profile_BestStreak"]   = "Best Streak";
+        _enStrings["Profile_StreakDays"]   = "d.";
+        _enStrings["Profile_StreakActiveToday"] = "Completed today ✓";
+        _enStrings["Profile_StreakPendingToday"] = "Spend a little more active time today to keep your streak going!";
+        _enStrings["Profile_DailyQuestsTitle"] = "🎯  Daily Quests";
+        _enStrings["Profile_DailyQuestsSubtitle"] = "Complete daily quests and earn bonus experience (XP)";
+        _enStrings["Profile_QuestClaim"]   = "🎁 Claim";
+        _enStrings["Profile_QuestClaimed"] = "Claimed ✓";
 
         // Desktop Widget Settings View
         _enStrings["Widget_Title"]         = "Desktop Widget";

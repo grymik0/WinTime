@@ -40,10 +40,12 @@ public sealed class ProjectStatItem : BaseViewModel
 
     public string RulesSummaryText => RulesCount switch
     {
-        0 => "Нет правил привязки",
+        0 => LocalizationService.IsRussian ? "Нет правил привязки" : "No assignment rules",
         1 => Rules[0].DisplayText,
         2 => $"{Rules[0].DisplayText}, {Rules[1].DisplayText}",
-        _ => $"{Rules[0].DisplayText} и ещё {RulesCount - 1}"
+        _ => LocalizationService.IsRussian
+            ? $"{Rules[0].DisplayText} и ещё {RulesCount - 1}"
+            : $"{Rules[0].DisplayText} and {RulesCount - 1} more"
     };
 }
 

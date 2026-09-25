@@ -113,6 +113,8 @@ public sealed class ProjectsViewModel : BaseViewModel
         _appRepo      = appRepo;
         _localization = localization;
 
+        _localization.LanguageChanged += async (_, _) => await LoadDataAsync();
+
         SetPeriodCommand = new RelayCommand<ProjectPeriod>(p => SelectedPeriod = p);
         CreateProjectCommand = new RelayCommand(async () => await CreateProjectAsync());
         EditProjectCommand = new RelayCommand<ProjectStatItem>(async p => await EditProjectAsync(p));
@@ -142,14 +144,14 @@ public sealed class ProjectsViewModel : BaseViewModel
             else
             {
                 TopProjectName = "—";
-                TopProjectTimeText = "0с";
+                TopProjectTimeText = LocalizationService.FormatDuration(0);
             }
 
             double coverage = totalActive > 0 ? (double)totalProjectSec / totalActive * 100.0 : 0.0;
             CoveragePercentText = $"{coverage:F0}%";
 
             int totalRules = stats.Sum(s => s.RulesCount);
-            ProjectsCountText = $"{stats.Count} проектов · {totalRules} правил";
+            ProjectsCountText = string.Format(_localization.GetString("Projects_CountFormat"), stats.Count, totalRules);
 
             double unassignedPct = totalActive > 0 ? (double)unassigned / totalActive * 100.0 : 0.0;
             UnassignedTimeText = $"{LocalizationService.FormatDuration(unassigned)} ({unassignedPct:F0}%)";
@@ -239,11 +241,8 @@ public sealed class ProjectsViewModel : BaseViewModel
     {
         if (item is null) return;
 
-        var result = MessageBox.Show(
-            $"Удалить проект «{item.Icon} {item.Name}»?\nВсе привязанные правила будут удалены, а время вернется в нераспределенное.",
-            "WinTime",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
+        string prompt = string.Format(_localization.GetString("Projects_DeleteConfirm"), $"{item.Icon} {item.Name}");
+        var result = MessageBox.Show(prompt, "WinTime", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
         if (result == MessageBoxResult.Yes)
         {
@@ -280,11 +279,8 @@ public sealed class ProjectsViewModel : BaseViewModel
     {
         if (rule is null) return;
 
-        var result = MessageBox.Show(
-            $"Удалить правило «{rule.DisplayText}»?",
-            "WinTime",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
+        string prompt = string.Format(_localization.GetString("Projects_DeleteRuleConfirm"), rule.DisplayText);
+        var result = MessageBox.Show(prompt, "WinTime", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
         if (result == MessageBoxResult.Yes)
         {
@@ -300,7 +296,7 @@ public sealed class ProjectsViewModel : BaseViewModel
         {
             await _projectRepo.ApplyRulesToSessionsAsync();
             await LoadDataAsync();
-            MessageBox.Show("Правила успешно применены ко всем прошлым записям активности!", "WinTime", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(_localization.GetString("Projects_AppliedNotification"), "WinTime", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch { }
         finally

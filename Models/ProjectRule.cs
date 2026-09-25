@@ -29,9 +29,9 @@ public sealed class ProjectRule
                 return $"💻 {appPart}";
 
             if (!string.IsNullOrWhiteSpace(TitleKeyword))
-                return $"📄 Заголовок: \"{TitleKeyword}\"";
+                return Services.LocalizationService.IsRussian ? $"📄 Заголовок: \"{TitleKeyword}\"" : $"📄 Title: \"{TitleKeyword}\"";
 
-            return "Все активности";
+            return Services.LocalizationService.IsRussian ? "Все активности" : "All activities";
         }
     }
 }

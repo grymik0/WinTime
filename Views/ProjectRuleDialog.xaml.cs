@@ -19,9 +19,12 @@ public partial class ProjectRuleDialog : Window
     {
         InitializeComponent();
 
+        var res = Application.Current?.Resources;
+        string anyAppText = (string)(res?["RuleDlg_AnyApp"] ?? "— Любое приложение (по ключевому слову) —");
+
         var list = new List<AppItemOption>
         {
-            new() { Id = null, DisplayName = "— Любое приложение (по ключевому слову) —" }
+            new() { Id = null, DisplayName = anyAppText }
         };
 
         foreach (var app in availableApps.OrderBy(a => a.DisplayName))
@@ -52,7 +55,9 @@ public partial class ProjectRuleDialog : Window
 
         if (!selected?.Id.HasValue == true && string.IsNullOrWhiteSpace(kw))
         {
-            MessageBox.Show("Выберите приложение или укажите ключевое слово для правила.", "WinTime", MessageBoxButton.OK, MessageBoxImage.Warning);
+            var res = Application.Current?.Resources;
+            string msg = (string)(res?["RuleDlg_AppOrKeywordRequired"] ?? "Выберите приложение или укажите ключевое слово для правила.");
+            MessageBox.Show(msg, "WinTime", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 

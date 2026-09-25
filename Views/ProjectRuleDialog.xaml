@@ -27,14 +27,14 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Шапка -->
+            <!-- Header -->
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="🏷️  Правило привязки активности"
+                <TextBlock Text="{DynamicResource RuleDlg_Title}"
                            FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
                            VerticalAlignment="Center" />
 
@@ -63,17 +63,17 @@
                 </Button>
             </Grid>
 
-            <!-- Содержимое -->
+            <!-- Content -->
             <StackPanel Grid.Row="1" Margin="0 18 0 16">
-                <!-- Приложение -->
-                <TextBlock Text="Приложение:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <!-- Application -->
+                <TextBlock Text="{DynamicResource RuleDlg_App}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <ComboBox x:Name="AppsComboBox"
                           DisplayMemberPath="DisplayName"
                           SelectedValuePath="Id"
                           Margin="0 0 0 14" />
 
-                <!-- Ключевое слово в заголовке окна -->
-                <TextBlock Text="Слово или текст в заголовке окна (необязательно):" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <!-- Window title keyword -->
+                <TextBlock Text="{DynamicResource RuleDlg_Keyword}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <TextBox x:Name="KeywordTextBox"
                          Background="{DynamicResource ControlBgBrush}"
                          Foreground="{DynamicResource TextPrimaryBrush}"
@@ -84,14 +84,14 @@
                          FontSize="13"
                          Margin="0 0 0 14" />
 
-                <!-- Пояснение -->
+                <!-- Hint -->
                 <Border Background="{DynamicResource ControlBgBrush}" CornerRadius="8" Padding="12 10">
-                    <TextBlock Text="💡 Подсказка: можно привязать всю программу целиком (например, Figma) либо только вкладки/окна с определенным словом (например, 'WinTime' в Chrome или VS)."
+                    <TextBlock Text="{DynamicResource RuleDlg_Hint}"
                                FontSize="11" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" LineHeight="16" />
                 </Border>
             </StackPanel>
 
-            <!-- Кнопки действий -->
+            <!-- Actions -->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -100,7 +100,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                        Content="Отмена"
+                        Content="{DynamicResource ProjectDlg_BtnCancel}"
                         Click="Cancel_Click"
                         Background="{DynamicResource ControlBgBrush}"
                         Foreground="{DynamicResource TextSecondaryBrush}"
@@ -129,7 +129,7 @@
                 </Button>
 
                 <Button Grid.Column="2"
-                        Content="Добавить правило"
+                        Content="{DynamicResource RuleDlg_BtnAdd}"
                         Click="Save_Click"
                         Background="{DynamicResource AccentBrush}"
                         Foreground="White"

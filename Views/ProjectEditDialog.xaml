@@ -27,14 +27,14 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Шапка -->
+            <!-- Header -->
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="DialogTitleText" Text="💼  Новый проект"
+                <TextBlock x:Name="DialogTitleText" Text="{DynamicResource ProjectDlg_TitleNew}"
                            FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
                            VerticalAlignment="Center" />
 
@@ -63,10 +63,10 @@
                 </Button>
             </Grid>
 
-            <!-- Поля ввода -->
+            <!-- Form fields -->
             <StackPanel Grid.Row="1" Margin="0 18 0 16">
-                <!-- Название -->
-                <TextBlock Text="Название проекта:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <!-- Name -->
+                <TextBlock Text="{DynamicResource ProjectDlg_Name}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <TextBox x:Name="NameTextBox"
                          Background="{DynamicResource ControlBgBrush}"
                          Foreground="{DynamicResource TextPrimaryBrush}"
@@ -77,8 +77,8 @@
                          FontSize="13"
                          Margin="0 0 0 14" />
 
-                <!-- Описание -->
-                <TextBlock Text="Описание (необязательно):" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <!-- Description -->
+                <TextBlock Text="{DynamicResource ProjectDlg_Desc}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <TextBox x:Name="DescTextBox"
                          Background="{DynamicResource ControlBgBrush}"
                          Foreground="{DynamicResource TextPrimaryBrush}"
@@ -89,8 +89,8 @@
                          FontSize="13"
                          Margin="0 0 14 0" />
 
-                <!-- Иконка -->
-                <TextBlock Text="Иконка проекта:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <!-- Icon -->
+                <TextBlock Text="{DynamicResource ProjectDlg_Icon}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <ItemsControl x:Name="IconsItemsControl" Margin="0 0 0 14">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -136,8 +136,8 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Цвет -->
-                <TextBlock Text="Цвет проекта:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <!-- Color -->
+                <TextBlock Text="{DynamicResource ProjectDlg_Color}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <ItemsControl x:Name="ColorsItemsControl">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -166,7 +166,7 @@
                 </ItemsControl>
             </StackPanel>
 
-            <!-- Кнопки действий -->
+            <!-- Actions -->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -175,7 +175,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                        Content="Отмена"
+                        Content="{DynamicResource ProjectDlg_BtnCancel}"
                         Click="Cancel_Click"
                         Background="{DynamicResource ControlBgBrush}"
                         Foreground="{DynamicResource TextSecondaryBrush}"
@@ -204,7 +204,7 @@
                 </Button>
 
                 <Button Grid.Column="2"
-                        Content="Сохранить"
+                        Content="{DynamicResource ProjectDlg_BtnSave}"
                         Click="Save_Click"
                         Background="{DynamicResource AccentBrush}"
                         Foreground="White"

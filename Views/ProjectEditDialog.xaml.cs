@@ -48,7 +48,8 @@ public partial class ProjectEditDialog : Window
 
         if (existing is not null)
         {
-            DialogTitleText.Text = "✏️  Редактировать проект";
+            var res = Application.Current?.Resources;
+            DialogTitleText.Text = (string)(res?["ProjectDlg_TitleEdit"] ?? "Редактировать проект");
             NameTextBox.Text = existing.Name;
             DescTextBox.Text = existing.Description;
             SelectedColor = existing.ColorHex;
@@ -113,7 +114,9 @@ public partial class ProjectEditDialog : Window
         string name = NameTextBox.Text?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(name))
         {
-            MessageBox.Show("Введите название проекта.", "WinTime", MessageBoxButton.OK, MessageBoxImage.Warning);
+            var res = Application.Current?.Resources;
+            string msg = (string)(res?["ProjectDlg_NameRequired"] ?? "Please enter a project name.");
+            MessageBox.Show(msg, "WinTime", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 

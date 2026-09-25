@@ -10,11 +10,13 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="20" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="24" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Заголовок страницы -->
+            <!-- Page title header -->
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -38,7 +40,7 @@
                         Cursor="Hand" />
             </Grid>
 
-            <!-- Карточка Уровня и Опыта -->
+            <!-- Level and XP card -->
             <Border Grid.Row="2" Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="12" Padding="24 20">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -54,7 +56,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Аватарка / Значок уровня -->
+                        <!-- Level avatar/badge -->
                         <Border Grid.Column="0" Width="52" Height="52" CornerRadius="26" Background="{DynamicResource ControlBgBrush}"
                                 BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <TextBlock Text="{Binding UserLevel, StringFormat={}Lvl {0}}"
@@ -67,12 +69,22 @@
                             <TextBlock Text="{DynamicResource Profile_XpHint}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
                         </StackPanel>
 
-                        <!-- Статистические мини-бейджы справа -->
+                        <!-- Stats mini-badges -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                             <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
                                 <StackPanel HorizontalAlignment="Center">
                                     <TextBlock Text="{DynamicResource Profile_AllTime}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
                                     <TextBlock Text="{Binding TotalTimeFormatted}" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 2 0 0" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="14 8" Margin="0 0 10 0">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="{DynamicResource Profile_CurrentStreak}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 2 0 0">
+                                        <TextBlock Text="{Binding CurrentStreak}" FontSize="14" FontWeight="Bold" Foreground="#F97316" />
+                                        <TextBlock Text=" 🔥" FontSize="12" />
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
 
@@ -92,7 +104,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- Прогресс-бар опыта (XP) -->
+                    <!-- Level XP progress bar -->
                     <StackPanel Grid.Row="2">
                         <Grid Margin="0 0 0 8">
                             <TextBlock Text="{DynamicResource Profile_Progress}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -109,8 +121,267 @@
                 </Grid>
             </Border>
 
-            <!-- Секция достижений -->
-            <StackPanel Grid.Row="4">
+            <!-- Streaks and Daily Quests -->
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="270" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Activity streak card -->
+                <Border Grid.Column="0" Background="{DynamicResource CardBgBrush}"
+                        BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1"
+                        CornerRadius="12" Padding="20 18">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="14" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="14" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="14" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <TextBlock Grid.Row="0" Text="{DynamicResource Profile_StreakTitle}"
+                                   FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                        <!-- Main streak counter -->
+                        <Border Grid.Row="2" Background="{DynamicResource CardSubBgBrush}"
+                                CornerRadius="10" Padding="16 12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="🔥" FontSize="34" VerticalAlignment="Center" Margin="0 0 12 0" />
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{DynamicResource Profile_CurrentStreak}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                                    <StackPanel Orientation="Horizontal" Margin="0 2 0 0">
+                                        <TextBlock Text="{Binding CurrentStreak}" FontSize="22" FontWeight="Bold" Foreground="#F97316" />
+                                        <TextBlock Text=" " FontSize="16" />
+                                        <TextBlock Text="{DynamicResource Profile_StreakDays}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="0 0 0 2" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Best streak -->
+                        <Grid Grid.Row="4" Margin="4 0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🏆  " FontSize="13" />
+                                <TextBlock Text="{DynamicResource Profile_BestStreak}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="{Binding BestStreak}" FontSize="13" FontWeight="Bold" Foreground="#EAB308" />
+                                <TextBlock Text=" " FontSize="12" />
+                                <TextBlock Text="{DynamicResource Profile_StreakDays}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Today status indicator -->
+                        <Border Grid.Row="6" CornerRadius="8" Padding="10 8">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#15F59E0B" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActiveToday}" Value="True">
+                                            <Setter Property="Background" Value="#1810B981" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{Binding StreakStatusHint}" FontSize="11" TextWrapping="Wrap" LineHeight="15">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#F59E0B" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsActiveToday}" Value="True">
+                                                <Setter Property="Foreground" Value="#10B981" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Daily quests card -->
+                <Border Grid.Column="2" Background="{DynamicResource CardBgBrush}"
+                        BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1"
+                        CornerRadius="12" Padding="20 18">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Profile_DailyQuestsTitle}"
+                                           FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="{DynamicResource Profile_DailyQuestsSubtitle}"
+                                           FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 2 0 0" />
+                            </StackPanel>
+
+                            <Border Grid.Column="1" Background="{DynamicResource CardSubBgBrush}" CornerRadius="6" Padding="8 4" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="⭐ +" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+                                    <TextBlock Text="{Binding BonusXp}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+                                    <TextBlock Text=" XP" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Today's quests list -->
+                        <ItemsControl Grid.Row="2" ItemsSource="{Binding DailyQuests}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource CardSubBgBrush}"
+                                            BorderBrush="{DynamicResource BorderBrushColor}"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Padding="14 10"
+                                            Margin="0 0 0 8">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsClaimed}" Value="True">
+                                                        <Setter Property="Opacity" Value="0.6" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CanClaim}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="38" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Иконка квеста -->
+                                            <Border Grid.Column="0" Width="34" Height="34" CornerRadius="8"
+                                                    Background="{DynamicResource ControlBgBrush}"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Icon}" FontSize="16"
+                                                           FontFamily="Segoe UI Emoji, Segoe UI Symbol"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+
+                                            <!-- Название, описание и шкала -->
+                                            <StackPanel Grid.Column="1" Margin="8 0 14 0" VerticalAlignment="Center">
+                                                <Grid>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="Bold"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                        <Border Background="#206366F1" CornerRadius="4" Padding="5 1" Margin="6 0 0 0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding XpReward, StringFormat={}+{0} XP}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding ProgressText}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
+                                                               HorizontalAlignment="Right" />
+                                                </Grid>
+
+                                                <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                                                           Margin="0 2 0 5" TextWrapping="Wrap" />
+
+                                                <ProgressBar Height="5" Value="{Binding ProgressPercentage, Mode=OneWay}" Maximum="100"
+                                                             Background="{DynamicResource ControlBgBrush}" Foreground="{DynamicResource AccentBrush}"
+                                                             BorderThickness="0">
+                                                    <ProgressBar.Clip>
+                                                        <RectangleGeometry Rect="0,0,10000,5" RadiusX="3" RadiusY="3" />
+                                                    </ProgressBar.Clip>
+                                                </ProgressBar>
+                                            </StackPanel>
+
+                                            <!-- Кнопка «Забрать» или статус -->
+                                            <Grid Grid.Column="2" VerticalAlignment="Center">
+                                                <!-- Кнопка «Забрать» (если выполнен и не забран) -->
+                                                <Button Content="{Binding XpReward, StringFormat={}🎁 +{0} XP}"
+                                                        Command="{Binding DataContext.ClaimQuestCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Background="{DynamicResource AccentBrush}"
+                                                        Foreground="White"
+                                                        FontSize="12" FontWeight="Bold"
+                                                        Padding="12 6"
+                                                        BorderThickness="0"
+                                                        Cursor="Hand">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding CanClaim}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+
+                                                <!-- Бейдж статуса (если еще не выполнен или уже забран) -->
+                                                <Border CornerRadius="6" Padding="10 5">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding CanClaim}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsClaimed}" Value="True">
+                                                                    <Setter Property="Background" Value="#1810B981" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding StatusBadgeText}" FontSize="11" FontWeight="SemiBold">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsClaimed}" Value="True">
+                                                                        <Setter Property="Foreground" Value="#10B981" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Border>
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Achievements section -->
+            <StackPanel Grid.Row="6">
                 <TextBlock Text="{DynamicResource Profile_AllAchList}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 14" />
 
                 <ItemsControl ItemsSource="{Binding Achievements}">
@@ -143,7 +414,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Иконка достижения -->
+                                    <!-- Achievement icon -->
                                     <Border Grid.Column="0" Width="38" Height="38" CornerRadius="8" Background="{DynamicResource ControlBgBrush}"
                                             HorizontalAlignment="Left" VerticalAlignment="Center">
                                         <Border.Style>
@@ -162,7 +433,7 @@
                                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
 
-                                    <!-- Название и описание -->
+                                    <!-- Title and description -->
                                     <StackPanel Grid.Column="1" Margin="8 0 12 0" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="Bold">
                                             <TextBlock.Style>
@@ -179,7 +450,7 @@
                                         <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                                                    Margin="0 3 0 6" TextWrapping="Wrap" />
 
-                                        <!-- Прогресс достижения -->
+                                        <!-- Achievement progress -->
                                         <Grid Margin="0 2 0 0">
                                             <ProgressBar Height="5" Value="{Binding Progress, Mode=OneWay}" Maximum="100"
                                                          Background="{DynamicResource ControlBgBrush}" Foreground="#10B981" BorderThickness="0" />
@@ -187,7 +458,7 @@
                                         <TextBlock Text="{Binding ProgressText}" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
                                     </StackPanel>
 
-                                    <!-- Бейдж статуса -->
+                                    <!-- Status badge -->
                                     <Border Grid.Column="2" CornerRadius="6"
                                             Padding="8 4" VerticalAlignment="Top">
                                         <Border.Style>
