@@ -81,26 +81,10 @@ No cloud sync, no telemetry, and no account required — **100% of your data sta
 ### Run from Source
 
 ```bash
-git clone https://github.com/your-username/WinTime.git
+git clone
 cd WinTime
 dotnet run -p:Platform=x64
 ```
-
-### Build with Visual Studio
-
-1. Open `WinTime.sln` in **Visual Studio 2022** (v17.10+) or JetBrains Rider.
-2. Select configuration **Release | x64** (or **Debug | x64**).
-3. Set `WinTime` as the Startup Project.
-4. Press **F5** to run.
-
-### Publish Self-Contained Executable
-
-To generate a standalone executable that runs without requiring a pre-installed .NET Runtime:
-
-```bash
-dotnet publish WinTime.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-```
-
 ### First Launch
 
 When opening WinTime for the first time, a setup dialog guides you to pick your preferred interface language (English or Russian) and a folder for storing your SQLite `.db` file (default: `%LOCALAPPDATA%\WinTime`). After selection, tracking begins automatically and the app docks to your Windows system tray.
@@ -135,8 +119,4 @@ WinTime was created with privacy as its primary foundation:
 - All window titles, timestamps, and uptime logs remain exclusively on your local storage.
 
 ---
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
