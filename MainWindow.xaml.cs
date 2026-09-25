@@ -66,4 +66,52 @@ public partial class MainWindow : Window
             Hide();
         }
     }
+
+    // Window caption control handlers
+
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+    }
+
+    private void MaximizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        ToggleWindowState();
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    public void ToggleWindowState()
+    {
+        WindowState = WindowState == WindowState.Maximized
+            ? WindowState.Normal
+            : WindowState.Maximized;
+    }
+
+    private void Window_StateChanged(object? sender, EventArgs e)
+    {
+        if (WindowState == WindowState.Maximized)
+        {
+            MaximizeIcon.Data = Geometry.Parse("M 3,5 H 9 V 11 H 3 Z M 5,5 V 3 H 11 V 9 H 9");
+            MaximizeBtn.ToolTip = Application.Current?.TryFindResource("Window_Restore") as string ?? "Восстановить";
+        }
+        else
+        {
+            MaximizeIcon.Data = Geometry.Parse("M 3,3 H 11 V 11 H 3 Z");
+            MaximizeBtn.ToolTip = Application.Current?.TryFindResource("Window_Maximize") as string ?? "Развернуть";
+        }
+    }
+
+    protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+        if (e.Key == System.Windows.Input.Key.F11)
+        {
+            ToggleWindowState();
+            e.Handled = true;
+        }
+    }
 }

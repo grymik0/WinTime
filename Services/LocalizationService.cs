@@ -125,6 +125,10 @@ public sealed class LocalizationService
         _ruStrings["Common_Today"]         = "Сегодня";
         _ruStrings["Common_Week"]          = "Неделя";
         _ruStrings["Common_Month"]         = "Месяц";
+        _ruStrings["Window_Minimize"]      = "Свернуть";
+        _ruStrings["Window_Maximize"]      = "Развернуть";
+        _ruStrings["Window_Restore"]       = "Восстановить";
+        _ruStrings["Window_Close"]         = "Закрыть в трей";
 
         // Dashboard
         _ruStrings["Dash_Title"]           = "Дашборд";
@@ -203,6 +207,7 @@ public sealed class LocalizationService
         _ruStrings["Goals_ActionNotify"]   = "🔔 Уведомлять каждые 3 минуты";
         _ruStrings["Goals_ActionClose"]    = "🛑 Закрывать процесс (с предупреждением 60 сек)";
         _ruStrings["Goals_BtnSave"]        = "Сохранить";
+        _ruStrings["Goals_BtnCancel"]      = "Отмена";
         _ruStrings["Goals_DeleteConfirm"]  = "Удалить этот лимит?";
 
         // Projects View & Dialogs
@@ -431,6 +436,10 @@ public sealed class LocalizationService
         _enStrings["Common_Today"]         = "Today";
         _enStrings["Common_Week"]          = "Week";
         _enStrings["Common_Month"]         = "Month";
+        _enStrings["Window_Minimize"]      = "Minimize";
+        _enStrings["Window_Maximize"]      = "Maximize";
+        _enStrings["Window_Restore"]       = "Restore";
+        _enStrings["Window_Close"]         = "Close to tray";
 
         // Dashboard
         _enStrings["Dash_Title"]           = "Dashboard";
@@ -509,6 +518,7 @@ public sealed class LocalizationService
         _enStrings["Goals_ActionNotify"]   = "🔔 Notify every 3 minutes";
         _enStrings["Goals_ActionClose"]    = "🛑 Close process (with 60s warning)";
         _enStrings["Goals_BtnSave"]        = "Save";
+        _enStrings["Goals_BtnCancel"]      = "Cancel";
         _enStrings["Goals_DeleteConfirm"]  = "Delete this limit?";
 
         // Projects View & Dialogs

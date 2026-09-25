@@ -58,7 +58,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <!-- Основной контент страницы с отступами -->
+        <!-- Main page content with margins -->
         <Grid Margin="24 20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -66,7 +66,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Шапка -->
+            <!-- Header -->
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -101,9 +101,9 @@
                 </Button>
             </Grid>
 
-            <!-- Содержимое: Таблица или Empty State -->
+            <!-- Content: Table or Empty State -->
             <Grid Grid.Row="2">
-                <!-- Таблица лимитов -->
+                <!-- Limits table -->
                 <DataGrid ItemsSource="{Binding Limits}"
                           Visibility="{Binding HasLimits, Converter={StaticResource BoolToVis}}"
                           AutoGenerateColumns="False"
@@ -125,7 +125,7 @@
                       RowStyle="{StaticResource RowStyle}">
 
                 <DataGrid.Columns>
-                    <!-- Имя приложения -->
+                    <!-- Application name -->
                     <DataGridTemplateColumn Header="{DynamicResource Goals_ColApp}" Width="*" MinWidth="160" SortMemberPath="FriendlyName">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -141,7 +141,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <!-- Дневной лимит -->
+                    <!-- Daily limit -->
                     <DataGridTemplateColumn Header="{DynamicResource Goals_ColLimit}" Width="110" SortMemberPath="MaxDailySeconds">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -150,7 +150,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <!-- Потрачено сегодня -->
+                    <!-- Spent today -->
                     <DataGridTemplateColumn Header="{DynamicResource Goals_ColToday}" Width="135" SortMemberPath="TodayUsedSeconds">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -159,7 +159,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <!-- Прогресс -->
+                    <!-- Progress -->
                     <DataGridTemplateColumn Header="{DynamicResource Goals_ColProgress}" Width="130" SortMemberPath="ProgressPercent">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -169,7 +169,7 @@
                                     </Grid>
                                     <ProgressBar Height="6" Value="{Binding ProgressPercent, Mode=OneWay}" Maximum="100" BorderThickness="0" Background="{DynamicResource ControlBgBrush}">
                                         <ProgressBar.Style>
-                                            <Style TargetType="ProgressBar">
+                                             <Style TargetType="ProgressBar">
                                                 <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsExceeded}" Value="True">
@@ -184,7 +184,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <!-- Тип действия -->
+                    <!-- Action type -->
                     <DataGridTemplateColumn Header="{DynamicResource Goals_ColAction}" Width="130" SortMemberPath="ActionTypeTitle">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -193,7 +193,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <!-- Включение/выключение -->
+                    <!-- Toggle limit on/off -->
                     <DataGridTemplateColumn Header="{DynamicResource Goals_ColStatus}" Width="70">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -205,7 +205,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <!-- Удаление -->
+                    <!-- Delete limit -->
                     <DataGridTemplateColumn Width="45">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -224,7 +224,7 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <!-- Пустое состояние -->
+            <!-- Empty state -->
             <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="12"
                     Visibility="{Binding HasNoLimits, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="40 30">
                 <StackPanel HorizontalAlignment="Center">
@@ -253,7 +253,7 @@
         </Grid>
     </Grid>
 
-    <!-- Модальный диалог добавления лимита (на весь экран без обрезки по полям) -->
+    <!-- Add limit modal dialog (full-screen overlay) -->
     <Grid Visibility="{Binding IsDialogOpen, Converter={StaticResource BoolToVis}}"
           Background="{DynamicResource ModalDimmerBrush}">
         <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="16"
@@ -262,9 +262,34 @@
                 <DropShadowEffect Color="#000000" BlurRadius="32" ShadowDepth="6" Opacity="0.35" />
             </Border.Effect>
             <StackPanel>
-                <TextBlock Text="{DynamicResource Goals_DialogTitle}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 16" />
+                <Grid Margin="0 0 0 16">
+                    <TextBlock Text="{DynamicResource Goals_DialogTitle}" FontSize="18" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                    <Button HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Command="{Binding CloseDialogCommand}"
+                            Background="Transparent" BorderThickness="0"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Cursor="Hand" Width="28" Height="28">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" Background="Transparent" CornerRadius="6">
+                                    <Path Data="M 3.5,3.5 L 10.5,10.5 M 10.5,3.5 L 3.5,10.5"
+                                          Stroke="{TemplateBinding Foreground}"
+                                          StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ControlBgBrush}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
 
-                <!-- Выбор приложения -->
+                <!-- Application selection -->
                 <TextBlock Text="{DynamicResource Goals_DialogApp}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <ComboBox ItemsSource="{Binding AvailableApps}"
                           SelectedItem="{Binding SelectedAppForLimit}"
@@ -272,7 +297,7 @@
                           Height="36"
                           Margin="0 0 0 16" />
 
-                <!-- Время (Часы и Минуты) -->
+                <!-- Time (Hours and Minutes) -->
                 <Grid Margin="0 0 0 16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -299,7 +324,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Режим действия -->
+                <!-- Action mode -->
                 <TextBlock Text="{DynamicResource Goals_DialogAction}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
                 <RadioButton Content="{DynamicResource Goals_ActionNotify}"
                              IsChecked="{Binding DialogActionType, ConverterParameter={x:Static models:LimitActionType.Notify}, Mode=OneWay}"
@@ -312,24 +337,40 @@
                              Foreground="{DynamicResource TextPrimaryBrush}"
                              Margin="0 0 0 20" Cursor="Hand" />
 
-                <!-- Кнопки диалога -->
+                <!-- Dialog action buttons -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="{DynamicResource Goals_BtnCancel}"
                             Command="{Binding CloseDialogCommand}"
                             Background="{DynamicResource ControlBgBrush}"
                             Foreground="{DynamicResource TextSecondaryBrush}"
-                            Padding="14 7"
+                            Padding="16 7"
                             Margin="0 0 10 0"
                             BorderThickness="0"
-                            Cursor="Hand" />
+                            Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                     <Button Content="{DynamicResource Goals_BtnSave}"
                             Command="{Binding SaveLimitCommand}"
                             Background="{DynamicResource AccentBrush}"
                             Foreground="White"
                             FontWeight="SemiBold"
-                            Padding="16 7"
+                            Padding="18 7"
                             BorderThickness="0"
-                            Cursor="Hand" />
+                            Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </Border>
