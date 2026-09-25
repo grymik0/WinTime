@@ -112,6 +112,7 @@ public sealed class LocalizationService
         _ruStrings["Nav_Processes"]        = "💻   Процессы";
         _ruStrings["Nav_Applications"]     = "🗂   Приложения";
         _ruStrings["Nav_Goals"]            = "🎯   Цели и Лимиты";
+        _ruStrings["Nav_Projects"]         = "💼   Проекты";
         _ruStrings["Nav_Profile"]          = "🏆   Профиль";
         _ruStrings["Nav_Widget"]           = "📌   Виджет";
         _ruStrings["Nav_Theme"]            = "🎨   Оформление";
@@ -353,6 +354,7 @@ public sealed class LocalizationService
         _enStrings["Nav_Processes"]        = "💻   Processes";
         _enStrings["Nav_Applications"]     = "🗂   Applications";
         _enStrings["Nav_Goals"]            = "🎯   Goals & Limits";
+        _enStrings["Nav_Projects"]         = "💼   Projects";
         _enStrings["Nav_Profile"]          = "🏆   Profile";
         _enStrings["Nav_Widget"]           = "📌   Widget";
         _enStrings["Nav_Theme"]            = "🎨   Appearance";

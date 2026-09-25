@@ -12,6 +12,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private readonly ProcessesViewModel          _processes;
     private readonly ApplicationsViewModel       _applications;
     private readonly GoalsViewModel              _goals;
+    private readonly ProjectsViewModel           _projects;
     private readonly ProfileViewModel            _profile;
     private readonly DesktopWidgetViewModel      _widget;
     private readonly ThemeCustomizationViewModel _theme;
@@ -41,6 +42,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     public ICommand NavigateProcessesCommand    { get; }
     public ICommand NavigateApplicationsCommand { get; }
     public ICommand NavigateGoalsCommand        { get; }
+    public ICommand NavigateProjectsCommand     { get; }
     public ICommand NavigateProfileCommand      { get; }
     public ICommand NavigateWidgetCommand       { get; }
     public ICommand NavigateThemeCommand        { get; }
@@ -52,6 +54,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         ProcessesViewModel          processes,
         ApplicationsViewModel       applications,
         GoalsViewModel              goals,
+        ProjectsViewModel           projects,
         ProfileViewModel            profile,
         DesktopWidgetViewModel      widget,
         ThemeCustomizationViewModel theme,
@@ -62,6 +65,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         _processes    = processes;
         _applications = applications;
         _goals        = goals;
+        _projects     = projects;
         _profile      = profile;
         _widget       = widget;
         _theme        = theme;
@@ -92,6 +96,12 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             CurrentView = _goals;
             _ = _goals.LoadAsync();
+        });
+
+        NavigateProjectsCommand = new RelayCommand(() =>
+        {
+            CurrentView = _projects;
+            _ = _projects.LoadDataAsync();
         });
 
         NavigateProfileCommand = new RelayCommand(() =>

@@ -27,7 +27,14 @@ public sealed class GoalsViewModel : BaseViewModel
     public ObservableCollection<AppLimitItem> Limits
     {
         get => _limits;
-        private set => SetProperty(ref _limits, value);
+        private set
+        {
+            if (SetProperty(ref _limits, value))
+            {
+                OnPropertyChanged(nameof(HasNoLimits));
+                OnPropertyChanged(nameof(HasLimits));
+            }
+        }
     }
 
     public List<AppModel> AvailableApps
@@ -67,6 +74,7 @@ public sealed class GoalsViewModel : BaseViewModel
     }
 
     public bool HasNoLimits => Limits.Count == 0;
+    public bool HasLimits   => Limits.Count > 0;
 
     public ICommand OpenAddDialogCommand   { get; }
     public ICommand CloseDialogCommand     { get; }

@@ -92,8 +92,53 @@ public sealed class DatabaseService : IDisposable
                 IsEnabled        INTEGER NOT NULL DEFAULT 1,
                 UNIQUE(AppId)
             );
+
+            CREATE TABLE IF NOT EXISTS Projects (
+                Id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name        TEXT    NOT NULL,
+                ColorHex    TEXT    NOT NULL DEFAULT '#6366F1',
+                Icon        TEXT    NOT NULL DEFAULT '📁',
+                Description TEXT    NOT NULL DEFAULT '',
+                CreatedAt   TEXT    NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS ProjectRules (
+                Id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                ProjectId     INTEGER NOT NULL REFERENCES Projects(Id) ON DELETE CASCADE,
+                AppId         INTEGER NULL REFERENCES Applications(Id) ON DELETE CASCADE,
+                TitleKeyword  TEXT    NOT NULL DEFAULT ''
+            );
         ";
         cmd.ExecuteNonQuery();
+
+        EnsureColumnExists("ActivitySessions", "ProjectId", "INTEGER NULL REFERENCES Projects(Id)");
+        using var idxCmd = _connection!.CreateCommand();
+        idxCmd.CommandText = "CREATE INDEX IF NOT EXISTS idx_sessions_project ON ActivitySessions(ProjectId);";
+        idxCmd.ExecuteNonQuery();
+    }
+
+    private void EnsureColumnExists(string table, string column, string typeDefinition)
+    {
+        using var checkCmd = _connection!.CreateCommand();
+        checkCmd.CommandText = $"PRAGMA table_info({table});";
+        using var reader = checkCmd.ExecuteReader();
+        bool exists = false;
+        while (reader.Read())
+        {
+            if (string.Equals(reader["name"]?.ToString(), column, StringComparison.OrdinalIgnoreCase))
+            {
+                exists = true;
+                break;
+            }
+        }
+        reader.Close();
+
+        if (!exists)
+        {
+            using var alterCmd = _connection!.CreateCommand();
+            alterCmd.CommandText = $"ALTER TABLE {table} ADD COLUMN {column} {typeDefinition};";
+            alterCmd.ExecuteNonQuery();
+        }
     }
 
     public void Dispose()

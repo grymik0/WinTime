@@ -57,62 +57,65 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="24 20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="18" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid>
+        <!-- Основной контент страницы с отступами -->
+        <Grid Margin="24 20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <!-- Шапка -->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+            <!-- Шапка -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0">
-                <TextBlock Text="{DynamicResource Goals_Title}"
-                           FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock Text="{DynamicResource Goals_Subtitle}"
-                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
-            </StackPanel>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="{DynamicResource Goals_Title}"
+                               FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{DynamicResource Goals_Subtitle}"
+                               FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
+                </StackPanel>
 
-            <Button Grid.Column="1"
-                    Content="{DynamicResource Goals_BtnAdd}"
-                    Command="{Binding OpenAddDialogCommand}"
-                    Background="{DynamicResource AccentBrush}"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Padding="16 8"
-                    FontSize="13"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    VerticalAlignment="Center">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-        </Grid>
+                <Button Grid.Column="1"
+                        Content="{DynamicResource Goals_BtnAdd}"
+                        Command="{Binding OpenAddDialogCommand}"
+                        Background="{DynamicResource AccentBrush}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Padding="16 8"
+                        FontSize="13"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
 
-        <!-- Содержимое: Таблица или Empty State -->
-        <Grid Grid.Row="2">
-            <!-- Таблица лимитов -->
-            <DataGrid ItemsSource="{Binding Limits}"
-                      AutoGenerateColumns="False"
-                      CanUserDeleteRows="False"
-                      CanUserAddRows="False"
-                      CanUserReorderColumns="False"
-                      IsReadOnly="True"
-                      SelectionMode="Single"
-                      AlternationCount="2"
-                      GridLinesVisibility="Horizontal"
-                      HorizontalGridLinesBrush="{DynamicResource BorderBrushColor}"
-                      Background="{DynamicResource CardBgBrush}"
+            <!-- Содержимое: Таблица или Empty State -->
+            <Grid Grid.Row="2">
+                <!-- Таблица лимитов -->
+                <DataGrid ItemsSource="{Binding Limits}"
+                          Visibility="{Binding HasLimits, Converter={StaticResource BoolToVis}}"
+                          AutoGenerateColumns="False"
+                          CanUserDeleteRows="False"
+                          CanUserAddRows="False"
+                          CanUserReorderColumns="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          AlternationCount="2"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="{DynamicResource BorderBrushColor}"
+                          Background="{DynamicResource CardBgBrush}"
                       Foreground="{DynamicResource TextPrimaryBrush}"
                       BorderBrush="{DynamicResource BorderBrushColor}"
                       BorderThickness="1"
@@ -247,85 +250,90 @@
                     </Button>
                 </StackPanel>
             </Border>
-
-            <!-- Модальный диалог добавления лимита -->
-            <Grid Visibility="{Binding IsDialogOpen, Converter={StaticResource BoolToVis}}" Background="#99000000">
-                <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="14"
-                        Width="420" Padding="24" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <StackPanel>
-                        <TextBlock Text="{DynamicResource Goals_DialogTitle}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 16" />
-
-                        <!-- Выбор приложения -->
-                        <TextBlock Text="{DynamicResource Goals_DialogApp}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
-                        <ComboBox ItemsSource="{Binding AvailableApps}"
-                                  SelectedItem="{Binding SelectedAppForLimit}"
-                                  DisplayMemberPath="FriendlyName"
-                                  Height="36"
-                                  Margin="0 0 0 16" />
-
-                        <!-- Время (Часы и Минуты) -->
-                        <Grid Margin="0 0 0 16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="12" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="{DynamicResource Goals_DialogHours}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
-                                <TextBox Text="{Binding DialogHours, UpdateSourceTrigger=PropertyChanged}"
-                                         Background="{DynamicResource ControlBgBrush}"
-                                         Foreground="{DynamicResource TextPrimaryBrush}"
-                                         BorderBrush="{DynamicResource BorderBrushColor}"
-                                         Padding="8 6" FontSize="13" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="{DynamicResource Goals_DialogMins}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
-                                <TextBox Text="{Binding DialogMinutes, UpdateSourceTrigger=PropertyChanged}"
-                                         Background="{DynamicResource ControlBgBrush}"
-                                         Foreground="{DynamicResource TextPrimaryBrush}"
-                                         BorderBrush="{DynamicResource BorderBrushColor}"
-                                         Padding="8 6" FontSize="13" />
-                            </StackPanel>
-                        </Grid>
-
-                        <!-- Режим действия -->
-                        <TextBlock Text="{DynamicResource Goals_DialogAction}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
-                        <RadioButton Content="{DynamicResource Goals_ActionNotify}"
-                                     IsChecked="{Binding DialogActionType, ConverterParameter={x:Static models:LimitActionType.Notify}, Mode=OneWay}"
-                                     Checked="OnNotifyChecked"
-                                     Foreground="{DynamicResource TextPrimaryBrush}"
-                                     Margin="0 0 0 8" Cursor="Hand" />
-                        <RadioButton Content="{DynamicResource Goals_ActionClose}"
-                                     IsChecked="{Binding DialogActionType, ConverterParameter={x:Static models:LimitActionType.CloseProcess}, Mode=OneWay}"
-                                     Checked="OnCloseChecked"
-                                     Foreground="{DynamicResource TextPrimaryBrush}"
-                                     Margin="0 0 0 20" Cursor="Hand" />
-
-                        <!-- Кнопки диалога -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="{DynamicResource Goals_BtnCancel}"
-                                    Command="{Binding CloseDialogCommand}"
-                                    Background="{DynamicResource ControlBgBrush}"
-                                    Foreground="{DynamicResource TextSecondaryBrush}"
-                                    Padding="14 7"
-                                    Margin="0 0 10 0"
-                                    BorderThickness="0"
-                                    Cursor="Hand" />
-                            <Button Content="{DynamicResource Goals_BtnSave}"
-                                    Command="{Binding SaveLimitCommand}"
-                                    Background="{DynamicResource AccentBrush}"
-                                    Foreground="White"
-                                    FontWeight="SemiBold"
-                                    Padding="16 7"
-                                    BorderThickness="0"
-                                    Cursor="Hand" />
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-            </Grid>
         </Grid>
     </Grid>
+
+    <!-- Модальный диалог добавления лимита (на весь экран без обрезки по полям) -->
+    <Grid Visibility="{Binding IsDialogOpen, Converter={StaticResource BoolToVis}}"
+          Background="{DynamicResource ModalDimmerBrush}">
+        <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1" CornerRadius="16"
+                Width="440" Padding="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect Color="#000000" BlurRadius="32" ShadowDepth="6" Opacity="0.35" />
+            </Border.Effect>
+            <StackPanel>
+                <TextBlock Text="{DynamicResource Goals_DialogTitle}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0 0 0 16" />
+
+                <!-- Выбор приложения -->
+                <TextBlock Text="{DynamicResource Goals_DialogApp}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <ComboBox ItemsSource="{Binding AvailableApps}"
+                          SelectedItem="{Binding SelectedAppForLimit}"
+                          DisplayMemberPath="FriendlyName"
+                          Height="36"
+                          Margin="0 0 0 16" />
+
+                <!-- Время (Часы и Минуты) -->
+                <Grid Margin="0 0 0 16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{DynamicResource Goals_DialogHours}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                        <TextBox Text="{Binding DialogHours, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{DynamicResource ControlBgBrush}"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 BorderBrush="{DynamicResource BorderBrushColor}"
+                                 Padding="8 6" FontSize="13" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{DynamicResource Goals_DialogMins}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                        <TextBox Text="{Binding DialogMinutes, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{DynamicResource ControlBgBrush}"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 BorderBrush="{DynamicResource BorderBrushColor}"
+                                 Padding="8 6" FontSize="13" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Режим действия -->
+                <TextBlock Text="{DynamicResource Goals_DialogAction}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <RadioButton Content="{DynamicResource Goals_ActionNotify}"
+                             IsChecked="{Binding DialogActionType, ConverterParameter={x:Static models:LimitActionType.Notify}, Mode=OneWay}"
+                             Checked="OnNotifyChecked"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             Margin="0 0 0 8" Cursor="Hand" />
+                <RadioButton Content="{DynamicResource Goals_ActionClose}"
+                             IsChecked="{Binding DialogActionType, ConverterParameter={x:Static models:LimitActionType.CloseProcess}, Mode=OneWay}"
+                             Checked="OnCloseChecked"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             Margin="0 0 0 20" Cursor="Hand" />
+
+                <!-- Кнопки диалога -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="{DynamicResource Goals_BtnCancel}"
+                            Command="{Binding CloseDialogCommand}"
+                            Background="{DynamicResource ControlBgBrush}"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Padding="14 7"
+                            Margin="0 0 10 0"
+                            BorderThickness="0"
+                            Cursor="Hand" />
+                    <Button Content="{DynamicResource Goals_BtnSave}"
+                            Command="{Binding SaveLimitCommand}"
+                            Background="{DynamicResource AccentBrush}"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            Padding="16 7"
+                            BorderThickness="0"
+                            Cursor="Hand" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Grid>
 </UserControl>
 

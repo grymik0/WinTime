@@ -16,6 +16,7 @@ internal static class AppServices
     public static ActivityRepository      ActivityRepo  { get; private set; } = null!;
     public static UptimeRepository        UptimeRepo    { get; private set; } = null!;
     public static GoalRepository          GoalRepo      { get; private set; } = null!;
+    public static ProjectRepository       ProjectRepo   { get; private set; } = null!;
     public static IconService             IconService   { get; private set; } = null!;
     public static ExportService           ExportService { get; private set; } = null!;
     public static ThemeService            ThemeService  { get; private set; } = null!;
@@ -29,6 +30,7 @@ internal static class AppServices
     public static ProcessesViewModel          ProcessesVm          { get; private set; } = null!;
     public static ApplicationsViewModel       ApplicationsVm       { get; private set; } = null!;
     public static GoalsViewModel              GoalsVm              { get; private set; } = null!;
+    public static ProjectsViewModel           ProjectsVm           { get; private set; } = null!;
     public static ProfileViewModel            ProfileVm            { get; private set; } = null!;
     public static DesktopWidgetViewModel      DesktopWidgetVm      { get; private set; } = null!;
     public static ThemeCustomizationViewModel ThemeVm              { get; private set; } = null!;
@@ -51,25 +53,27 @@ internal static class AppServices
         ActivityRepo  = new ActivityRepository(Database);
         UptimeRepo    = new UptimeRepository(Database);
         GoalRepo      = new GoalRepository(Database);
+        ProjectRepo   = new ProjectRepository(Database);
         IconService   = new IconService();
         ExportService = new ExportService(ActivityRepo, AppRepo);
 
         Buffer        = new InMemoryBuffer();
-        Tracker       = new ActivityTracker(AppRepo, ActivityRepo, UptimeRepo, Buffer, Settings);
+        Tracker       = new ActivityTracker(AppRepo, ActivityRepo, UptimeRepo, Buffer, Settings, ProjectRepo);
         LimitEnforcer = new LimitEnforcerService(GoalRepo, ActivityRepo, Tracker, Localization);
         _ = LimitEnforcer.ReloadLimitsAsync();
         BedtimeReminder = new BedtimeReminderService(ActivityRepo, Settings, Tracker, Localization);
         BedtimeReminder.Start();
 
-        DashboardVm          = new DashboardViewModel(ActivityRepo, IconService, Tracker, Localization);
+        DashboardVm          = new DashboardViewModel(ActivityRepo, IconService, Tracker, Localization, ThemeService);
         ProcessesVm          = new ProcessesViewModel(UptimeRepo, ActivityRepo, Tracker, Localization);
         ApplicationsVm       = new ApplicationsViewModel(AppRepo, ActivityRepo);
         GoalsVm              = new GoalsViewModel(GoalRepo, AppRepo, ActivityRepo, LimitEnforcer, Localization);
+        ProjectsVm           = new ProjectsViewModel(ProjectRepo, AppRepo, Localization);
         ProfileVm            = new ProfileViewModel(ActivityRepo, Tracker, Localization);
         DesktopWidgetVm      = new DesktopWidgetViewModel(Tracker, ActivityRepo, Settings);
         ThemeVm              = new ThemeCustomizationViewModel(ThemeService, Localization);
         SettingsVm           = new SettingsViewModel(Settings, ActivityRepo, ExportService);
-        MainWindowVm         = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, GoalsVm, ProfileVm, DesktopWidgetVm, ThemeVm, SettingsVm, Localization);
+        MainWindowVm         = new MainWindowViewModel(DashboardVm, ProcessesVm, ApplicationsVm, GoalsVm, ProjectsVm, ProfileVm, DesktopWidgetVm, ThemeVm, SettingsVm, Localization);
     }
 
     public static async Task ShutdownAsync()

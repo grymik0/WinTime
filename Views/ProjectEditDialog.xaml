@@ -1,0 +1,232 @@
+<Window x:Class="WinTime.Views.ProjectEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Настройка проекта"
+        Width="490" Height="510"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border Background="{DynamicResource AppBgBrush}"
+            BorderBrush="{DynamicResource BorderBrushColor}"
+            BorderThickness="1"
+            CornerRadius="16"
+            Padding="24 20"
+            Margin="24">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="4" Opacity="0.25" />
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Шапка -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="DialogTitleText" Text="💼  Новый проект"
+                           FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
+                           VerticalAlignment="Center" />
+
+                <Button Grid.Column="1"
+                        Content="✕"
+                        Click="Cancel_Click"
+                        Width="28" Height="28"
+                        Background="{DynamicResource ControlBgBrush}"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        FontSize="11"
+                        BorderThickness="0"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" CornerRadius="14">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <!-- Поля ввода -->
+            <StackPanel Grid.Row="1" Margin="0 18 0 16">
+                <!-- Название -->
+                <TextBlock Text="Название проекта:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <TextBox x:Name="NameTextBox"
+                         Background="{DynamicResource ControlBgBrush}"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         CaretBrush="{DynamicResource TextPrimaryBrush}"
+                         BorderBrush="{DynamicResource BorderBrushColor}"
+                         BorderThickness="1"
+                         Padding="10 8"
+                         FontSize="13"
+                         Margin="0 0 0 14" />
+
+                <!-- Описание -->
+                <TextBlock Text="Описание (необязательно):" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <TextBox x:Name="DescTextBox"
+                         Background="{DynamicResource ControlBgBrush}"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         CaretBrush="{DynamicResource TextPrimaryBrush}"
+                         BorderBrush="{DynamicResource BorderBrushColor}"
+                         BorderThickness="1"
+                         Padding="10 8"
+                         FontSize="13"
+                         Margin="0 0 14 0" />
+
+                <!-- Иконка -->
+                <TextBlock Text="Иконка проекта:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <ItemsControl x:Name="IconsItemsControl" Margin="0 0 0 14">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Tag="{Binding Glyph}"
+                                    Click="Icon_Click"
+                                    Width="38" Height="38"
+                                    Margin="0 0 6 6"
+                                    Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="IconBorder"
+                                                Background="{DynamicResource ControlBgBrush}"
+                                                BorderBrush="{DynamicResource BorderBrushColor}"
+                                                BorderThickness="1"
+                                                CornerRadius="8">
+                                            <TextBlock Text="{Binding Glyph}"
+                                                       FontFamily="Segoe UI Emoji, Segoe UI Symbol"
+                                                       FontSize="18"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="IconBorder" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                                <Setter TargetName="IconBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                            </Trigger>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter TargetName="IconBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                <Setter TargetName="IconBorder" Property="BorderThickness" Value="2" />
+                                                <Setter TargetName="IconBorder" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Цвет -->
+                <TextBlock Text="Цвет проекта:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 0 0 6" />
+                <ItemsControl x:Name="ColorsItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Tag="{Binding Hex}"
+                                    Click="Color_Click"
+                                    Width="32" Height="32"
+                                    Margin="0 0 8 0"
+                                    Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid>
+                                            <Border Background="{Binding ColorBrush}" CornerRadius="16" />
+                                            <Border BorderBrush="White" BorderThickness="2" CornerRadius="16"
+                                                    Visibility="{Binding IsSelectedVis}" Margin="-2" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- Кнопки действий -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="Отмена"
+                        Click="Cancel_Click"
+                        Background="{DynamicResource ControlBgBrush}"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrushColor}"
+                        BorderThickness="1"
+                        FontWeight="SemiBold"
+                        FontSize="13"
+                        Padding="14 9"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Grid.Column="2"
+                        Content="Сохранить"
+                        Click="Save_Click"
+                        Background="{DynamicResource AccentBrush}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        FontSize="13"
+                        Padding="14 9"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
+

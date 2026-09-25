@@ -24,15 +24,16 @@ public sealed class ActivityRepository
         try
         {
             await _db.Connection.ExecuteAsync(@"
-                INSERT INTO ActivitySessions (AppId, WindowTitle, StartTime, DurationSeconds, IsIdle)
-                VALUES (@AppId, @WindowTitle, @StartTime, @DurationSeconds, @IsIdle)",
+                INSERT INTO ActivitySessions (AppId, WindowTitle, StartTime, DurationSeconds, IsIdle, ProjectId)
+                VALUES (@AppId, @WindowTitle, @StartTime, @DurationSeconds, @IsIdle, @ProjectId)",
                 valid.Select(s => new
                 {
                     s.AppId,
                     s.WindowTitle,
                     StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm:ss"),
                     s.DurationSeconds,
-                    IsIdle = s.IsIdle ? 1 : 0
+                    IsIdle = s.IsIdle ? 1 : 0,
+                    s.ProjectId
                 }),
                 tx);
             tx.Commit();

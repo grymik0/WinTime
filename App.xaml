@@ -20,6 +20,7 @@
             <SolidColorBrush x:Key="TextMutedBrush" Color="#6B7280" />
             <SolidColorBrush x:Key="AccentBrush" Color="#6366F1" />
             <SolidColorBrush x:Key="AccentHoverBrush" Color="#4F46E5" />
+            <SolidColorBrush x:Key="ModalDimmerBrush" Color="#80000000" />
 
             <!-- Стиль элементов ComboBoxItem -->
             <Style TargetType="ComboBoxItem">

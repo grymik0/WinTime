@@ -1,0 +1,410 @@
+<UserControl x:Class="WinTime.Views.ProjectsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:WinTime.ViewModels"
+             Background="{DynamicResource AppBgBrush}">
+
+    <UserControl.Resources>
+        <Style x:Key="PeriodBtn" TargetType="Button">
+            <Setter Property="Background"         Value="{DynamicResource ControlBgBrush}" />
+            <Setter Property="Foreground"         Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="BorderThickness"    Value="0" />
+            <Setter Property="Padding"            Value="16 7" />
+            <Setter Property="FontSize"           Value="13" />
+            <Setter Property="Cursor"             Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StatCard" TargetType="Border">
+            <Setter Property="Background"      Value="{DynamicResource CardBgBrush}" />
+            <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius"    Value="10" />
+            <Setter Property="Padding"         Value="14 12" />
+        </Style>
+
+        <Style x:Key="ActionBtn" TargetType="Button">
+            <Setter Property="Background"         Value="{DynamicResource ControlBgBrush}" />
+            <Setter Property="Foreground"         Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="BorderBrush"        Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness"    Value="1" />
+            <Setter Property="Padding"            Value="10 5" />
+            <Setter Property="FontSize"           Value="12" />
+            <Setter Property="FontWeight"         Value="SemiBold" />
+            <Setter Property="Cursor"             Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlHoverBgBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24 20 24 24">
+        <StackPanel>
+
+            <!-- Верхний блок заголовка -->
+            <Grid Margin="0 0 0 20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="💼  Проекты и тегирование" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="Автоматический учёт времени по проектам, клиентам и задачам"
+                               FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
+                </StackPanel>
+
+                <!-- Кнопка перепривязки правил -->
+                <Button Grid.Column="1"
+                        Content="🔄  Применить ко всей истории"
+                        Command="{Binding ReapplyAllRulesCommand}"
+                        Style="{StaticResource ActionBtn}"
+                        Margin="0 0 10 0"
+                        VerticalAlignment="Center" />
+
+                <!-- Кнопка создания проекта -->
+                <Button Grid.Column="2"
+                        Content="➕  Новый проект"
+                        Command="{Binding CreateProjectCommand}"
+                        Background="{DynamicResource AccentBrush}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Padding="16 8"
+                        FontSize="13"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                    CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <!-- Фильтр периодов -->
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
+                <Button Content="Сегодня" Margin="0 0 8 0"
+                        Command="{Binding SetPeriodCommand}"
+                        CommandParameter="{x:Static vm:ProjectPeriod.Today}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPeriodToday}" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Неделя" Margin="0 0 8 0"
+                        Command="{Binding SetPeriodCommand}"
+                        CommandParameter="{x:Static vm:ProjectPeriod.Week}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPeriodWeek}" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Месяц" Margin="0 0 8 0"
+                        Command="{Binding SetPeriodCommand}"
+                        CommandParameter="{x:Static vm:ProjectPeriod.Month}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPeriodMonth}" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="За всё время"
+                        Command="{Binding SetPeriodCommand}"
+                        CommandParameter="{x:Static vm:ProjectPeriod.AllTime}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PeriodBtn}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPeriodAllTime}" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                    <Setter Property="Foreground" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+
+            <!-- Карточки суммарной статистики -->
+            <UniformGrid Columns="4" Margin="0 0 0 20">
+                <Border Style="{StaticResource StatCard}" Margin="0 0 8 0">
+                    <StackPanel>
+                        <TextBlock Text="⏱  Проектное время" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{Binding TotalProjectTimeText}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="{Binding ProjectsCountText}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 4 0 0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
+                    <StackPanel>
+                        <TextBlock Text="🏆  Главный проект" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{Binding TopProjectName}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding TopProjectTimeText}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 4 0 0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCard}" Margin="4 0 4 0">
+                    <StackPanel>
+                        <TextBlock Text="📊  Охват времени" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{Binding CoveragePercentText}" FontSize="22" FontWeight="Bold" Foreground="#10B981" />
+                        <TextBlock Text="времени в проектах" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0 4 0 0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCard}" Margin="8 0 0 0">
+                    <StackPanel>
+                        <TextBlock Text="💤  Вне проектов" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 0 0 4" />
+                        <TextBlock Text="{Binding UnassignedTimeText}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="неразмеченные окна" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0 4 0 0" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Список проектов -->
+            <ItemsControl ItemsSource="{Binding Projects}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource CardBgBrush}"
+                                BorderBrush="{DynamicResource BorderBrushColor}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="18 16"
+                                Margin="0 0 0 12">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Основная строка проекта -->
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="180" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Иконка с цветным бейджем -->
+                                    <Border Grid.Column="0" Width="44" Height="44"
+                                            Background="{DynamicResource ControlBgBrush}"
+                                            BorderBrush="{Binding ColorHex}"
+                                            BorderThickness="2"
+                                            CornerRadius="10"
+                                            Margin="0 0 14 0"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Icon}"
+                                                   FontFamily="Segoe UI Emoji, Segoe UI Symbol"
+                                                   FontSize="22"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+
+                                    <!-- Название и описание -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        <TextBlock Text="{Binding Description}" FontSize="12"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   Margin="0 3 0 0"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+
+                                    <!-- Время и прогресс -->
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding FormattedTime}" FontSize="18" FontWeight="Bold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                            <TextBlock Text="{Binding Percentage, StringFormat=' ({0:F0}%)'}" FontSize="12"
+                                                       Foreground="{DynamicResource TextMutedBrush}"
+                                                       VerticalAlignment="Bottom" Margin="4 0 0 2" />
+                                        </StackPanel>
+
+                                        <ProgressBar Value="{Binding Percentage}" Maximum="100"
+                                                     Height="6" Width="170" Margin="0 6 0 0"
+                                                     BorderThickness="0"
+                                                     Background="{DynamicResource ControlBgBrush}"
+                                                     Foreground="{Binding ColorHex}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Нижняя строка: Чипы правил и действия -->
+                                <Grid Grid.Row="1" Margin="58 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Список правил в виде бейджей -->
+                                    <ItemsControl Grid.Column="0" ItemsSource="{Binding Rules}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource ControlBgBrush}"
+                                                        BorderBrush="{DynamicResource BorderBrushColor}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6"
+                                                        Padding="8 4"
+                                                        Margin="0 0 6 6">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding DisplayText}" FontSize="11"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                        <Button Content="✕"
+                                                                Command="{Binding DataContext.DeleteRuleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}"
+                                                                Foreground="{DynamicResource TextMutedBrush}"
+                                                                FontSize="10"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Margin="6 0 0 0"
+                                                                Cursor="Hand" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <!-- Кнопки действий проекта -->
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="8 0 0 0">
+                                        <Button Content="➕ Правило"
+                                                Command="{Binding DataContext.AddRuleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ActionBtn}"
+                                                Margin="0 0 6 0" />
+
+                                        <Button Content="✏️"
+                                                ToolTip="Редактировать проект"
+                                                Command="{Binding DataContext.EditProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ActionBtn}"
+                                                Padding="8 5"
+                                                Margin="0 0 6 0" />
+
+                                        <Button Content="🗑️"
+                                                ToolTip="Удалить проект"
+                                                Command="{Binding DataContext.DeleteProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ActionBtn}"
+                                                Padding="8 5" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Пустое состояние (когда проектов нет) -->
+            <Border Background="{DynamicResource CardBgBrush}"
+                    BorderBrush="{DynamicResource BorderBrushColor}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="32"
+                    HorizontalAlignment="Stretch">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Projects.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="📂" FontSize="44" HorizontalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Text="Проекты пока не созданы" FontSize="18" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Создайте проект и добавьте правила (например, Visual Studio или заголовок окна 'WinTime'), чтобы система автоматически вела учёт времени по вашим задачам."
+                               FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"
+                               TextAlignment="Center" MaxWidth="520" Margin="0 6 0 16" />
+                    <Button Content="➕  Создать первый проект"
+                            Command="{Binding CreateProjectCommand}"
+                            Background="{DynamicResource AccentBrush}"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            Padding="20 10"
+                            FontSize="13"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            HorizontalAlignment="Center">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                        CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
+

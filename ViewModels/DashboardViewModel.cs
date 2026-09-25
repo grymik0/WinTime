@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using System.Windows.Media;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -34,8 +35,12 @@ public sealed class DashboardViewModel : BaseViewModel
     private Axis[]     _xAxes    = [new Axis { Labels = [] }];
     private Axis[]     _yAxes    = [new Axis { MinLimit = 0 }];
 
-    public SolidColorPaint LegendTextPaint { get; } =
-        new(new SKColor(229, 231, 235));
+    private SolidColorPaint _legendTextPaint = new(new SKColor(229, 231, 235));
+    public SolidColorPaint LegendTextPaint
+    {
+        get => _legendTextPaint;
+        private set => SetProperty(ref _legendTextPaint, value);
+    }
 
     private ObservableCollection<AppStatItem> _topApps = [];
 
@@ -101,6 +106,21 @@ public sealed class DashboardViewModel : BaseViewModel
         private set => SetProperty(ref _heatmapStatsText, value);
     }
 
+    public SolidColorBrush HeatmapLegend0Brush => HeatmapDayItem.GetBrush((_themeService?.CurrentTheme == AppThemeMode.Light) ? "#E5E7EB" : "#252535");
+    public SolidColorBrush HeatmapLegend1Brush => HeatmapDayItem.GetBrush((_themeService?.CurrentTheme == AppThemeMode.Light) ? "#C7D2FE" : "#3730A3");
+    public SolidColorBrush HeatmapLegend2Brush => HeatmapDayItem.GetBrush((_themeService?.CurrentTheme == AppThemeMode.Light) ? "#818CF8" : "#4F46E5");
+    public SolidColorBrush HeatmapLegend3Brush => HeatmapDayItem.GetBrush((_themeService?.CurrentTheme == AppThemeMode.Light) ? "#6366F1" : "#6366F1");
+    public SolidColorBrush HeatmapLegend4Brush => HeatmapDayItem.GetBrush((_themeService?.CurrentTheme == AppThemeMode.Light) ? "#4338CA" : "#818CF8");
+
+    public void RefreshHeatmapLegend()
+    {
+        OnPropertyChanged(nameof(HeatmapLegend0Brush));
+        OnPropertyChanged(nameof(HeatmapLegend1Brush));
+        OnPropertyChanged(nameof(HeatmapLegend2Brush));
+        OnPropertyChanged(nameof(HeatmapLegend3Brush));
+        OnPropertyChanged(nameof(HeatmapLegend4Brush));
+    }
+
     private string _heatmapTotalTimeText   = "0с";
     private string _heatmapBestDayText     = "—";
     private string _heatmapAvgDayText      = "—";
@@ -144,6 +164,7 @@ public sealed class DashboardViewModel : BaseViewModel
 
     private readonly ActivityTracker    _tracker;
     private readonly LocalizationService _localization;
+    private readonly ThemeService?       _themeService;
 
     private long _rawActiveSeconds;
     private long _todayActiveSeconds;
@@ -154,12 +175,33 @@ public sealed class DashboardViewModel : BaseViewModel
 
     // Constructor
 
-    public DashboardViewModel(ActivityRepository activityRepo, IconService iconService, ActivityTracker tracker, LocalizationService localization)
+    public DashboardViewModel(
+        ActivityRepository  activityRepo,
+        IconService         iconService,
+        ActivityTracker     tracker,
+        LocalizationService localization,
+        ThemeService?       themeService = null)
     {
         _activityRepo = activityRepo;
         _iconService  = iconService;
         _tracker      = tracker;
         _localization = localization;
+        _themeService = themeService;
+
+        UpdateThemePaints();
+
+        if (_themeService != null)
+        {
+            _themeService.ThemeChanged += (_, _) =>
+            {
+                System.Windows.Application.Current?.Dispatcher.InvokeAsync(async () =>
+                {
+                    UpdateThemePaints();
+                    RefreshHeatmapLegend();
+                    await BuildHeatmapAsync();
+                });
+            };
+        }
 
         _localization.LanguageChanged += (_, _) =>
         {
@@ -179,6 +221,39 @@ public sealed class DashboardViewModel : BaseViewModel
         });
 
         OpenWeeklyRecapCommand = new RelayCommand(async () => await OpenWeeklyRecapAsync());
+    }
+
+    private void UpdateThemePaints()
+    {
+        bool isLight = _themeService?.CurrentTheme == AppThemeMode.Light;
+
+        LegendTextPaint = isLight
+            ? new SolidColorPaint(new SKColor(31, 41, 55))     // #1F2937 (Темный графит для светлой темы)
+            : new SolidColorPaint(new SKColor(229, 231, 235)); // #E5E7EB (Светло-серый для темной темы)
+
+        var axisLabelPaint = GetAxisLabelPaint();
+
+        if (XAxes != null)
+        {
+            foreach (var axis in XAxes)
+                axis.LabelsPaint = axisLabelPaint;
+            OnPropertyChanged(nameof(XAxes));
+        }
+
+        if (YAxes != null)
+        {
+            foreach (var axis in YAxes)
+                axis.LabelsPaint = axisLabelPaint;
+            OnPropertyChanged(nameof(YAxes));
+        }
+    }
+
+    private SolidColorPaint GetAxisLabelPaint()
+    {
+        bool isLight = _themeService?.CurrentTheme == AppThemeMode.Light;
+        return isLight
+            ? new SolidColorPaint(new SKColor(75, 85, 99))    // #4B5563
+            : new SolidColorPaint(new SKColor(156, 163, 175)); // #9CA3AF
     }
 
     private async Task OpenWeeklyRecapAsync()
@@ -391,6 +466,8 @@ public sealed class DashboardViewModel : BaseViewModel
                     previousMonth = weekMonday.Month;
                 }
 
+                bool isLight = _themeService?.CurrentTheme == AppThemeMode.Light;
+
                 for (int d = 0; d < 7; d++)
                 {
                     var dayDate = weekMonday.AddDays(d);
@@ -402,29 +479,31 @@ public sealed class DashboardViewModel : BaseViewModel
                     if (sec > 0) activeDaysCount++;
 
                     int intensity = 0;
-                    string color = isFuture ? "#181824" : "#252535";
+                    string color = isLight
+                        ? (isFuture ? "#F3F4F6" : "#E5E7EB")
+                        : (isFuture ? "#181824" : "#252535");
 
                     if (!isFuture && sec > 0)
                     {
                         if (sec < 3600)
                         {
                             intensity = 1;
-                            color = "#3730A3";
+                            color = isLight ? "#C7D2FE" : "#3730A3";
                         }
                         else if (sec < 3 * 3600)
                         {
                             intensity = 2;
-                            color = "#4F46E5";
+                            color = isLight ? "#818CF8" : "#4F46E5";
                         }
                         else if (sec < 6 * 3600)
                         {
                             intensity = 3;
-                            color = "#6366F1";
+                            color = isLight ? "#6366F1" : "#6366F1";
                         }
                         else
                         {
                             intensity = 4;
-                            color = "#818CF8";
+                            color = isLight ? "#4338CA" : "#818CF8";
                         }
                     }
 
@@ -492,6 +571,7 @@ public sealed class DashboardViewModel : BaseViewModel
                 ? $"🔥 Серия: {streak} {GetDaysWord(streak)} · Всего активных: {activeDaysCount} дн."
                 : $"🔥 Streak: {streak} {(streak == 1 ? "day" : "days")} · Total active: {activeDaysCount} days";
             HeatmapWeeks = new ObservableCollection<HeatmapWeekItem>(weeks);
+            RefreshHeatmapLegend();
         }
         catch { }
     }
@@ -762,7 +842,7 @@ public sealed class DashboardViewModel : BaseViewModel
                 LabelsRotation = _selectedPeriod == TimePeriod.Today  ? -60 :
                                  _selectedPeriod == TimePeriod.Month  ? -60 : 0,
                 TextSize       = 11,
-                LabelsPaint    = new SolidColorPaint(new SKColor(156, 163, 175)),
+                LabelsPaint    = GetAxisLabelPaint(),
                 Padding        = new LiveChartsCore.Drawing.Padding(0),
             }
         ];
@@ -773,7 +853,7 @@ public sealed class DashboardViewModel : BaseViewModel
             {
                 MinLimit    = 0,
                 TextSize    = 11,
-                LabelsPaint = new SolidColorPaint(new SKColor(156, 163, 175)),
+                LabelsPaint = GetAxisLabelPaint(),
                 Labeler     = v => v < 1
                     ? (isRu ? $"{(int)Math.Round(v * 60)}м" : $"{(int)Math.Round(v * 60)}m")
                     : (isRu ? $"{v:F1}ч" : $"{v:F1}h"),
